@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lito · Content Studio</title>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; }
+    ::-webkit-scrollbar { display: none; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    input, button { font-family: inherit; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+// ─── LITO BASE ────────────────────────────────────────────────────────────────
+// LITO_BASE: prompt ultra-detallado para máxima consistencia de personaje
+const LITO_BASE = `Lito the chibi axolotl, kawaii sticker art style. CHARACTER DETAILS: chubby round body in soft mint green color with gentle gradient, body color exactly like #98E8D0 mint. THREE pairs of fluffy feathery external gills on sides of head, bright bubblegum pink color like cotton candy. Face has HUGE glossy sparkly eyes with white highlight dot reflection, rosy circular blushed cheeks in soft pink, tiny cute small closed mouth. Very stubby round mini hands and mini feet, same mint green as body. STYLE: thick bold black outlines like a sticker, 2D flat cel-shaded illustration, absolutely NOT 3D, NOT realistic. Soft pastel shading with subtle highlights on body. High contrast colors. Kawaii chibi proportions with oversized head. Clean white or solid pastel background. No text, no subtitles, no watermark. Same character design always: mint body, pink fluffy gills, big sparkly eyes, rosy cheeks, tiny mouth, stubby limbs.`;
+
+// ─── SCHEDULE ─────────────────────────────────────────────────────────────────
+const schedule = [
+  { hora: "7:00 AM",  emoji: "🌅", tipo: "Buenos días / Motivación" },
+  { hora: "8:00 AM",  emoji: "😩", tipo: "Trabajo / Escuela relatable" },
+  { hora: "9:00 AM",  emoji: "📰", tipo: "Tendencia del día" },
+  { hora: "10:00 AM", emoji: "😂", tipo: "Humor absurdo" },
+  { hora: "11:00 AM", emoji: "💬", tipo: "Pregunta viral (incita comentar)" },
+  { hora: "12:00 PM", emoji: "🍕", tipo: "Comida / Almuerzo" },
+  { hora: "1:00 PM",  emoji: "😴", tipo: "Siesta / Flojera de tarde" },
+  { hora: "2:00 PM",  emoji: "🔥", tipo: "Meme trending / actualidad" },
+  { hora: "3:00 PM",  emoji: "🥹", tipo: "Nostalgia / sentimiento" },
+  { hora: "4:00 PM",  emoji: "😤", tipo: "Queja cotidiana (muy relatable)" },
+  { hora: "5:00 PM",  emoji: "🎉", tipo: "Salida del trabajo / viernes energy" },
+  { hora: "6:00 PM",  emoji: "🌙", tipo: "Noche / reflexión o caos nocturno" },
+];
+
+// ─── WEEKLY MEMES ─────────────────────────────────────────────────────────────
+const weeklyMemes = {
+  Lunes: [
+    `${LITO_BASE}. Dead eyes, flat mouth, dragging feet slowly, holding a tiny coffee cup, huge dark circles under eyes. Walking zombie-like. Mood: Monday survival mode.`,
+    `${LITO_BASE}. Full panic, papers flying, pencil behind ear, surrounded by mini alarm clocks. Mood: running late Monday morning.`,
+    `${LITO_BASE}. Curious alert face, one eyebrow raised, looking at tiny glowing phone screen. Mood: reacting to trending Monday news.`,
+    `${LITO_BASE}. Uncontrollable laughter, tears flying, rolling on floor, tiny legs kicking in air. Mood: absurdly funny Monday meme.`,
+    `${LITO_BASE}. Innocent big eyes, head tilted slightly, standing still, expectant pose. Mood: posing a question to audience.`,
+    `${LITO_BASE}. Pure joy, hearts as eyes, reaching toward a giant pizza slice much bigger than Lito. Drool drop. Mood: lunch obsession.`,
+    `${LITO_BASE}. Half-closed sleepy eyes, blanket cape, pillow under arm, completely melted posture. Mood: post-lunch nap mode.`,
+    `${LITO_BASE}. Eyes wide open shocked, both mini hands on cheeks Home Alone style. Mood: reacting to wild Monday news.`,
+    `${LITO_BASE}. Soft teary eyes, faint smile, looking upward dreamily, holding a tiny old toy. Mood: nostalgic Monday feelings.`,
+    `${LITO_BASE}. Puffed cheeks, arms crossed, tiny steam from head, foot stomp. Mood: very annoyed at Monday inconvenience.`,
+    `${LITO_BASE}. Euphoric smile, confetti raining, tiny fists raised in victory. Mood: surviving Monday = win.`,
+    `${LITO_BASE}. Sitting wrapped in blanket burrito, one eye open, staring into nothing. Moon and stars. Mood: 11pm Monday thoughts.`,
+  ],
+  Martes: [
+    `${LITO_BASE}. Forced smile with dead eyes, holding a tiny motivational banner. Clearly not convinced. Mood: fake Tuesday positivity.`,
+    `${LITO_BASE}. Full panic, papers flying everywhere, calculator in hand, surrounded by mini spreadsheet papers. Mood: Tuesday deadline.`,
+    `${LITO_BASE}. Squinting one eye suspiciously, finger on chin, thinking bubble. Mood: skeptical about Tuesday trend.`,
+    `${LITO_BASE}. Completely flat face pressed against a wall, arms spread, zero expression. Mood: profound absurd Tuesday humor.`,
+    `${LITO_BASE}. Innocent big eyes, pointing at viewer with tiny finger, rosy cheeks. Mood: asking audience a debate question.`,
+    `${LITO_BASE}. Shaking with excitement, sparkle eyes, holding a tiny taco much bigger than head. Mood: Tuesday taco discovery.`,
+    `${LITO_BASE}. Dramatic telenovela face, one hand to forehead, other reaching out, tiny dramatic tear. Mood: extra about Tuesday exhaustion.`,
+    `${LITO_BASE}. Pointing finger guns, winking, confident smirk, tiny sunglasses slightly askew. Mood: unbothered Tuesday reaction.`,
+    `${LITO_BASE}. Longing gaze at tiny snow globe with childhood scene. Soft glow. Mood: missing simpler Tuesday times.`,
+    `${LITO_BASE}. Arms T-posed, eyes closed, floating mid-air, absolutely done. Mood: choosing not to deal with Tuesday.`,
+    `${LITO_BASE}. Sprinting full speed, trail of dust, tiny smile, backpack bouncing. Mood: escaping Tuesday.`,
+    `${LITO_BASE}. Lying on back like starfish, staring at ceiling stars, totally blank. Mood: Tuesday night decompress.`,
+  ],
+  Miércoles: [
+    `${LITO_BASE}. Cautiously optimistic face, small hopeful smile, peeking around a corner. Mood: Wednesday = halfway survival.`,
+    `${LITO_BASE}. Typing furiously on tiny laptop, tongue out in concentration, smoke from keyboard. Mood: Wednesday grind.`,
+    `${LITO_BASE}. Gasping mouth open wide, eyes fully round, pointing at something off-screen. Mood: mid-week news reaction.`,
+    `${LITO_BASE}. Doing a silly dance alone, arms flailing, one leg up, eyes closed happily. Mood: random Wednesday joy.`,
+    `${LITO_BASE}. Sitting cross-legged, chin on hands, big curious eyes, very still and attentive. Mood: posing a deep question.`,
+    `${LITO_BASE}. Cheeks huge from stuffing food, both hands holding different snacks, eyes closed in bliss. Mood: Wednesday snack emergency.`,
+    `${LITO_BASE}. Head drooping slowly, caught falling asleep mid-sit, sudden snap awake. Mood: 1pm Wednesday crash.`,
+    `${LITO_BASE}. Dramatically falling backward in slow motion, cape-blanket flowing, single tear. Mood: devastated by mid-week meme.`,
+    `${LITO_BASE}. Gentle smile, eyes soft, holding tiny photo frame blank, glow and sparkles. Mood: Wednesday throwback feelings.`,
+    `${LITO_BASE}. Staring intensely at tiny broken printer, steam rising slowly from head. Mood: Wednesday technology betrayal.`,
+    `${LITO_BASE}. Surfing on giant wave made of papers and folders, triumphant pose, tiny shaka hand. Mood: conquering hump day.`,
+    `${LITO_BASE}. Wrapped in 5 blankets, only eyes and gills visible, surrounded by snacks, tiny TV glow. Mood: Wednesday night comfort.`,
+  ],
+  Jueves: [
+    `${LITO_BASE}. Nose wiggling, eyes lit up, leaning forward hands clasped. Can SMELL Friday coming. Mood: Thursday = pre-Friday energy.`,
+    `${LITO_BASE}. Confidently strutting with tiny briefcase, chin up, sunglasses on. Mood: Thursday professional mode.`,
+    `${LITO_BASE}. Frozen mid-scroll on phone, eyes reflecting screen, jaw dropped. Mood: can't look away from something online.`,
+    `${LITO_BASE}. Tiny detective hat, magnifying glass up to eye, leaning forward, suspicious side-eye. Mood: investigating internet nonsense.`,
+    `${LITO_BASE}. Arms wide open, eyes sparkling, inviting warm expression. Mood: asking community something wholesome.`,
+    `${LITO_BASE}. Balancing 5 stacked burgers on tiny head while walking carefully, eyes crossing. Mood: Thursday food challenge.`,
+    `${LITO_BASE}. Sitting inside a coffee cup, peeking out over the rim, both hands gripping edge. Tiny and sleepy. Mood: becoming one with caffeine.`,
+    `${LITO_BASE}. Spinning in office chair super fast, dizzy spirals in eyes, arms out. Mood: Thursday chaos spiral.`,
+    `${LITO_BASE}. Holding tiny ticket stubs and popcorn, nostalgic misty eyes, soft retro light. Mood: Thursday throwback.`,
+    `${LITO_BASE}. Pointing dramatically at blank calendar square with mini angry face, one eye twitching. Mood: counting hours to Friday.`,
+    `${LITO_BASE}. Wearing a tiny crown, arms crossed regally, chin up, glitter raining. Mood: Thursday royalty — almost weekend.`,
+    `${LITO_BASE}. Under pile of blankets, only tiny gills and one eye visible, phone glow, mini snacks scattered. Mood: Thursday night wind-down.`,
+  ],
+  Viernes: [
+    `${LITO_BASE}. EXPLOSIVE joy, leaping into air, confetti everywhere, fists pumped, biggest smile possible. Mood: FRIDAY ARRIVED.`,
+    `${LITO_BASE}. Slow-motion strut, wind blowing gills dramatically, sunglasses on, tiny gold chain. Mood: Friday main character energy.`,
+    `${LITO_BASE}. Refreshing tiny phone screen repeatedly with intense focus, one eye slightly twitching. Mood: waiting for Friday news.`,
+    `${LITO_BASE}. DJ booth behind Lito, headphones on, paw raised, eyes closed in musical trance. Mood: Friday is the vibe.`,
+    `${LITO_BASE}. Holding tiny microphone toward viewer, eyebrows raised expectantly. Mood: what are your Friday night plans?`,
+    `${LITO_BASE}. Ordering from huge menu taller than Lito, eyes wide with too many choices, tiny sweat drop. Mood: Friday feast decision paralysis.`,
+    `${LITO_BASE}. Doing absolutely nothing on a bean bag, limbs splayed, zero energy, pure relief. Mood: moment after work ends Friday.`,
+    `${LITO_BASE}. Reacting to Friday meme with pointing and laughing, slapping knee, tears of laughter. Mood: Friday energy is unmatched.`,
+    `${LITO_BASE}. Tiny mixtape in hand, misty nostalgic eyes, soft smile, old-school headphones. Mood: songs that take you back on Friday.`,
+    `${LITO_BASE}. Legs spinning cartoon-fast out the door, trail of smoke, grinning wide. Mood: ESCAPING for the weekend.`,
+    `${LITO_BASE}. Arms raised like Rocky at top of stairs, dramatic lighting, wind in gills, victory pose. Mood: made it through the week.`,
+    `${LITO_BASE}. Curled in tiny ball, eyes closed peacefully, ZZZ floating, smile. Stars and moon. Mood: earned Friday night rest.`,
+  ],
+  Sábado: [
+    `${LITO_BASE}. In tiny pajamas, hair messy, squinting at bright light, confused smile, cereal bowl in hand. Mood: waking up with no alarm Saturday.`,
+    `${LITO_BASE}. Wearing mini apron, holding spatula, smoke from pan, one eyebrow raised, proud look. Mood: attempting Saturday recipe.`,
+    `${LITO_BASE}. Watching something intense on tiny TV, leaning forward, mouth open, hands gripping knees. Mood: weekend series binge begins.`,
+    `${LITO_BASE}. Full artist mode, tiny beret, palette, tongue out, painting something off-screen intensely. Mood: Saturday creative chaos.`,
+    `${LITO_BASE}. Lying on back in park, looking at clouds, serene smile, tiny flower in gill. Mood: asking what followers do on Saturdays.`,
+    `${LITO_BASE}. Surrounded by 10 open delivery boxes, overwhelmed happy face, too much food, eyes spinning. Mood: Saturday delivery haul.`,
+    `${LITO_BASE}. Melted into the couch, basically a puddle, remote on chest, chips on belly, content face. Mood: legendary Saturday nap.`,
+    `${LITO_BASE}. Seeing a meme and LOSING it, falling off chair, kicking legs, tears of laughter. Mood: Saturday internet is chaotic.`,
+    `${LITO_BASE}. Watching old home video on tiny projector, warm light, one nostalgic tear, soft smile. Mood: Saturday memory feels.`,
+    `${LITO_BASE}. Grocery cart too big, Lito barely reaching handles, determined focused face. Mood: Saturday adulting struggle.`,
+    `${LITO_BASE}. At a tiny party, confetti cannon, biggest smile, gills bouncy. Mood: Saturday night let's GO.`,
+    `${LITO_BASE}. Sitting on rooftop edge, legs dangling, looking at stars dreamily, soft satisfied face. Mood: perfect end to a Saturday.`,
+  ],
+  Domingo: [
+    `${LITO_BASE}. In bed, barely one eye open, sun beaming in, pulling pillow over face. Mood: Sunday slow sacred morning.`,
+    `${LITO_BASE}. Making coffee with extreme focus, both hands wrapped around mug, eyes closed in peace. Mood: Sunday ritual.`,
+    `${LITO_BASE}. Looking at phone, shadow of Monday looming behind Lito getting closer, unaware then slow horror creep. Mood: Sunday scaries.`,
+    `${LITO_BASE}. Dramatically lying face down on floor, completely flat, zero motivation. Mood: Sunday does this to everyone.`,
+    `${LITO_BASE}. Sitting at window with rain outside, warm light inside, cup of tea, thoughtful face. Mood: reflective Sunday question to community.`,
+    `${LITO_BASE}. Smelling tray of freshly baked goods, steam rising, eyes closed, pure bliss, tiny happy tear. Mood: Sunday cooking is therapy.`,
+    `${LITO_BASE}. Full starfish pose in bed, eyes closed, slight smile, absolute peace, sunbeam across face. Mood: Sunday nap non-negotiable.`,
+    `${LITO_BASE}. Shadow of a Monday monster growing on wall behind cheerful oblivious Lito. Mood: Sunday evening mood shift.`,
+    `${LITO_BASE}. Soft glow, old childhood cartoon on tiny TV, wrapped in blanket, nostalgic teary smile. Mood: Sunday throwback therapy.`,
+    `${LITO_BASE}. Packing tiny backpack very slowly with maximum reluctance, eyes dragging, mouth pout. Mood: Sunday night prep dread.`,
+    `${LITO_BASE}. Toasting tiny glass toward viewer, warm smile, sunset light, eyes soft and grateful. Mood: grateful Sunday toast.`,
+    `${LITO_BASE}. Eyes closed, peaceful curl, blanket, surrounded by candles and soft things. Mood: Sunday reset complete.`,
+  ],
+};
+
+// ─── SPECIAL DATES ────────────────────────────────────────────────────────────
+const specialDates = [
+  { nombre:"Día de las Madres", fecha:"10 de Mayo", emoji:"💐", color:{bg:"#fff0f6",accent:"#f472b6",light:"#fce7f3",dark:"#831843"}, prompts:[
+    {hora:"7:00 AM",tipo:"Dedicatoria mañana",prompt:`${LITO_BASE}. Holding a giant bouquet of flowers bigger than Lito, eyes filled with love, blush very intense, tiny heart floating. Mood: dedicating morning to mom.`},
+    {hora:"10:00 AM",tipo:"Homenaje emotivo",prompt:`${LITO_BASE}. Hugging a tiny photo frame blank, soft tears of joy, warm golden light around. Mood: emotional tribute to mom.`},
+    {hora:"12:00 PM",tipo:"Comida especial",prompt:`${LITO_BASE}. Wearing tiny apron, presenting a huge cake with candles bigger than Lito, proud chef smile. Mood: special Mother's Day meal.`},
+    {hora:"3:00 PM",tipo:"Mensaje viral",prompt:`${LITO_BASE}. On knees with arms spread wide, eyes full of stars and hearts, exaggerated admiration pose. Mood: worshipping mom energy.`},
+    {hora:"6:00 PM",tipo:"Noche de celebración",prompt:`${LITO_BASE}. Dancing with a tiny figure representing mom silhouette, confetti, pure joy, tearful happy eyes. Mood: celebrating mom tonight.`},
+  ]},
+  { nombre:"Navidad", fecha:"25 de Diciembre", emoji:"🎄", color:{bg:"#f0fdf4",accent:"#16a34a",light:"#dcfce7",dark:"#14532d"}, prompts:[
+    {hora:"7:00 AM",tipo:"Mañana navideña",prompt:`${LITO_BASE}. Wearing tiny Santa hat, jumping out of bed with explosive excitement, Christmas lights sparkling everywhere. Mood: Christmas morning energy.`},
+    {hora:"9:00 AM",tipo:"Apertura de regalos",prompt:`${LITO_BASE}. Surrounded by 10 giant gift boxes all bigger than Lito, wide shocked eyes, trembling with excitement. Mood: gift opening chaos.`},
+    {hora:"12:00 PM",tipo:"Cena navideña",prompt:`${LITO_BASE}. Sitting at tiny table groaning under weight of massive Christmas feast, eyes spinning happily, bib on. Mood: Christmas feast incoming.`},
+    {hora:"3:00 PM",tipo:"Siesta navideña",prompt:`${LITO_BASE}. Completely knocked out on sofa, Santa hat tilted, tiny Christmas lights reflected on peaceful face. Mood: post-Christmas-lunch legendary nap.`},
+    {hora:"8:00 PM",tipo:"Noche buena",prompt:`${LITO_BASE}. Wearing ugly Christmas sweater, dancing under mistletoe, confetti and snowflakes falling, euphoric face. Mood: Christmas night magic.`},
+  ]},
+  { nombre:"Año Nuevo", fecha:"1 de Enero", emoji:"🎆", color:{bg:"#fefce8",accent:"#eab308",light:"#fef9c3",dark:"#713f12"}, prompts:[
+    {hora:"12:00 AM",tipo:"Cuenta regresiva",prompt:`${LITO_BASE}. Watching fireworks explode above, eyes reflecting gold and silver lights, mouth wide open in awe, tiny party hat. Mood: New Year countdown.`},
+    {hora:"8:00 AM",tipo:"Resaca de año nuevo",prompt:`${LITO_BASE}. Waking up looking completely destroyed, hat still on, confetti stuck to face, one eye barely open. Mood: New Year Day recovery mode.`},
+    {hora:"11:00 AM",tipo:"Propósitos virales",prompt:`${LITO_BASE}. Writing on a tiny notepad with extreme determination, tongue out, fire in eyes. Mood: setting New Year resolutions.`},
+    {hora:"3:00 PM",tipo:"Ya se olvidaron",prompt:`${LITO_BASE}. Holding ripped resolution notepad, guilty face, hands up in surrender. Mood: resolutions already broken by Jan 1.`},
+    {hora:"6:00 PM",tipo:"Reflexión de año",prompt:`${LITO_BASE}. Sitting on a tiny cliff edge, looking at sunset, one nostalgic tear, soft smile. Mood: reflecting on the year gone by.`},
+  ]},
+  { nombre:"San Valentín", fecha:"14 de Febrero", emoji:"💝", color:{bg:"#fff0f6",accent:"#e11d48",light:"#fce7f3",dark:"#881337"}, prompts:[
+    {hora:"7:00 AM",tipo:"Soltero y orgulloso",prompt:`${LITO_BASE}. Sitting alone with giant plate of chocolates, heart sunglasses, huge smile, zero sadness. Mood: thriving single on Valentine's Day.`},
+    {hora:"10:00 AM",tipo:"Enamorado intenso",prompt:`${LITO_BASE}. Heart eyes literally floating out of head, floating off ground, surrounded by pink hearts. Mood: Valentine's obsession.`},
+    {hora:"12:00 PM",tipo:"Comida del amor",prompt:`${LITO_BASE}. Presenting a heart-shaped pizza toward viewer with both hands, super proud, petals raining. Mood: Valentine's feast.`},
+    {hora:"3:00 PM",tipo:"Anti San Valentín",prompt:`${LITO_BASE}. Wrapped in black cape, surrounded by anti-heart symbols, pouting dramatically, arms crossed. Mood: Valentine's Day is overrated.`},
+    {hora:"7:00 PM",tipo:"Cita de noche",prompt:`${LITO_BASE}. Dressed up fancy with tiny bow tie, rose in mouth, walking confidently under string lights. Mood: Valentine's night date.`},
+  ]},
+  { nombre:"Halloween", fecha:"31 de Octubre", emoji:"🎃", color:{bg:"#fff7ed",accent:"#ea580c",light:"#ffedd5",dark:"#431407"}, prompts:[
+    {hora:"7:00 AM",tipo:"Despertar terrorífico",prompt:`${LITO_BASE}. Wearing tiny vampire cape, waking up from coffin, confused morning face, fangs visible. Mood: Halloween morning chaos.`},
+    {hora:"10:00 AM",tipo:"Disfraz reveal",prompt:`${LITO_BASE}. Wearing an elaborate tiny costume ghost sheet with eye holes, posing dramatically, jazz hands. Mood: Halloween costume reveal.`},
+    {hora:"3:00 PM",tipo:"Dulces o travesuras",prompt:`${LITO_BASE}. Holding a giant bag of candy bigger than Lito, running at full speed, determined face. Mood: Halloween candy mission.`},
+    {hora:"6:00 PM",tipo:"Susto épico",prompt:`${LITO_BASE}. Jumping 5 feet in air, eyes round as plates, gills standing on end, everything scared. Mood: Halloween jumpscare reaction.`},
+    {hora:"10:00 PM",tipo:"Noche de brujas",prompt:`${LITO_BASE}. Under full moon, witch hat, flying on tiny broom with determined face, stars trailing. Mood: Halloween night magic.`},
+  ]},
+  { nombre:"Día de Muertos", fecha:"1-2 Noviembre", emoji:"🌺", color:{bg:"#faf5ff",accent:"#7c3aed",light:"#ede9fe",dark:"#3b0764"}, prompts:[
+    {hora:"8:00 AM",tipo:"Ofrenda mañanera",prompt:`${LITO_BASE}. Face painted as sugar skull, holding a tiny marigold flower, respectful gentle smile. Mood: honoring ancestors.`},
+    {hora:"12:00 PM",tipo:"Comida de ofrenda",prompt:`${LITO_BASE}. Surrounded by traditional Day of Dead food offerings, eyes wide in appreciation, marigold petals everywhere. Mood: Día de Muertos feast.`},
+    {hora:"4:00 PM",tipo:"Altar familiar",prompt:`${LITO_BASE}. Placing a tiny photo frame on a mini altar surrounded by candles and flowers, solemn tender expression. Mood: remembering loved ones.`},
+    {hora:"7:00 PM",tipo:"Celebración colorida",prompt:`${LITO_BASE}. Dancing with skeleton companions, marigolds raining, colorful sugar skull face paint, joyful tears. Mood: celebrating life and death.`},
+    {hora:"9:00 PM",tipo:"Reflexión nocturna",prompt:`${LITO_BASE}. Sitting by candlelit altar, soft glow on face, peaceful smile, marigold petals floating. Mood: spiritual Día de Muertos night.`},
+  ]},
+  { nombre:"Inicio de Clases", fecha:"Inicio de clases", emoji:"🎒", color:{bg:"#f0f9ff",accent:"#0284c7",light:"#e0f2fe",dark:"#0c4a6e"}, prompts:[
+    {hora:"6:00 AM",tipo:"El primer día",prompt:`${LITO_BASE}. Giant backpack twice Lito's size, shiny new school supplies, nervous smile with sweat drop, holding pencil like a weapon. Mood: first day of school.`},
+    {hora:"8:00 AM",tipo:"Llegada al salón",prompt:`${LITO_BASE}. Peeking through a tiny classroom door, giant eyes scanning the room nervously, one foot in one foot out. Mood: entering new classroom.`},
+    {hora:"12:00 PM",tipo:"Lonchera épica",prompt:`${LITO_BASE}. Opening lunchbox to reveal dream lunch, sparkle eyes, steam rising, angelic light. Mood: school lunch is the highlight.`},
+    {hora:"3:00 PM",tipo:"Salida del colegio",prompt:`${LITO_BASE}. Running out the school doors at full cartoon speed, backpack bouncing wildly, biggest grin. Mood: school's out for today.`},
+    {hora:"9:00 PM",tipo:"Tarea a las 11pm",prompt:`${LITO_BASE}. Surrounded by open books, papers everywhere, dead eyes, one tiny candle burning low, midnight. Mood: first-week homework panic.`},
+  ]},
+  { nombre:"Partido Grande", fecha:"Temporada fútbol", emoji:"⚽", color:{bg:"#f0fdf4",accent:"#15803d",light:"#dcfce7",dark:"#14532d"}, prompts:[
+    {hora:"11:00 AM",tipo:"Pre-partido hype",prompt:`${LITO_BASE}. Wearing tiny jersey, face painted, giant foam finger, screaming into the void, ultra hyped. Mood: game day energy.`},
+    {hora:"2:00 PM",tipo:"Kickoff",prompt:`${LITO_BASE}. Leaning so far forward watching tiny TV that almost falls off couch, snacks scattered, fully intense. Mood: kickoff moment.`},
+    {hora:"4:00 PM",tipo:"Tu equipo va perdiendo",prompt:`${LITO_BASE}. Head in hands, dramatic despair, single tear on cheek, jersey ruffled. Mood: team is losing devastation.`},
+    {hora:"5:00 PM",tipo:"Remontada épica",prompt:`${LITO_BASE}. Leaping off couch mid-air, fists pumping, snacks flying everywhere, pure disbelief and joy. Mood: epic comeback reaction.`},
+    {hora:"7:00 PM",tipo:"Post-partido",prompt:`${LITO_BASE}. Completely wiped out on couch, jersey on, surrounded by empty snack bowls, one thumb up, exhausted smile. Mood: post-game survivor.`},
+  ]},
+];
+
+const dayColors = {
+  Lunes:     {bg:"#f0fdf4",accent:"#4ade80",light:"#dcfce7",dark:"#166534"},
+  Martes:    {bg:"#fdf4ff",accent:"#c084fc",light:"#f3e8ff",dark:"#6b21a8"},
+  Miércoles: {bg:"#fff7ed",accent:"#fb923c",light:"#ffedd5",dark:"#9a3412"},
+  Jueves:    {bg:"#fefce8",accent:"#facc15",light:"#fef9c3",dark:"#713f12"},
+  Viernes:   {bg:"#fff0f6",accent:"#f472b6",light:"#fce7f3",dark:"#831843"},
+  Sábado:    {bg:"#f0f9ff",accent:"#38bdf8",light:"#e0f2fe",dark:"#0c4a6e"},
+  Domingo:   {bg:"#faf5ff",accent:"#a78bfa",light:"#ede9fe",dark:"#4c1d95"},
+};
+
+const days = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+
+const humorTypes = [
+  {id:"negro",     label:"Negro / Pesado",    emoji:"🖤", desc:"Dark humor, ironía pesada, lo que no deberías reír pero ríes"},
+  {id:"absurdo",   label:"Absurdo",           emoji:"🌀", desc:"Sin sentido total, situaciones imposibles, humor surrealista"},
+  {id:"relatable", label:"Relatable",         emoji:"😭", desc:"Situaciones cotidianas dolorosas que todos vivimos"},
+  {id:"cringe",    label:"Cringe / Awkward",  emoji:"😬", desc:"Momentos vergonzosos, situaciones incómodas universales"},
+  {id:"nostalgia", label:"Nostalgia dolorosa",emoji:"🥹", desc:"Cosas del pasado que ya no existen y duelen recordar"},
+  {id:"existencial",label:"Existencial",      emoji:"🌌", desc:"Crisis existenciales presentadas de forma cómica"},
+  {id:"adulting",  label:"Ser adulto es",     emoji:"💀", desc:"El horror de las responsabilidades adultas y la vida real"},
+  {id:"pareja",    label:"Relaciones",        emoji:"💔", desc:"Humor de pareja, soltería, apps de citas, el drama romántico"},
+];
+
+const formatTypes = [
+  {id:"single", label:"Imagen única",     emoji:"🖼️", desc:"Un meme potente en una sola imagen"},
+  {id:"comic2", label:"Mini historia 2p", emoji:"📖", desc:"Setup → Remate. Dos paneles"},
+  {id:"comic3", label:"Mini historia 3p", emoji:"📚", desc:"Setup → Desarrollo → Remate. Tres paneles"},
+];
+
+// ─── GROQ API (gratis) ────────────────────────────────────────────────────────
+async function callGroq(groqKey, systemPrompt, userMsg) {
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${groqKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        {role: "system", content: systemPrompt},
+        {role: "user", content: userMsg},
+      ],
+      max_tokens: 1000,
+      temperature: 0.9,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `Groq HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || "";
+}
+
+// ─── GENERATE HOOKS via Groq ──────────────────────────────────────────────────
+async function generateHooks(groqKey, tipo, dia, promptImagen) {
+  const sys = `Eres un experto en contenido viral para Facebook en español latino.
+Generas frases tipo "hook" para posts de memes con un personaje ajolotito chibi llamado Lito.
+Las frases deben:
+- Ser en español latino natural y coloquial
+- Tener entre 5 y 20 palabras máximo
+- Incitar a comentar, compartir o etiquetar
+- Incluir emojis relevantes
+- Ser muy relatable y virales
+- NO ser demasiado formales
+Responde ÚNICAMENTE con un JSON array de 5 strings. Sin explicaciones, sin markdown, sin backticks.`;
+
+  const usr = `Día: ${dia}
+Tipo de publicación: ${tipo}
+Contexto visual del meme: ${promptImagen.slice(0, 150)}
+Genera 5 frases hook virales para Facebook para este meme de Lito.`;
+
+  const text = await callGroq(groqKey, sys, usr);
+  const clean = text.replace(/```json|```/g,"").trim();
+  return JSON.parse(clean);
+}
+
+// ─── GENERATE CREATIVE MEME via Groq ─────────────────────────────────────────
+async function generateCreativeMeme(groqKey, humorType, format, customTopic, charsDescription="") {
+  const humorInfo = humorTypes.find(h => h.id === humorType);
+  const panelCount = format === "single" ? 1 : format === "comic2" ? 2 : 3;
+
+  const jsonSchema = panelCount === 1
+    ? `{"titulo":"...","concepto":"...","prompt_imagen":"...","frase_hook":"...","frase_alternativa":"..."}`
+    : panelCount === 2
+    ? `{"titulo":"...","concepto":"...","panel1":{"descripcion":"...","prompt_imagen":"..."},"panel2":{"descripcion":"...","prompt_imagen":"..."},"frase_hook":"...","frase_alternativa":"..."}`
+    : `{"titulo":"...","concepto":"...","panel1":{"descripcion":"...","prompt_imagen":"..."},"panel2":{"descripcion":"...","prompt_imagen":"..."},"panel3":{"descripcion":"...","prompt_imagen":"..."},"frase_hook":"...","frase_alternativa":"..."}`;
+
+  const sys = `Eres un experto en contenido viral para Facebook en español latino, especialista en memes con personajes chibi.
+Trabajas con Lito: un ajolotito chibi adorable con cuerpo color menta, branquias rosadas, mejillas sonrojadas, ojos grandes brillosos y boca pequeña. Estilo 2D sticker.
+
+DESCRIPCIÓN BASE DE LITO (incluye SIEMPRE en cada prompt_imagen):
+"Chibi axolotl named Lito, mint green body with soft gradient, pink feathery external gills, rosy cheeks, big shiny innocent eyes, tiny mouth, thick sticker-style outlines, soft shading, high contrast, mini hands and mini feet, flat 2D illustration style NOT 3D, no text, no subtitles, cute sticker art style"
+
+REGLAS DE PROMPTS:
+- Describe pose, expresión facial, elementos visuales, mood
+- Expresiones: dead eyes, shocked O_O, innocent face, serious flat, crying tears of joy, puffed angry cheeks, hearts as eyes, dramatic telenovela pose
+- Los objetos deben ser desproporcionadamente grandes vs Lito para efecto cómico
+- Fondo simple o sólido siempre. Sin texto en la imagen.
+
+REGLAS FRASE HOOK: español latino coloquial, máximo 20 palabras, incitar comentar/etiquetar/compartir, emojis relevantes.
+
+Responde ÚNICAMENTE con JSON válido sin markdown ni backticks. Formato: ${jsonSchema}`;
+
+  const usr = `Tipo de humor: ${humorInfo.label} — ${humorInfo.desc}
+Formato: ${panelCount === 1 ? "imagen única" : `mini historieta ${panelCount} paneles`}
+${customTopic ? `Tema: ${customTopic}` : "Tema: libre, lo más viral y relatable posible"}
+${charsDescription ? `\nPERSONAJES A INCLUIR (usa sus descripciones exactas en los prompts de imagen):\n${charsDescription}` : ""}
+Que la gente quiera comentar, etiquetar o compartir.`;
+
+  const text = await callGroq(groqKey, sys, usr);
+  const clean = text.replace(/```json|```/g,"").trim();
+  return JSON.parse(clean);
+}
+
+// ─── FAL.AI IMAGE - text2img o img2img según si hay referencia ────────────────
+async function generateFalImage(prompt, falKey, referenceUrl = null) {
+  // Si hay imagen de referencia → img2img (MÁXIMA consistencia de personaje)
+  if (referenceUrl) {
+    const res = await fetch("https://fal.run/fal-ai/flux/dev/image-to-image", {
+      method: "POST",
+      headers: {"Authorization": `Key ${falKey}`, "Content-Type": "application/json"},
+      body: JSON.stringify({
+        image_url: referenceUrl,
+        prompt: prompt.slice(0, 600),
+        strength: 0.60,          // 0=copia exacta, 1=ignora referencia. 0.6 = mantiene a Lito pero cambia pose/expresión
+        num_inference_steps: 25,
+        guidance_scale: 3.5,
+      }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      // Si falla img2img, fallback a text2img
+      console.warn("img2img falló, usando text2img:", err);
+    } else {
+      const data = await res.json();
+      const url = data.images?.[0]?.url;
+      if (url) return url;
+    }
+  }
+
+  // text2img estándar (sin referencia o si img2img falló)
+  const res = await fetch("https://fal.run/fal-ai/flux/schnell", {
+    method: "POST",
+    headers: {"Authorization": `Key ${falKey}`, "Content-Type": "application/json"},
+    body: JSON.stringify({
+      prompt: prompt.slice(0, 500),
+      image_size: "square_hd",
+      num_images: 1,
+      num_inference_steps: 4,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || err.message || `HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  const url = data.images?.[0]?.url;
+  if (!url) throw new Error("fal.ai no devolvió URL de imagen");
+  return url;
+}
+
+// ─── FAL.AI VIDEO (Wan2.1) ────────────────────────────────────────────────────
+async function animateWithWan(imageUrl, falKey) {
+  const motionPrompt = "cute chibi axolotl character blinking slowly, gills wiggling gently, subtle breathing movement, smooth looping animation, 2D cartoon style";
+  const submitRes = await fetch("https://queue.fal.run/fal-ai/wan/v2.1/1.3b/image-to-video", {
+    method: "POST",
+    headers: {"Authorization": `Key ${falKey}`, "Content-Type": "application/json"},
+    body: JSON.stringify({image_url: imageUrl, prompt: motionPrompt, num_frames: 81, resolution: "480p", num_inference_steps: 20}),
+  });
+  if (!submitRes.ok) {
+    const err = await submitRes.json().catch(() => ({}));
+    throw new Error(err.detail || `Error ${submitRes.status}`);
+  }
+  const {request_id} = await submitRes.json();
+  if (!request_id) throw new Error("No se recibió request_id de fal.ai");
+  const pollUrl = `https://queue.fal.run/fal-ai/wan/v2.1/1.3b/image-to-video/requests/${request_id}`;
+  for (let i = 0; i < 72; i++) {
+    await new Promise(r => setTimeout(r, 2500));
+    const pollRes = await fetch(pollUrl, {headers: {"Authorization": `Key ${falKey}`}});
+    const data = await pollRes.json();
+    if (data.status === "COMPLETED" && data.output?.video?.url) return data.output.video.url;
+    if (data.status === "FAILED") throw new Error("Wan2.1 falló al generar el video");
+  }
+  throw new Error("Tiempo de espera agotado.");
+}
+
+// ─── VIDEO CARD ───────────────────────────────────────────────────────────────
+function VideoCard({imageUrl, falKey}) {
+  const [status, setStatus] = useState("idle");
+  const [videoUrl, setVideoUrl] = useState(null);
+  const [errMsg, setErrMsg] = useState("");
+  const [elapsed, setElapsed] = useState(0);
+
+  const generate = async () => {
+    setStatus("loading"); setVideoUrl(null); setErrMsg(""); setElapsed(0);
+    const timer = setInterval(() => setElapsed(s => s + 1), 1000);
+    try {
+      const url = await animateWithWan(imageUrl, falKey);
+      setVideoUrl(url); setStatus("done");
+    } catch(e) { setErrMsg(e.message); setStatus("error"); }
+    finally { clearInterval(timer); }
+  };
+
+  return (
+    <div style={{marginTop: 10, padding: 12, background: "#0f0f23", borderRadius: 12, border: "2px solid #4c1d95"}}>
+      <div style={{fontSize: 11, fontWeight: 800, color: "#a78bfa", marginBottom: 8}}>🎬 Animar con Wan2.1 · ~$0.03</div>
+      {status === "idle" && (
+        <button onClick={generate} style={{width:"100%", padding:"10px", background:"linear-gradient(135deg,#7c3aed,#2563eb)", color:"white", border:"none", borderRadius:8, fontWeight:800, fontSize:12, cursor:"pointer"}}>
+          ▶ Generar video animado
+        </button>
+      )}
+      {status === "loading" && (
+        <div style={{textAlign:"center", padding:"16px 0"}}>
+          <div style={{fontSize:28, animation:"spin 1.5s linear infinite", display:"inline-block", marginBottom:6}}>🫧</div>
+          <div style={{fontSize:12, color:"#a78bfa", fontWeight:700}}>Animando a Lito... ⏱ {elapsed}s</div>
+          <div style={{fontSize:10, color:"#6d28d9", marginTop:4}}>Wan2.1 tarda ~60-90 segundos</div>
+        </div>
+      )}
+      {status === "error" && (
+        <div style={{textAlign:"center"}}>
+          <div style={{color:"#f87171", fontSize:11, marginBottom:8}}>{errMsg}</div>
+          <button onClick={generate} style={{padding:"8px 16px", background:"#7c3aed", color:"white", border:"none", borderRadius:8, fontWeight:700, fontSize:11, cursor:"pointer"}}>🔄 Reintentar</button>
+        </div>
+      )}
+      {status === "done" && videoUrl && (
+        <div>
+          <video src={videoUrl} controls autoPlay loop playsInline style={{width:"100%", borderRadius:8, marginBottom:8}} />
+          <a href={videoUrl} target="_blank" rel="noreferrer" style={{display:"block", padding:"9px", textAlign:"center", background:"#7c3aed", color:"white", borderRadius:8, fontWeight:700, fontSize:12, textDecoration:"none"}}>
+            ⬇️ Guardar video
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── IMAGE CARD ───────────────────────────────────────────────────────────────
+function ImageCard({prompt, label, idx, falKey, referenceUrl}) {
+  const [status, setStatus] = useState("idle");
+  const [imgSrc, setImgSrc] = useState(null);
+  const [errMsg, setErrMsg] = useState("");
+  const [elapsed, setElapsed] = useState(0);
+
+  const usingRef = !!referenceUrl;
+
+  const generate = async () => {
+    if (!falKey) { setErrMsg("Agrega tu fal.ai key en ⚙️ Configuración"); setStatus("error"); return; }
+    setStatus("loading"); setImgSrc(null); setErrMsg(""); setElapsed(0);
+    const timer = setInterval(() => setElapsed(s => s + 1), 1000);
+    try {
+      const url = await generateFalImage(prompt, falKey, referenceUrl || null);
+      setImgSrc(url); setStatus("done");
+    } catch(e) { setErrMsg(e.message); setStatus("error"); }
+    finally { clearInterval(timer); }
+  };
+
+  return (
+    <div style={{marginBottom: 14}}>
+      {label && (
+        <div style={{display:"flex", alignItems:"center", gap:8, marginBottom:8}}>
+          {idx !== undefined && (
+            <div style={{width:26,height:26,borderRadius:"50%",background:"linear-gradient(135deg,#f97316,#dc2626)",color:"white",fontWeight:900,fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{idx+1}</div>
+          )}
+          <div style={{fontSize:12, fontWeight:700, color:"#7c2d12"}}>{label}</div>
+        </div>
+      )}
+      <div style={{background:"#fff7ed",border:"1.5px dashed #f97316",borderRadius:10,padding:"10px 12px",fontSize:11,color:"#374151",lineHeight:1.65,fontFamily:"monospace",marginBottom:8}}>
+        {prompt.slice(0,280)}{prompt.length>280?"...":""}
+      </div>
+      {status === "idle" && (
+        <button onClick={generate} style={{width:"100%",padding:"12px",background:falKey?"linear-gradient(135deg,#7c3aed,#db2777)":"#e5e7eb",color:falKey?"white":"#9ca3af",border:"none",borderRadius:10,fontWeight:800,fontSize:13,cursor:"pointer",boxShadow:falKey?"0 3px 14px #7c3aed44":"none"}}>
+          {falKey
+            ? (usingRef ? "🎯 Generar con referencia de Lito (img2img)" : "🖼️ Generar imagen · FLUX (~$0.003)")
+            : "🔑 Agrega tu fal.ai key en ⚙️"}
+        </button>
+      )}
+      {status === "loading" && (
+        <div style={{borderRadius:12,border:"2px solid #e9d5ff",background:"linear-gradient(135deg,#faf5ff,#fff7ed)",padding:"28px 20px",textAlign:"center"}}>
+          <div style={{fontSize:36,animation:"spin 1.5s linear infinite",display:"inline-block",marginBottom:8}}>🫧</div>
+          <div style={{fontSize:13,color:"#7c3aed",fontWeight:700,marginBottom:4}}>{usingRef ? "🎯 Generando con referencia de Lito..." : "Generando con FLUX..."}</div>
+          <div style={{fontSize:11,color:"#9ca3af",marginBottom:12}}>{usingRef ? "img2img · más consistencia" : "fal.ai FLUX Schnell"} · ⏱ {elapsed}s</div>
+          <div style={{height:4,background:"#e9d5ff",borderRadius:10,overflow:"hidden"}}>
+            <div style={{height:"100%",borderRadius:10,background:"linear-gradient(90deg,#7c3aed,#db2777)",width:`${Math.min((elapsed/12)*100,92)}%`,transition:"width 1s linear"}} />
+          </div>
+        </div>
+      )}
+      {status === "error" && (
+        <div style={{borderRadius:12,border:"2px solid #fca5a5",background:"#fef2f2",padding:"18px",textAlign:"center"}}>
+          <div style={{fontSize:22,marginBottom:6}}>⚠️</div>
+          <div style={{color:"#dc2626",fontSize:12,fontWeight:700,marginBottom:4}}>Error al generar imagen</div>
+          <div style={{color:"#6b7280",fontSize:11,marginBottom:12}}>{errMsg}</div>
+          <button onClick={generate} style={{padding:"9px 24px",background:"#7c3aed",color:"white",border:"none",borderRadius:8,fontWeight:700,fontSize:12,cursor:"pointer"}}>🔄 Reintentar</button>
+        </div>
+      )}
+      {status === "done" && imgSrc && (
+        <div style={{borderRadius:12,overflow:"hidden",border:"2px solid #e9d5ff"}}>
+          <img src={imgSrc} alt="Lito generado" style={{width:"100%",display:"block"}} />
+          <div style={{padding:"8px 10px",background:"#f5f3ff",display:"flex",gap:8}}>
+            <a href={imgSrc} target="_blank" rel="noreferrer" style={{flex:1,padding:"9px",textAlign:"center",background:"#7c3aed",color:"white",borderRadius:8,fontWeight:700,fontSize:12,textDecoration:"none",display:"block"}}>⬇️ Guardar imagen</a>
+            <button onClick={generate} style={{padding:"9px 14px",background:"white",color:"#7c3aed",border:"2px solid #7c3aed",borderRadius:8,fontWeight:700,fontSize:12,cursor:"pointer"}}>🔄</button>
+          </div>
+          {falKey && <VideoCard imageUrl={imgSrc} falKey={falKey} />}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── HOOK PANEL ───────────────────────────────────────────────────────────────
+function HookPanel({tipo, dia, promptImagen, colors, groqKey}) {
+  const [hooks, setHooks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(null);
+  const [errMsg, setErrMsg] = useState("");
+
+  const generate = async () => {
+    if (!groqKey) { setErrMsg("Agrega tu Groq key en ⚙️ Configuración"); return; }
+    setLoading(true); setErrMsg("");
+    try {
+      const result = await generateHooks(groqKey, tipo, dia, promptImagen);
+      setHooks(result);
+    } catch(e) { setErrMsg(e.message); }
+    setLoading(false);
+  };
+
+  const copyHook = (text, i) => {
+    navigator.clipboard.writeText(text);
+    setCopied(i); setTimeout(() => setCopied(null), 2000);
+  };
+
+  return (
+    <div style={{marginTop:12}}>
+      <button onClick={generate} disabled={loading} style={{width:"100%",padding:"11px",background:loading?"#e5e7eb":`linear-gradient(135deg,${colors.accent},${colors.dark})`,color:loading?"#9ca3af":"white",border:"none",borderRadius:10,fontWeight:800,fontSize:13,cursor:loading?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+        {loading ? <><span style={{display:"inline-block",animation:"spin 1s linear infinite"}}>✦</span> Generando con Groq...</> : "✨ Generar frases hook (Groq · gratis)"}
+      </button>
+      {errMsg && <div style={{marginTop:8,padding:"8px 12px",background:"#fef2f2",borderRadius:8,fontSize:11,color:"#dc2626"}}>{errMsg}</div>}
+      {hooks.length > 0 && (
+        <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:6}}>
+          <div style={{fontSize:11,fontWeight:700,color:colors.dark,marginBottom:2}}>💬 Toca para copiar:</div>
+          {hooks.map((hook, i) => (
+            <button key={i} onClick={() => copyHook(hook, i)} style={{textAlign:"left",padding:"10px 14px",background:copied===i?colors.accent:colors.bg,color:copied===i?"white":"#1f2937",border:`1.5px solid ${copied===i?colors.accent:colors.light}`,borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:600,lineHeight:1.5,transition:"all 0.15s"}}>
+              {copied===i?"✅ ¡Copiado!":hook}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── CREATIVE GENERATOR ───────────────────────────────────────────────────────
+function CreativeGenerator({groqKey, falKey, characters}) {
+  const [selectedChars, setSelectedChars] = useState(characters.slice(0,1).map(c=>c.id));
+  const toggleChar = (id) => setSelectedChars(prev => prev.includes(id) ? prev.filter(x=>x!==id) : [...prev, id]);
+
+  // Determinar referencia e imagen: si 1 personaje con ref → img2img; si grupo → ref del primero con ref; si no → null
+  const activeChars = characters.filter(c => selectedChars.includes(c.id));
+  const charWithRef = activeChars.find(c => c.referenceUrl);
+  const referenceUrl = charWithRef?.referenceUrl || null;
+  const [selectedHumor, setSelectedHumor] = useState("negro");
+  const [selectedFormat, setSelectedFormat] = useState("single");
+  const [customTopic, setCustomTopic] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [selectedHook, setSelectedHook] = useState(null);
+  const [copied, setCopied] = useState(null);
+
+  const copy = (text, key) => {
+    navigator.clipboard.writeText(text);
+    setCopied(key); setTimeout(() => setCopied(null), 2000);
+  };
+
+  // Construir descripción de personajes para el prompt
+  const charsDescription = activeChars.length === 1
+    ? `Main character: ${activeChars[0].descripcion}`
+    : activeChars.map((c,i) => `Character ${i+1} (${c.nombre}): ${c.descripcion}`).join("\n");
+
+  const generate = async () => {
+    if (!groqKey) { setError("Agrega tu Groq key en ⚙️ Configuración primero"); return; }
+    setLoading(true); setResult(null); setError(null); setSelectedHook(null);
+    try {
+      const data = await generateCreativeMeme(groqKey, selectedHumor, selectedFormat, customTopic, charsDescription);
+      setResult(data);
+    } catch(e) { setError(e.message || "Error generando. Intenta de nuevo."); }
+    setLoading(false);
+  };
+
+  const panelKeys = result ? ["panel1","panel2","panel3"].filter(k => result[k]) : [];
+  const hooks = result ? [result.frase_hook, result.frase_alternativa].filter(Boolean) : [];
+
+  return (
+    <div style={{padding:"14px 16px"}}>
+      {/* ── CHARACTER SELECTOR ── */}
+      {characters.length > 0 && (
+        <div style={{marginBottom:14}}>
+          <div style={{fontSize:12,fontWeight:800,color:"#374151",marginBottom:8}}>🎭 Personajes en escena</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
+            {characters.map(char => {
+              const isSel = selectedChars.includes(char.id);
+              return <button key={char.id} onClick={()=>toggleChar(char.id)} style={{padding:"7px 14px",borderRadius:"50px",border:isSel?`2px solid ${char.color}`:"2px solid #e5e7eb",background:isSel?`${char.color}22`:"white",color:isSel?"#111":"#6b7280",fontWeight:isSel?800:600,fontSize:13,cursor:"pointer"}}>
+                {char.emoji} {char.nombre} {isSel && char.referenceUrl ? "🎯":""}
+              </button>;
+            })}
+          </div>
+          {activeChars.length > 1 && (
+            <div style={{marginTop:6,padding:"6px 10px",background:"#f0fdf4",borderRadius:8,fontSize:10,color:"#166534"}}>
+              ✅ Escena con {activeChars.map(c=>c.nombre).join(", ")} · {charWithRef ? `img2img usando ref de ${charWithRef.nombre}` : "prompt detallado"}
+            </div>
+          )}
+        </div>
+      )}
+      <div style={{marginBottom:14}}>
+        <div style={{fontSize:12,fontWeight:800,color:"#374151",marginBottom:8}}>🎭 Tipo de humor</div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
+          {humorTypes.map(h => {
+            const isActive = selectedHumor === h.id;
+            return <button key={h.id} onClick={() => setSelectedHumor(h.id)} style={{padding:"7px 12px",borderRadius:"50px",border:isActive?"2px solid #f97316":"2px solid #e5e7eb",background:isActive?"#fff7ed":"white",color:isActive?"#7c2d12":"#6b7280",fontWeight:isActive?800:600,fontSize:12,cursor:"pointer"}}>{h.emoji} {h.label}</button>;
+          })}
+        </div>
+        {selectedHumor && <div style={{marginTop:7,padding:"7px 12px",background:"#fff7ed",borderRadius:10,fontSize:11,color:"#9a3412"}}>💡 {humorTypes.find(h=>h.id===selectedHumor)?.desc}</div>}
+      </div>
+
+      <div style={{marginBottom:14}}>
+        <div style={{fontSize:12,fontWeight:800,color:"#374151",marginBottom:8}}>📐 Formato</div>
+        <div style={{display:"flex",gap:8}}>
+          {formatTypes.map(f => {
+            const isActive = selectedFormat === f.id;
+            return <button key={f.id} onClick={() => setSelectedFormat(f.id)} style={{flex:1,padding:"10px 6px",borderRadius:12,textAlign:"center",border:isActive?"2px solid #f97316":"2px solid #e5e7eb",background:isActive?"#fff7ed":"white",color:isActive?"#7c2d12":"#6b7280",fontWeight:isActive?800:600,fontSize:11,cursor:"pointer"}}>
+              <div style={{fontSize:18,marginBottom:2}}>{f.emoji}</div>
+              <div>{f.label}</div>
+              <div style={{fontSize:10,opacity:0.7,marginTop:2}}>{f.desc}</div>
+            </button>;
+          })}
+        </div>
+      </div>
+
+      <div style={{marginBottom:14}}>
+        <div style={{fontSize:12,fontWeight:800,color:"#374151",marginBottom:6}}>✏️ Tema <span style={{fontWeight:400,color:"#9ca3af"}}>(opcional)</span></div>
+        <input value={customTopic} onChange={e => setCustomTopic(e.target.value)} placeholder="Ej: el wifi que se cae, el ex que regresa, los lunes..." style={{width:"100%",padding:"11px 14px",border:"2px solid #e5e7eb",borderRadius:12,fontSize:13,color:"#374151",background:"white",outline:"none"}} />
+      </div>
+
+      <button onClick={generate} disabled={loading} style={{width:"100%",padding:"14px",background:loading?"#e5e7eb":"linear-gradient(135deg,#f97316,#dc2626)",color:loading?"#9ca3af":"white",border:"none",borderRadius:14,fontWeight:900,fontSize:15,cursor:loading?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,boxShadow:loading?"none":"0 4px 20px #f9731655",marginBottom:16}}>
+        {loading ? <><span style={{animation:"spin 0.8s linear infinite",display:"inline-block"}}>✦</span> Creando meme con Groq AI...</> : "🎲 Generar meme con IA (gratis)"}
+      </button>
+
+      {error && <div style={{padding:14,background:"#fef2f2",border:"1.5px solid #fca5a5",borderRadius:12,color:"#dc2626",fontSize:13,marginBottom:16,textAlign:"center"}}>⚠️ {error}</div>}
+
+      {result && (
+        <div style={{animation:"fadeIn 0.3s ease"}}>
+          <div style={{background:"linear-gradient(135deg,#fff7ed,#fef2f2)",border:"2px solid #fed7aa",borderRadius:14,padding:14,marginBottom:14}}>
+            <div style={{fontSize:17,fontWeight:900,color:"#7c2d12",marginBottom:4}}>🎯 {result.titulo}</div>
+            <div style={{fontSize:12,color:"#9a3412",lineHeight:1.6}}>{result.concepto}</div>
+          </div>
+
+          <div style={{background:"white",border:"2px solid #e9d5ff",borderRadius:14,padding:14,marginBottom:14}}>
+            <div style={{fontSize:12,fontWeight:800,color:"#6d28d9",marginBottom:10,display:"flex",alignItems:"center",gap:6}}>
+              <span style={{width:22,height:22,borderRadius:"50%",background:"#7c3aed",color:"white",fontSize:11,fontWeight:900,display:"inline-flex",alignItems:"center",justifyContent:"center"}}>1</span>
+              Elige tu frase hook
+            </div>
+            {hooks.map((h, i) => {
+              const isSelected = selectedHook === h;
+              return <button key={i} onClick={() => setSelectedHook(isSelected ? null : h)} style={{display:"block",width:"100%",textAlign:"left",padding:"12px 14px",marginBottom:8,background:isSelected?"#7c3aed":"#faf5ff",color:isSelected?"white":"#1f2937",border:`2px solid ${isSelected?"#7c3aed":"#e9d5ff"}`,borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:700,lineHeight:1.5}}>
+                {isSelected?"✅ ":""}{h}
+              </button>;
+            })}
+            {selectedHook && <button onClick={() => copy(selectedHook,"hook")} style={{width:"100%",padding:9,borderRadius:9,background:copied==="hook"?"#059669":"#f0fdf4",color:copied==="hook"?"white":"#065f46",border:"none",fontWeight:700,fontSize:12,cursor:"pointer"}}>
+              {copied==="hook"?"✅ ¡Frase copiada!":"📋 Copiar frase seleccionada"}
+            </button>}
+          </div>
+
+          <div style={{background:"white",border:"2px solid #e9d5ff",borderRadius:14,padding:14,marginBottom:14}}>
+            <div style={{fontSize:12,fontWeight:800,color:"#6d28d9",marginBottom:10,display:"flex",alignItems:"center",gap:6}}>
+              <span style={{width:22,height:22,borderRadius:"50%",background:"#7c3aed",color:"white",fontSize:11,fontWeight:900,display:"inline-flex",alignItems:"center",justifyContent:"center"}}>2</span>
+              {selectedFormat==="single" ? "Genera tu imagen" : "Genera los paneles"}
+              <span style={{marginLeft:"auto",fontSize:10,fontWeight:600,color:"#a78bfa",background:"#f5f3ff",padding:"2px 8px",borderRadius:"50px"}}>{falKey?"fal.ai conectado ✅":"necesita fal.ai key"}</span>
+            </div>
+            {selectedFormat==="single" && result.prompt_imagen && <ImageCard prompt={result.prompt_imagen} falKey={falKey} referenceUrl={referenceUrl} />}
+            {panelKeys.map((key, idx) => (
+              <ImageCard key={key} prompt={result[key].prompt_imagen} label={idx===0?"Setup":idx===panelKeys.length-1?"🔥 Remate":"Giro"} idx={idx} falKey={falKey} referenceUrl={referenceUrl} />
+            ))}
+            <div style={{fontSize:10,color:"#a78bfa",textAlign:"center",marginTop:4}}>Powered by fal.ai FLUX · ~$0.003/imagen</div>
+          </div>
+
+          <button onClick={generate} style={{width:"100%",padding:11,background:"white",color:"#f97316",border:"2px solid #f97316",borderRadius:12,fontWeight:800,fontSize:13,cursor:"pointer",marginBottom:8}}>
+            🔄 Generar concepto diferente
+          </button>
+        </div>
+      )}
+
+      {!result && !loading && (
+        <div style={{textAlign:"center",padding:"40px 20px",color:"#9ca3af"}}>
+          <div style={{fontSize:48,marginBottom:12}}>🎲</div>
+          <div style={{fontWeight:700,fontSize:14,marginBottom:6,color:"#374151"}}>Modo Creativo IA</div>
+          <div style={{fontSize:12,lineHeight:1.6}}>Groq genera los conceptos y frases <strong style={{color:"#059669"}}>gratis 🎉</strong><br/>fal.ai genera las imágenes y videos<br/><span style={{color:"#9ca3af"}}>Agrega tus keys en ⚙️ Configuración</span></div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── SETTINGS PANEL + CHARACTER MANAGER ──────────────────────────────────────
+function SettingsPanel({groqKey, setGroqKey, falKey, setFalKey, characters, setCharacters, onClose}) {
+  const [gInput, setGInput] = useState("");
+  const [fInput, setFInput] = useState("");
+  const [settingsTab, setSettingsTab] = useState("keys"); // keys | characters
+  const [editingChar, setEditingChar] = useState(null); // null | {id,nombre,emoji,descripcion,referenceUrl,color}
+  const [newChar, setNewChar] = useState({nombre:"",emoji:"🐾",descripcion:"",referenceUrl:"",color:"#f472b6"});
+  const [showNewForm, setShowNewForm] = useState(false);
+
+  const COLORS = ["#4ade80","#f472b6","#fb923c","#38bdf8","#a78bfa","#facc15","#f87171","#34d399"];
+
+  const saveChar = (char) => {
+    if (!char.nombre.trim()) return;
+    if (editingChar) {
+      setCharacters(cs => cs.map(c => c.id === char.id ? char : c));
+      setEditingChar(null);
+    } else {
+      setCharacters(cs => [...cs, {...char, id: Date.now().toString()}]);
+      setNewChar({nombre:"",emoji:"🐾",descripcion:"",referenceUrl:"",color:"#f472b6"});
+      setShowNewForm(false);
+    }
+  };
+
+  const deleteChar = (id) => setCharacters(cs => cs.filter(c => c.id !== id));
+
+  const CharForm = ({char, setChar, onSave, onCancel, title}) => (
+    <div style={{background:"#f8fafc",borderRadius:12,padding:14,border:"2px solid #e5e7eb"}}>
+      <div style={{fontWeight:800,fontSize:13,color:"#374151",marginBottom:10}}>{title}</div>
+      <div style={{display:"flex",gap:8,marginBottom:8}}>
+        <input value={char.emoji} onChange={e=>setChar({...char,emoji:e.target.value})} style={{width:50,padding:"8px",border:"2px solid #e5e7eb",borderRadius:8,fontSize:18,textAlign:"center",outline:"none"}} maxLength={2} />
+        <input value={char.nombre} onChange={e=>setChar({...char,nombre:e.target.value})} placeholder="Nombre del personaje" style={{flex:1,padding:"8px 12px",border:"2px solid #e5e7eb",borderRadius:8,fontSize:13,outline:"none"}} />
+      </div>
+      {/* Color picker */}
+      <div style={{display:"flex",gap:6,marginBottom:8,flexWrap:"wrap"}}>
+        {COLORS.map(c => (
+          <button key={c} onClick={() => setChar({...char,color:c})} style={{width:28,height:28,borderRadius:"50%",background:c,border:char.color===c?"3px solid #111":"2px solid white",cursor:"pointer",boxShadow:"0 1px 4px rgba(0,0,0,0.2)"}} />
+        ))}
+      </div>
+      <textarea value={char.descripcion} onChange={e=>setChar({...char,descripcion:e.target.value})} placeholder="Descripción detallada del personaje en inglés para los prompts de imagen. Ej: Chibi bunny named Anita, white fluffy body, big blue eyes, pink bow on head, kawaii 2D sticker style..." rows={3} style={{width:"100%",padding:"8px 12px",border:"2px solid #e5e7eb",borderRadius:8,fontSize:11,resize:"none",outline:"none",fontFamily:"sans-serif",marginBottom:8}} />
+      <input value={char.referenceUrl} onChange={e=>setChar({...char,referenceUrl:e.target.value})} placeholder="URL de imagen de referencia (imgur.com) — opcional" style={{width:"100%",padding:"8px 12px",border:"2px solid #e5e7eb",borderRadius:8,fontSize:11,marginBottom:10,outline:"none"}} />
+      {char.referenceUrl && <img src={char.referenceUrl} alt="ref" style={{width:"100%",maxHeight:120,objectFit:"contain",borderRadius:8,marginBottom:10,background:"#f0f0f0"}} onError={e=>e.target.style.display="none"} />}
+      <div style={{display:"flex",gap:8}}>
+        <button onClick={() => saveChar(char)} style={{flex:1,padding:10,background:`linear-gradient(135deg,${char.color},${char.color}cc)`,color:"white",border:"none",borderRadius:10,fontWeight:800,fontSize:13,cursor:"pointer"}}>
+          ✅ Guardar personaje
+        </button>
+        <button onClick={onCancel} style={{padding:"10px 14px",background:"white",color:"#6b7280",border:"2px solid #e5e7eb",borderRadius:10,fontWeight:700,fontSize:13,cursor:"pointer"}}>
+          Cancelar
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:200,display:"flex",alignItems:"flex-end"}} onClick={e => e.target===e.currentTarget && onClose()}>
+      <div style={{width:"100%",background:"white",borderRadius:"20px 20px 0 0",padding:"20px 20px 32px",maxHeight:"88vh",overflowY:"auto"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <h2 style={{fontSize:17,fontWeight:900,color:"#111"}}>⚙️ Configuración</h2>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:"#6b7280"}}>✕</button>
+        </div>
+
+        {/* Sub-tabs */}
+        <div style={{display:"flex",gap:8,marginBottom:16}}>
+          {[["keys","🔑 API Keys"],["characters","🎭 Personajes"]].map(([k,l]) => (
+            <button key={k} onClick={()=>setSettingsTab(k)} style={{flex:1,padding:"10px",borderRadius:10,border:"none",background:settingsTab===k?"#7c3aed":"#f3f4f6",color:settingsTab===k?"white":"#6b7280",fontWeight:settingsTab===k?800:600,fontSize:13,cursor:"pointer"}}>
+              {l}
+            </button>
+          ))}
+        </div>
+
+        {/* ── KEYS TAB ── */}
+        {settingsTab==="keys" && (
+          <div>
+            {/* Groq */}
+            <div style={{marginBottom:16,padding:14,background:groqKey?"#f0fdf4":"#f8fafc",borderRadius:14,border:`2px solid ${groqKey?"#86efac":"#e5e7eb"}`}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+                <div>
+                  <div style={{fontWeight:800,fontSize:13,color:groqKey?"#166534":"#374151"}}>🤖 Groq · prompts y frases {groqKey?"✅":""}</div>
+                  <div style={{fontSize:10,color:groqKey?"#16a34a":"#6b7280"}}>{groqKey?"Llama 3.3 · Gratis":"Gratis en console.groq.com"}</div>
+                </div>
+                {groqKey && <button onClick={()=>setGroqKey("")} style={{fontSize:10,color:"#dc2626",background:"none",border:"none",cursor:"pointer",fontWeight:700}}>Cambiar</button>}
+              </div>
+              {!groqKey && <>
+                <input type="password" value={gInput} onChange={e=>setGInput(e.target.value)} placeholder="gsk_xxxxxxxxxxxxxxxxxxxx" style={{width:"100%",padding:"9px 12px",border:"2px solid #e5e7eb",borderRadius:10,fontSize:12,marginBottom:8,fontFamily:"monospace",outline:"none"}} />
+                <button onClick={()=>{if(gInput.trim()){setGroqKey(gInput.trim());setGInput("");}}} style={{width:"100%",padding:9,background:"#059669",color:"white",border:"none",borderRadius:10,fontWeight:800,fontSize:13,cursor:"pointer"}}>Guardar</button>
+              </>}
+            </div>
+            {/* fal.ai */}
+            <div style={{marginBottom:16,padding:14,background:falKey?"#f5f3ff":"#f8fafc",borderRadius:14,border:`2px solid ${falKey?"#c4b5fd":"#e5e7eb"}`}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+                <div>
+                  <div style={{fontWeight:800,fontSize:13,color:falKey?"#5b21b6":"#374151"}}>⚡ fal.ai · imágenes + videos {falKey?"✅":""}</div>
+                  <div style={{fontSize:10,color:falKey?"#7c3aed":"#6b7280"}}>{falKey?"FLUX + Wan2.1 conectado · ~$10/mes":"fal.ai → Dashboard → API Keys"}</div>
+                </div>
+                {falKey && <button onClick={()=>setFalKey("")} style={{fontSize:10,color:"#dc2626",background:"none",border:"none",cursor:"pointer",fontWeight:700}}>Cambiar</button>}
+              </div>
+              {!falKey && <>
+                <input type="password" value={fInput} onChange={e=>setFInput(e.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx:xxxxxx" style={{width:"100%",padding:"9px 12px",border:"2px solid #e5e7eb",borderRadius:10,fontSize:12,marginBottom:8,fontFamily:"monospace",outline:"none"}} />
+                <button onClick={()=>{if(fInput.trim()){setFalKey(fInput.trim());setFInput("");}}} style={{width:"100%",padding:9,background:"#7c3aed",color:"white",border:"none",borderRadius:10,fontWeight:800,fontSize:13,cursor:"pointer"}}>Guardar</button>
+              </>}
+            </div>
+            <div style={{padding:"10px 14px",background:"#fef9c3",borderRadius:10,fontSize:11,color:"#713f12",textAlign:"center"}}>
+              💰 Groq gratis · Imágenes ~$1/mes · Videos ~$9/mes
+            </div>
+          </div>
+        )}
+
+        {/* ── CHARACTERS TAB ── */}
+        {settingsTab==="characters" && (
+          <div>
+            <div style={{fontSize:12,color:"#6b7280",marginBottom:12,lineHeight:1.6}}>
+              Agrega hasta <strong>6 personajes</strong>. En el Modo IA puedes seleccionar cuáles aparecen en cada meme. Con referencia de imagen activa, usa img2img para mayor consistencia.
+            </div>
+
+            {/* Character list */}
+            {characters.map(char => (
+              <div key={char.id} style={{marginBottom:10}}>
+                {editingChar?.id === char.id ? (
+                  <CharForm char={editingChar} setChar={setEditingChar} onSave={()=>saveChar(editingChar)} onCancel={()=>setEditingChar(null)} title={`Editar ${char.nombre}`} />
+                ) : (
+                  <div style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:"white",borderRadius:12,border:`2px solid ${char.color}44`}}>
+                    <div style={{width:40,height:40,borderRadius:"50%",background:`${char.color}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>
+                      {char.emoji}
+                    </div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontWeight:800,fontSize:13,color:"#111"}}>{char.nombre}</div>
+                      <div style={{fontSize:10,color:char.referenceUrl?"#16a34a":"#9ca3af"}}>
+                        {char.referenceUrl ? "🎯 Referencia img2img activa" : "Sin referencia · solo texto"}
+                      </div>
+                    </div>
+                    <button onClick={()=>setEditingChar({...char})} style={{padding:"6px 10px",background:"#f3f4f6",border:"none",borderRadius:8,fontSize:11,cursor:"pointer",fontWeight:600}}>✏️</button>
+                    {char.id !== "lito" && <button onClick={()=>deleteChar(char.id)} style={{padding:"6px 10px",background:"#fef2f2",border:"none",borderRadius:8,fontSize:11,cursor:"pointer",color:"#dc2626",fontWeight:600}}>🗑️</button>}
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {/* Add new */}
+            {characters.length < 6 && !showNewForm && !editingChar && (
+              <button onClick={()=>setShowNewForm(true)} style={{width:"100%",padding:"12px",background:"linear-gradient(135deg,#7c3aed,#db2777)",color:"white",border:"none",borderRadius:12,fontWeight:800,fontSize:13,cursor:"pointer",marginTop:4}}>
+                ➕ Agregar personaje nuevo
+              </button>
+            )}
+            {showNewForm && (
+              <CharForm char={newChar} setChar={setNewChar} onSave={()=>saveChar(newChar)} onCancel={()=>setShowNewForm(false)} title="Nuevo personaje" />
+            )}
+
+            {/* Multi-char tip */}
+            <div style={{marginTop:14,padding:"10px 14px",background:"#fff7ed",borderRadius:10,fontSize:11,color:"#9a3412",lineHeight:1.6}}>
+              💡 <strong>Para escenas con varios personajes:</strong> genera primero una imagen con los 3 juntos → súbela a imgur → agrégala como referencia al primer personaje (o crea un personaje "Grupo" con esa referencia).
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── MAIN APP ─────────────────────────────────────────────────────────────────
+function App() {
+  const [tab, setTab] = useState("semanal");
+  const [activeDay, setActiveDay] = useState("Lunes");
+  const [activeDate, setActiveDate] = useState(0);
+  const [expanded, setExpanded] = useState(null);
+  const [copiedPrompt, setCopiedPrompt] = useState(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [groqKey, setGroqKey] = useState("");
+  const [falKey, setFalKey] = useState("");
+  // Personajes: cada uno tiene id, nombre, emoji, descripcion, referenceUrl, color
+  const [characters, setCharacters] = useState([
+    {
+      id: "lito",
+      nombre: "Lito",
+      emoji: "🫧",
+      descripcion: "Chibi axolotl named Lito, mint green body #98E8D0 with soft gradient, THREE pairs fluffy pink feathery external gills, huge glossy sparkly eyes with white highlight dot, rosy circular blushed cheeks, tiny cute small mouth, stubby round mini hands and feet, kawaii 2D sticker art style, thick black outlines",
+      referenceUrl: "",
+      color: "#4ade80",
+    }
+  ]);
+
+  const colors = tab==="semanal" ? dayColors[activeDay] : tab==="especial" ? specialDates[activeDate].color : {bg:"#fff7ed",accent:"#f97316",light:"#ffedd5",dark:"#7c2d12"};
+
+  const copyPrompt = (text, key) => {
+    navigator.clipboard.writeText(text);
+    setCopiedPrompt(key); setTimeout(() => setCopiedPrompt(null), 2000);
+  };
+
+  const currentItems = tab==="semanal"
+    ? weeklyMemes[activeDay].map((prompt, i) => ({hora:schedule[i].hora, emoji:schedule[i].emoji, tipo:schedule[i].tipo, prompt}))
+    : specialDates[activeDate].prompts;
+
+  const keysOk = groqKey && falKey;
+
+  return (
+    <div style={{minHeight:"100vh",background:"#f8fafc",fontFamily:"'Segoe UI',system-ui,sans-serif",paddingBottom:60}}>
+
+      {/* HEADER */}
+      <div style={{background:"linear-gradient(135deg,#a7f3d0,#fbcfe8,#bfdbfe)",padding:"24px 20px 14px",textAlign:"center",boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>
+        <div style={{fontSize:38,lineHeight:1,marginBottom:4}}>🫧</div>
+        <h1 style={{margin:0,fontSize:22,fontWeight:900,background:"linear-gradient(90deg,#059669,#db2777,#2563eb)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Lito · Content Studio</h1>
+        <p style={{margin:"4px 0 0",color:"#6b7280",fontSize:11,fontWeight:500}}>Groq AI gratis · fal.ai imágenes + videos ✨</p>
+      </div>
+
+      {/* TABS */}
+      <div style={{position:"sticky",top:0,zIndex:100,background:"white",borderBottom:"2px solid #f0f0f0",boxShadow:"0 2px 8px rgba(0,0,0,0.06)"}}>
+        <div style={{display:"flex",overflowX:"auto",scrollbarWidth:"none"}}>
+          {[["semanal","📅","Semanal"],["especial","🎉","Especiales"],["creativo","🎲","Modo IA"]].map(([key,ico,lbl]) => {
+            const isActive = tab===key;
+            return <button key={key} onClick={() => {setTab(key);setExpanded(null);}} style={{flex:"1 0 auto",padding:"14px 12px",border:"none",borderBottom:isActive?"3px solid #7c3aed":"3px solid transparent",background:"white",color:isActive?"#7c3aed":"#6b7280",fontWeight:isActive?800:600,fontSize:13,cursor:"pointer",whiteSpace:"nowrap"}}>{ico} {lbl}</button>;
+          })}
+          <button onClick={() => setShowSettings(true)} style={{flexShrink:0,padding:"14px 16px",border:"none",borderBottom:"3px solid transparent",background:"white",color:keysOk?"#059669":"#f97316",fontWeight:700,fontSize:13,cursor:"pointer"}}>
+            ⚙️{keysOk?" ✅":""}
+          </button>
+        </div>
+      </div>
+
+      {/* SUB-SELECTOR */}
+      {tab !== "creativo" && (
+        <div style={{overflowX:"auto",display:"flex",gap:8,padding:"14px 16px 0",scrollbarWidth:"none"}}>
+          {tab==="semanal"
+            ? days.map(day => {
+                const c = dayColors[day]; const isActive = day===activeDay;
+                return <button key={day} onClick={() => {setActiveDay(day);setExpanded(null);}} style={{flexShrink:0,padding:"8px 16px",borderRadius:"50px",border:isActive?`2px solid ${c.accent}`:"2px solid #e5e7eb",background:isActive?c.light:"white",color:isActive?c.dark:"#6b7280",fontWeight:isActive?800:600,fontSize:12,cursor:"pointer",boxShadow:isActive?`0 2px 10px ${c.accent}44`:"none"}}>{day}</button>;
+              })
+            : specialDates.map((d, i) => {
+                const isActive = i===activeDate;
+                return <button key={i} onClick={() => {setActiveDate(i);setExpanded(null);}} style={{flexShrink:0,padding:"8px 14px",borderRadius:"50px",border:isActive?`2px solid ${d.color.accent}`:"2px solid #e5e7eb",background:isActive?d.color.light:"white",color:isActive?d.color.dark:"#6b7280",fontWeight:isActive?800:600,fontSize:11,cursor:"pointer"}}>{d.emoji} {d.nombre}</button>;
+              })
+          }
+        </div>
+      )}
+
+      {tab==="especial" && (
+        <div style={{padding:"10px 16px 0",textAlign:"center"}}>
+          <span style={{display:"inline-block",padding:"4px 14px",background:colors.light,color:colors.dark,borderRadius:"50px",fontSize:12,fontWeight:700,border:`1.5px solid ${colors.accent}`}}>
+            {specialDates[activeDate].emoji} {specialDates[activeDate].nombre} · {specialDates[activeDate].fecha}
+          </span>
+        </div>
+      )}
+
+      {/* CREATIVE TAB */}
+      {tab==="creativo" && <CreativeGenerator groqKey={groqKey} falKey={falKey} characters={characters} />}
+
+      {/* ITEMS LIST */}
+      {tab !== "creativo" && (
+        <div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:10}}>
+          {currentItems.map((item, i) => {
+            const isOpen = expanded===i;
+            const promptKey = `${tab}-${tab==="semanal"?activeDay:activeDate}-${i}`;
+            return (
+              <div key={i} style={{background:"white",borderRadius:16,border:`2px solid ${isOpen?colors.accent:"#f0f0f0"}`,overflow:"hidden",boxShadow:isOpen?`0 4px 20px ${colors.accent}28`:"0 1px 3px rgba(0,0,0,0.04)",transition:"all 0.25s"}}>
+                <button onClick={() => setExpanded(isOpen?null:i)} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"13px 16px",background:"none",border:"none",cursor:"pointer",textAlign:"left"}}>
+                  <div style={{background:isOpen?colors.light:"#f9fafb",borderRadius:10,padding:"5px 8px",minWidth:68,textAlign:"center"}}>
+                    <div style={{fontSize:10,color:colors.dark,fontWeight:800}}>{item.hora}</div>
+                  </div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:13,fontWeight:700,color:"#111"}}>{item.emoji||""} {item.tipo}</div>
+                  </div>
+                  <div style={{fontSize:16,color:colors.accent,transform:isOpen?"rotate(180deg)":"rotate(0)",transition:"transform 0.2s"}}>⌄</div>
+                </button>
+
+                {isOpen && (
+                  <div style={{padding:"0 16px 16px"}}>
+                    <div style={{fontSize:11,fontWeight:700,color:"#6b7280",marginBottom:6,textTransform:"uppercase",letterSpacing:0.5}}>🎨 Prompt de imagen</div>
+                    <div style={{background:colors.bg,border:`1.5px dashed ${colors.accent}`,borderRadius:10,padding:12,fontSize:11,color:"#374151",lineHeight:1.65,fontFamily:"monospace"}}>
+                      {item.prompt}
+                    </div>
+                    <button onClick={() => copyPrompt(item.prompt, promptKey)} style={{marginTop:8,width:"100%",padding:9,background:copiedPrompt===promptKey?colors.accent:colors.light,color:copiedPrompt===promptKey?"white":colors.dark,border:"none",borderRadius:8,fontWeight:700,fontSize:12,cursor:"pointer",transition:"all 0.2s"}}>
+                      {copiedPrompt===promptKey?"✅ ¡Copiado!":"📋 Copiar prompt de imagen"}
+                    </button>
+
+                    <div style={{height:1,background:"#f0f0f0",margin:"12px 0"}} />
+
+                    {/* Image generation */}
+                    <div style={{fontSize:11,fontWeight:700,color:"#6b7280",marginBottom:6,textTransform:"uppercase",letterSpacing:0.5}}>🖼️ Generar imagen directamente</div>
+                    <ImageCard prompt={item.prompt} falKey={falKey} referenceUrl={characters.find(c=>c.id==="lito")?.referenceUrl || ""} />
+
+                    <div style={{height:1,background:"#f0f0f0",margin:"12px 0"}} />
+
+                    <div style={{fontSize:11,fontWeight:700,color:"#6b7280",marginBottom:4,textTransform:"uppercase",letterSpacing:0.5}}>✨ Frases hook (Groq · gratis)</div>
+                    <HookPanel tipo={item.tipo} dia={tab==="semanal"?activeDay:specialDates[activeDate].nombre} promptImagen={item.prompt} colors={colors} groqKey={groqKey} />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* SETTINGS MODAL */}
+      {showSettings && <SettingsPanel groqKey={groqKey} setGroqKey={setGroqKey} falKey={falKey} setFalKey={setFalKey} characters={characters} setCharacters={setCharacters} onClose={() => setShowSettings(false)} />}
+
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
