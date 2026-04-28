@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+  <title>Lito Studio</title>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="Lito Studio"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#7c3aed"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫧</text></svg>"/>
+  <script>
+    const mf={name:"Lito Studio",short_name:"Lito",start_url:"./",display:"standalone",background_color:"#0f0817",theme_color:"#7c3aed",icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='112' fill='%237c3aed'/><text x='256' y='380' font-size='320' text-anchor='middle'>🫧</text></svg>",sizes:"512x512",type:"image/svg+xml"}]};
+    const bl=new Blob([JSON.stringify(mf)],{type:"application/json"});
+    const lk=document.createElement("link");lk.rel="manifest";lk.href=URL.createObjectURL(bl);document.head.appendChild(lk);
+  </script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;background:#0f0817;color:#fff;font-family:'Segoe UI',system-ui,sans-serif;}
+    ::-webkit-scrollbar{display:none;}
+    @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    input,button,textarea{font-family:inherit;}
+    textarea{resize:none;}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback}=React;
+
+// ─── LITO CHARACTER BASE ──────────────────────────────────────────────────────
+const LITO_BASE=`Lito the chibi axolotl character: round chubby body in mint green #98E8D0 with subtle gradient, THREE pairs of fluffy cotton-candy-pink feathery external gills on head sides, large glossy sparkly eyes with bright white catchlight dot, soft rosy circular blush marks on cheeks, tiny cute closed mouth with slight smile, stubby rounded mini arms and legs. Style: kawaii 2D flat illustration, thick bold black sticker outlines, NOT 3D NOT realistic. Soft cel-shading pastel highlights. Oversized chibi head, cute proportions. Solid white or soft pastel background. No text no watermarks.`;
+
+// ─── SCHEDULE ─────────────────────────────────────────────────────────────────
+const schedule=[
+  {hora:"7:00 AM",emoji:"🌅",tipo:"Buenos días / Motivación"},
+  {hora:"8:00 AM",emoji:"😩",tipo:"Trabajo / Escuela relatable"},
+  {hora:"9:00 AM",emoji:"📰",tipo:"Tendencia del día"},
+  {hora:"10:00 AM",emoji:"😂",tipo:"Humor absurdo"},
+  {hora:"11:00 AM",emoji:"💬",tipo:"Pregunta viral"},
+  {hora:"12:00 PM",emoji:"🍕",tipo:"Comida / Almuerzo"},
+  {hora:"1:00 PM",emoji:"😴",tipo:"Siesta / Flojera"},
+  {hora:"2:00 PM",emoji:"🔥",tipo:"Meme trending"},
+  {hora:"3:00 PM",emoji:"🥹",tipo:"Nostalgia"},
+  {hora:"4:00 PM",emoji:"😤",tipo:"Queja cotidiana"},
+  {hora:"5:00 PM",emoji:"🎉",tipo:"Fin del día"},
+  {hora:"6:00 PM",emoji:"🌙",tipo:"Noche / reflexión"},
+];
+
+// ─── PROMPTS MEJORADOS ────────────────────────────────────────────────────────
+const weeklyMemes={
+  Lunes:[
+    `${LITO_BASE} POSE: trudging forward with tiny legs dragging on the ground. EXPRESSION: completely dead flat eyes, mouth a thin resigned line, dark circles the size of dinner plates under eyes. PROPS: enormous coffee cup nearly as big as body held with both stubby arms, coffee steam rising. MOOD: Monday zombie survival mode, half asleep mid-walk.`,
+    `${LITO_BASE} POSE: sprinting in full panic cartoon-fast, legs spinning like wheels, trail of speed lines behind. EXPRESSION: eyes bugged out O_O in pure terror, sweat drops flying. PROPS: giant backpack bouncing, alarm clock floating nearby showing 8:59. MOOD: catastrophically late Monday morning.`,
+    `${LITO_BASE} POSE: frozen mid-scroll, phone held inches from face, leaning slightly forward. EXPRESSION: one eyebrow raised skeptically, other eye squinting, mouth slightly open in mild disbelief. PROPS: tiny glowing smartphone reflecting light on face. MOOD: reading something suspicious on Monday trending news.`,
+    `${LITO_BASE} POSE: flat on back on the floor, tiny legs kicking wildly in the air, arms flailing. EXPRESSION: eyes shut tight laughing, tears streaming down cheeks, mouth wide open in hysterical laugh. MOOD: found something so absurdly funny on Monday it caused physical collapse.`,
+    `${LITO_BASE} POSE: standing straight, arms behind back, head tilted slightly, one tiny finger pointing directly at viewer. EXPRESSION: impossibly wide innocent sparkly eyes, rosy cheeks extra pink, gentle knowing smile. MOOD: asking the audience something important with maximum cute energy.`,
+    `${LITO_BASE} POSE: arms stretched toward a comically oversized pizza slice taller than body, standing on tiptoes. EXPRESSION: literal heart pupils, drool drop on chin, euphoric trembling smile. PROPS: pizza slice with exaggerated toppings, steam rising dramatically. MOOD: lunch is the only reason to survive Monday.`,
+    `${LITO_BASE} POSE: completely melted and drooping against a wall, body barely upright, head lolled sideways. EXPRESSION: half-moon sleepy eyes barely open, content dreamy faint smile. PROPS: tiny cozy blanket draped over shoulders like a cape, mini pillow tucked under arm. MOOD: post-lunch nap mode activated, cannot be stopped.`,
+    `${LITO_BASE} POSE: both tiny hands pressed flat against cheeks Home Alone style, elbows out. EXPRESSION: eyes stretched to maximum O_O shock circles, mouth perfect small O of disbelief. MOOD: just read something absolutely wild on the internet Monday afternoon.`,
+    `${LITO_BASE} POSE: sitting cross-legged, chin resting on interlocked tiny fingers, looking upward dreamily. EXPRESSION: soft watery nostalgic eyes with tiny shimmer tears, gentle bittersweet smile. PROPS: holding a small worn toy or trinket glowing softly. MOOD: deep Monday nostalgia wave hitting unexpectedly.`,
+    `${LITO_BASE} POSE: arms crossed tightly over chest, foot stomping, whole body slightly trembling with contained rage. EXPRESSION: puffed out cheeks, eyebrows furrowed into angry V, tiny visible steam wisps from head. MOOD: Monday inconvenience has pushed past the limit, absolutely done.`,
+    `${LITO_BASE} POSE: leaping into the air mid-jump, fists pumped above head triumphantly, confetti raining. EXPRESSION: biggest ear-to-ear grin, eyes sparkling with victory stars. MOOD: survived another Monday, this is a legitimate achievement worthy of celebration.`,
+    `${LITO_BASE} POSE: cocooned inside a burrito-wrap of blankets, only tiny face and gill tips peeking out. EXPRESSION: one eye barely open, vaguely pensive distant stare into the void. PROPS: crescent moon and soft stars floating nearby. MOOD: 11pm Monday deep thoughts before sleep.`,
+  ],
+  Martes:[
+    `${LITO_BASE} POSE: standing stiff with exaggerated forced smile plastered on face. EXPRESSION: technically smiling with mouth, eyes completely dead and empty, holding a tiny banner with blank text. MOOD: fake Tuesday positivity, everything is fine, totally fine.`,
+    `${LITO_BASE} POSE: surrounded in a storm of flying papers, pencil behind ear, calculator in one hand. EXPRESSION: spiral eyes showing maximum stress, sweat rivers pouring. PROPS: tiny spreadsheet papers floating everywhere, small pile of books tipping. MOOD: Tuesday deadline arrived and prepared was not.`,
+    `${LITO_BASE} POSE: chin resting on one stubby fist, one eye squinted in deep suspicion, leaning back slightly. EXPRESSION: raised eyebrow, pursed lips, skeptical side-eye energy. PROPS: empty thought bubble floating above head. MOOD: not convinced by whatever Tuesday brought today.`,
+    `${LITO_BASE} POSE: face completely pressed flat against a wall, arms spread out to sides, body plastered. EXPRESSION: completely blank neutral face, unreadable, zero emotion. MOOD: this is simply where Lito lives now on Tuesday, no further questions.`,
+    `${LITO_BASE} POSE: leaning forward with extra rosy cheeks, one stubby finger pointing directly at viewer with gentle confidence. EXPRESSION: wide pure innocent eyes, soft questioning smile. MOOD: genuinely curious what the audience thinks, asks with complete sincerity.`,
+    `${LITO_BASE} POSE: vibrating with excitement, bouncing slightly on heels, holding a tiny taco twice the size of head. EXPRESSION: sparkle explosion eyes, dopamine smile, blushing intensely. PROPS: oversized taco with dramatic steam and toppings. MOOD: Tuesday taco discovery is life-changing news.`,
+    `${LITO_BASE} POSE: back of hand dramatically pressed to forehead, other arm reaching outward in a sweep, eyes dramatically closed. EXPRESSION: single perfect tear rolling down one cheek, trembling lip. MOOD: telenovela-level Tuesday exhaustion, suffering beautifully.`,
+    `${LITO_BASE} POSE: standing confidently with tiny sunglasses slightly askew, both index fingers pointing outward in finger guns. EXPRESSION: cool wink from one eye, relaxed smirk. MOOD: completely unbothered by whatever Tuesday news happened, totally fine.`,
+    `${LITO_BASE} POSE: sitting quietly, eyes soft and distant, gazing at a tiny glowing snow globe held gently. EXPRESSION: dreamy nostalgic half-smile, one tiny sparkle tear. PROPS: snow globe with tiny scene inside glowing warmly. MOOD: Tuesday threw back memories of simpler better times.`,
+    `${LITO_BASE} POSE: standing in T-pose, arms perfectly horizontal, eyes serenely closed, floating slightly off ground. EXPRESSION: beatifically peaceful, choosing non-participation. MOOD: has made peace with not dealing with Tuesday, transcended.`,
+    `${LITO_BASE} POSE: running at maximum cartoon speed, legs blurred spinning circles, small grin. EXPRESSION: determined eyes forward, tiny smile of purpose. PROPS: small dust trail and speed lines. MOOD: escaping Tuesday with full commitment.`,
+    `${LITO_BASE} POSE: lying flat on back in starfish spread, completely still. EXPRESSION: staring directly upward at ceiling stars with blankly content face. MOOD: Tuesday decompress: zero thoughts, just ceiling.`,
+  ],
+  Miércoles:[
+    `${LITO_BASE} POSE: carefully peeking around a corner, only half of face visible, one eye scouting. EXPRESSION: cautiously hopeful tiny smile, eyebrow slightly raised with tentative optimism. MOOD: Wednesday hump day survival, halfway done, daring to hope.`,
+    `${LITO_BASE} POSE: hunched intensely over a tiny laptop, typing furiously with both stubby hands. EXPRESSION: tongue sticking out in concentration, eyes narrowed in focus, small stress vein. PROPS: keyboard smoke wisps, tiny screen glowing. MOOD: Wednesday grind is absolutely real and relentless.`,
+    `${LITO_BASE} POSE: mouth agape in full gasp, one stubby arm raised pointing at something off-screen. EXPRESSION: eyes blown open to maximum O_O, gills fluffed in shock. MOOD: Wednesday mid-week news just dropped something genuinely unbelievable.`,
+    `${LITO_BASE} POSE: mid-solo-dance, one leg kicked up, both arms flailing at different angles, gills bouncing. EXPRESSION: eyes closed in pure joy, big goofy grin. MOOD: random unexpected burst of Wednesday happiness for absolutely no reason.`,
+    `${LITO_BASE} POSE: sitting cross-legged perfectly still, chin resting on both hands, completely attentive. EXPRESSION: wide open curious focused eyes, patient gentle expression. MOOD: has a sincere important question, giving the audience full attention.`,
+    `${LITO_BASE} POSE: cheeks puffed to maximum capacity from overstuffing, both hands holding different snacks simultaneously. EXPRESSION: eyes rolling back in bliss, tiny satisfied grunt face. PROPS: various snacks in each hand, crumbs floating. MOOD: Wednesday snack emergency has been declared and handled.`,
+    `${LITO_BASE} POSE: seated, head drooping slowly forward with closed eyes, chin almost to chest, then sudden head snap back up. EXPRESSION: caught mid-microsleep, jolted awake, startled confused face. MOOD: 1pm Wednesday total energy crash, fighting it and losing.`,
+    `${LITO_BASE} POSE: falling dramatically backward in slow motion, tiny cape-blanket billowing. EXPRESSION: one arm outstretched reaching upward, single cinematic tear arc. MOOD: devastated by something on the internet Wednesday, going out with maximum drama.`,
+    `${LITO_BASE} POSE: sitting gently, holding a small blank picture frame with both hands, soft warm light falling on face. EXPRESSION: tender nostalgic closed-eye smile, soft glow on face. MOOD: Wednesday hit with a wave of warm memory, feeling it fully.`,
+    `${LITO_BASE} POSE: standing inches from a tiny broken printer, staring at it unblinkingly. EXPRESSION: eyes slightly twitching, steam rising from top of head, veins barely visible. MOOD: Wednesday technology has chosen violence, this is personal now.`,
+    `${LITO_BASE} POSE: surfing triumphantly on a giant wave made of stacked papers and office folders, arms spread wide. EXPRESSION: massive victory grin, eyes gleaming with accomplishment. MOOD: conquered Wednesday hump day, riding the momentum to Friday.`,
+    `${LITO_BASE} POSE: burrowed deep inside a nest of five layered blankets, only eyes, top of head, and gill tips visible. EXPRESSION: heavy-lidded content eyes, soft glow of a tiny distant television. PROPS: snack wrappers nearby, fairy lights. MOOD: Wednesday night maximum comfort achievement unlocked.`,
+  ],
+  Jueves:[
+    `${LITO_BASE} POSE: leaning dramatically forward, hands clasped, nose twitching upward. EXPRESSION: eyes lit up with unmistakable excitement, wide smile of premonition. MOOD: can physically smell Friday approaching from Thursday, it's really happening.`,
+    `${LITO_BASE} POSE: striding confidently forward with a tiny briefcase swinging, chin tilted upward. EXPRESSION: subtle smug confident smirk, mirrored sunglasses reflecting light, gills flowing. MOOD: Thursday professional mode fully activated, main character energy on.`,
+    `${LITO_BASE} POSE: frozen completely mid-scroll, phone screen illuminating face, jaw slightly dropped. EXPRESSION: eyes slightly glazed in absorption, mouth partway open, unable to stop. MOOD: Thursday internet rabbit hole, cannot and will not look away from this.`,
+    `${LITO_BASE} POSE: leaning forward with a tiny magnifying glass held up to one eye. EXPRESSION: other eye squinted, detective hat tilted, suspicious focused expression. MOOD: Thursday investigation mode, something on the internet requires intense scrutiny.`,
+    `${LITO_BASE} POSE: both stubby arms spread wide open in welcoming gesture, slight lean forward. EXPRESSION: genuinely warm sparkling eyes, inviting open smile, extra rosy cheeks. MOOD: asking the community something wholesome Thursday, warmly waiting.`,
+    `${LITO_BASE} POSE: walking forward with extreme careful concentration, five stacked burgers balanced on top of head, arms out for balance. EXPRESSION: eyes crossing trying to look up, tongue out, brow furrowed in focus. MOOD: Thursday food challenge accepted, consequences pending.`,
+    `${LITO_BASE} POSE: sitting inside an oversized coffee mug, rim at chest height, both hands gripping the rim, peeking over it. EXPRESSION: sleepy heavy-lidded half-open eyes, content tiny smile. MOOD: Thursday requires merging with the coffee source directly.`,
+    `${LITO_BASE} POSE: spinning in a tiny office chair at high speed, arms flung outward. EXPRESSION: dizzy spiral swirl eyes, chaotic open-mouth grin. MOOD: Thursday chaos spinning out of control, somehow still having fun.`,
+    `${LITO_BASE} POSE: sitting quietly holding tiny vintage ticket stubs and a small popcorn box. EXPRESSION: misty faraway nostalgic eyes with faint shimmer, wistful soft smile. PROPS: warm retro golden light falling softly. MOOD: Thursday threw back something that hit deeply with feelings.`,
+    `${LITO_BASE} POSE: pointing dramatically with full stubby arm at a blank calendar square, one eye twitching. EXPRESSION: barely contained barely patient face, eyebrow spasming slightly. MOOD: Thursday counting every single remaining hour until Friday, not subtly.`,
+    `${LITO_BASE} POSE: standing regally with arms folded across chest, tiny crown atop head, chin raised. EXPRESSION: dignified satisfied expression, glitter raining down. MOOD: Thursday royalty who almost has the weekend, and deserves full credit.`,
+    `${LITO_BASE} POSE: fully submerged under a pile of blankets, only gills barely poking out and faint eye glow. EXPRESSION: invisible but vibe is: cozy, pre-weekend, phone in hand. MOOD: Thursday night sacred pre-weekend hibernation ritual.`,
+  ],
+  Viernes:[
+    `${LITO_BASE} POSE: full jump with both fists punched into the air, confetti explosion around. EXPRESSION: biggest possible grin, eyes turned to happy crescents, gills flying. MOOD: FRIDAY IS HERE, this is the most important moment of the week.`,
+    `${LITO_BASE} POSE: slow-motion confident strut, one foot forward mid-stride. EXPRESSION: cool calm composed smirk, sunglasses on, tiny gold chain glinting. PROPS: wind effect making gills flow dramatically behind. MOOD: Friday main character energy, nobody can touch this today.`,
+    `${LITO_BASE} POSE: tapping a tiny phone screen with maximum intensity, both thumbs. EXPRESSION: laser-focused eyes, concentration lines, one eye slightly twitching with impatience. MOOD: refreshing Friday news waiting for the weekend drop to begin.`,
+    `${LITO_BASE} POSE: behind tiny DJ booth, one paw raised in air, headphones on, head bopping. EXPRESSION: eyes closed in musical bliss, tiny beatific DJ smile. PROPS: tiny turntables, equalizer bars, soft colorful lights. MOOD: Friday is a vibe and Lito is the DJ.`,
+    `${LITO_BASE} POSE: holding a tiny microphone leaning toward viewer like a reporter, eyebrows raised in question. EXPRESSION: genuinely curious expression, expectant attentive eyes, mic extended invitingly. MOOD: Friday evening check-in, what are the plans, Lito needs to know.`,
+    `${LITO_BASE} POSE: standing before a restaurant menu that is taller than body, overwhelmed, eyes darting. EXPRESSION: delighted paralysis, too many good options, tiny sweat of indecision. PROPS: oversized menu held up, items listed in tiny text. MOOD: Friday dinner decision paralysis, everything sounds perfect.`,
+    `${LITO_BASE} POSE: completely splayed on a bean bag chair, limbs in four different directions, fully horizontal. EXPRESSION: deeply relieved closed-eye serene smile, total surrender to comfort. MOOD: the exact moment Friday work ended, bones dissolved, pure relief.`,
+    `${LITO_BASE} POSE: doubled over pointing at something off-screen, slapping own knee, tears from laughing. EXPRESSION: eyes completely shut from laughter, mouth wide open in silent scream of joy. MOOD: Friday meme hit different, this is why the internet was invented.`,
+    `${LITO_BASE} POSE: sitting with vintage headphones on, holding a tiny mixtape cassette tenderly. EXPRESSION: soft nostalgic misty eyes, gentle Friday-feeling smile. PROPS: warm amber light, old headphone cord. MOOD: songs that send you back hit hardest on Friday evenings.`,
+    `${LITO_BASE} POSE: sprinting full-speed out of a door frame, legs blurred, giant grin. EXPRESSION: pure freedom expression, eyes bright, gills streaming behind. PROPS: door frame behind, speed lines and small smoke trail. MOOD: Friday escape velocity reached, weekend has officially started.`,
+    `${LITO_BASE} POSE: arms raised Rocky-at-top-of-stairs style on a small elevated step. EXPRESSION: triumphant tearful proud smile, wind dramatically blowing gills back. PROPS: symbolic staircase step, cinematic lighting. MOOD: survived the full week, this victory is earned and real.`,
+    `${LITO_BASE} POSE: curled into a perfect small ball, all limbs tucked, eyes peacefully closed. EXPRESSION: tiny content sleeping smile, pure peace. PROPS: crescent moon, soft floating stars, single ZZZ bubble. MOOD: earned Friday sleep, body and soul satisfied.`,
+  ],
+  Sábado:[
+    `${LITO_BASE} POSE: standing in rumpled pajamas, one hand rubbing an eye, squinting at bright light. EXPRESSION: confused blissful morning face, hair slightly messed, tiny cereal bowl in other hand. MOOD: woke up with zero alarm, brain rebooting slowly, this is freedom.`,
+    `${LITO_BASE} POSE: standing at a tiny stove in an apron, spatula raised mid-flip, eyebrow cocked. EXPRESSION: one eye squinting through smoke, proud chef grin, apron stained. PROPS: tiny pan with smoke rising, chef hat slightly askew. MOOD: Saturday cooking attempt, confidence high, outcome uncertain.`,
+    `${LITO_BASE} POSE: perched on the edge of a seat, leaning hard toward a tiny TV screen, knuckles white on armrests. EXPRESSION: mouth wide open in suspense, eyes enormous, can't blink. MOOD: Saturday series binge is in full swing, do not interrupt.`,
+    `${LITO_BASE} POSE: full artist mode with a tiny beret and palette, brush mid-stroke, tongue out. EXPRESSION: intense creative focus eyes, completely absorbed, brush aimed at canvas off-screen. PROPS: paint smears on face, palette overflowing with colors. MOOD: Saturday creative energy unleashed, creating something probably chaotic.`,
+    `${LITO_BASE} POSE: flat on back in soft grass, arms spread, legs slightly spread, looking up. EXPRESSION: serene half-smile, soft dreamy eyes looking at clouds. PROPS: tiny flower tucked in gills, blue sky implied. MOOD: Saturday in the park doing absolutely nothing, this is the goal.`,
+    `${LITO_BASE} POSE: standing surrounded by ten delivery boxes of varying sizes, arms slightly raised. EXPRESSION: overwhelmed delighted spinning eyes, dopamine smile, small happy sweat. MOOD: Saturday delivery haul arrived all at once, this is too much and not enough.`,
+    `${LITO_BASE} POSE: melted completely into a couch, body draped over it at impossible angles, fully boneless. EXPRESSION: profoundly satisfied closed-eye smile, TV remote resting on chest. PROPS: snack bowl on belly, couch consumed by Lito or Lito consumed by couch. MOOD: legendary Saturday nap, the kind songs are written about.`,
+    `${LITO_BASE} POSE: falling backward off a chair mid-laugh, legs kicking in air, one arm flailing. EXPRESSION: eyes completely shut from laughing, tears streaming, mouth wide open. MOOD: Saturday internet delivered something unhinged and Lito's body gave up.`,
+    `${LITO_BASE} POSE: sitting in warm lamplight watching a tiny projector beam a small scene. EXPRESSION: soft nostalgic teary eyes, gentle smile, warmth on face from projection light. MOOD: Saturday old memories surfaced, feeling them fully, it's bittersweet and good.`,
+    `${LITO_BASE} POSE: pushing a shopping cart twice the size, barely reaching the handlebar, face set in grim determination. EXPRESSION: focused serious adulting face, list in pocket, on a mission. MOOD: Saturday grocery run, doing adult responsibilities with maximum seriousness.`,
+    `${LITO_BASE} POSE: at center of a small gathering, confetti cannon in hands mid-fire, gills bouncing. EXPRESSION: maximum celebration smile, eyes lit with party energy. MOOD: Saturday night, the real one, it's time and Lito is ready.`,
+    `${LITO_BASE} POSE: sitting on a rooftop ledge, legs dangling, looking up at a star-filled sky. EXPRESSION: content serene satisfied smile, soft glowing eyes reflecting stars. MOOD: perfect Saturday ending, exactly what was needed, everything is fine.`,
+  ],
+  Domingo:[
+    `${LITO_BASE} POSE: under covers with only top of head and one bleary eye visible, pillow half over face. EXPRESSION: one eye barely open, filtering bright sunlight through squinted lid, do not disturb. MOOD: Sunday morning is sacred, the world can wait, this is not negotiable.`,
+    `${LITO_BASE} POSE: standing at a tiny counter with both hands wrapped around an oversized mug, eyes closed. EXPRESSION: complete peaceful bliss, slight smile, steam rising to face. MOOD: Sunday coffee ritual, most important daily ceremony, must be respected.`,
+    `${LITO_BASE} POSE: sitting checking phone casually while directly behind and approaching: a growing shadow of a giant Monday monster. EXPRESSION: completely unaware cheerful face on Lito, horror slowly creeping in at the edges. MOOD: Sunday scaries arriving right on schedule.`,
+    `${LITO_BASE} POSE: face down completely flat on the floor, arms out, totally motionless. EXPRESSION: invisible, face pressed to floor, vibes are: done. MOOD: Sunday has taken all motivation away, this is where Lito will remain.`,
+    `${LITO_BASE} POSE: sitting by a rain-streaked window, cup of tea held in both hands, looking out thoughtfully. EXPRESSION: quiet reflective gentle face, soft rain light on features. MOOD: Sunday reflection mode, asking the audience a genuine question about life.`,
+    `${LITO_BASE} POSE: leaning over a tiny oven tray of fresh baked goods, nose hovering just above, eyes closed in ecstasy. EXPRESSION: absolute bliss smile, happy tears in the corners of eyes. PROPS: steam rising dramatically from baked goods. MOOD: Sunday cooking is therapy, this is medicine, this is healing.`,
+    `${LITO_BASE} POSE: completely flat starfish pose on a bed, arms and legs extended to all four corners. EXPRESSION: deeply sleeping peaceful smile, sunbeam falling across face. MOOD: Sunday nap is constitutional right, non-negotiable, deeply earned.`,
+    `${LITO_BASE} POSE: watching TV happily in the foreground while behind: the shadow of Monday-monster grows larger on the wall. EXPRESSION: oblivious cheerful front, monster shadow taking over background. MOOD: Sunday evening mood shift happening in real time, unaware but doomed.`,
+    `${LITO_BASE} POSE: wrapped tightly in a soft blanket on a couch, old cartoon playing on a tiny TV, warm light. EXPRESSION: nostalgic tear of joy, wide gentle smile, completely at peace. MOOD: Sunday throwback therapy session, healing through childhood media.`,
+    `${LITO_BASE} POSE: slowly, deliberately, packing a tiny backpack, movements heavy and reluctant. EXPRESSION: maximum pout, eyes drooping with tragic resignation, moving in slow motion. MOOD: Sunday night Monday prep, every item packed under protest.`,
+    `${LITO_BASE} POSE: raising a tiny glass toward the viewer in a toast, warm golden hour light on face. EXPRESSION: sincere grateful soft smile, warmth in sparkling eyes. MOOD: grateful Sunday toast, week survived, moments savored, thankful.`,
+    `${LITO_BASE} POSE: nestled in a perfect nest of blankets, candles nearby, everything soft and quiet. EXPRESSION: eyes peacefully closed, tiny serene smile, completely at rest. MOOD: Sunday reset complete, ready or not, peace has been achieved.`,
+  ],
+};
+
+// ─── SPECIAL DATES ────────────────────────────────────────────────────────────
+const specialDates=[
+  {nombre:"Día de las Madres",fecha:"10 Mayo",emoji:"💐",color:"#f472b6",prompts:[
+    {hora:"7:00 AM",tipo:"Dedicatoria mañana",prompt:`${LITO_BASE} POSE: standing holding an enormous bouquet of flowers that is nearly as big as body. EXPRESSION: eyes overflowing with pure love, extra rosy cheeks blushing intensely, tiny floating hearts. MOOD: dedicating the whole morning to mom with maximum affection.`},
+    {hora:"10:00 AM",tipo:"Homenaje emotivo",prompt:`${LITO_BASE} POSE: gently hugging a small picture frame to chest, eyes closed tenderly. EXPRESSION: soft tears of joy rolling down cheeks, grateful warm smile. PROPS: golden warm light, soft floating petals. MOOD: emotional morning tribute to mom, full heart.`},
+    {hora:"12:00 PM",tipo:"Comida especial",prompt:`${LITO_BASE} POSE: presenting a towering birthday cake (bigger than Lito) with both hands, proudly. EXPRESSION: huge beaming chef pride smile, apron on, chef hat. MOOD: made something special for mom today, very proud.`},
+    {hora:"3:00 PM",tipo:"Mensaje viral",prompt:`${LITO_BASE} POSE: on knees with arms spread in dramatic adoration, looking upward. EXPRESSION: eyes full of literal stars and hearts, overwhelmed reverence. MOOD: expressing that mom is everything, no words are enough.`},
+    {hora:"6:00 PM",tipo:"Celebración",prompt:`${LITO_BASE} POSE: dancing joyfully, confetti raining, arms raised. EXPRESSION: tearful happy eyes, biggest celebration smile. MOOD: tonight is all about celebrating mom, pure joy.`},
+  ]},
+  {nombre:"Navidad",fecha:"25 Dic",emoji:"🎄",color:"#16a34a",prompts:[
+    {hora:"7:00 AM",tipo:"Mañana navideña",prompt:`${LITO_BASE} POSE: leaping out of bed mid-air, Santa hat flying off head, arms raised. EXPRESSION: eyes wide with explosive Christmas morning joy, biggest grin. PROPS: Christmas lights twinkling everywhere. MOOD: it's Christmas morning, everything is perfect.`},
+    {hora:"9:00 AM",tipo:"Apertura de regalos",prompt:`${LITO_BASE} POSE: surrounded by towering gift boxes all bigger than body, frozen in awe. EXPRESSION: O_O shock eyes, mouth open, trembling with excitement. MOOD: gift opening chaos has begun.`},
+    {hora:"12:00 PM",tipo:"Cena navideña",prompt:`${LITO_BASE} POSE: seated at tiny table absolutely groaning under a mountain of Christmas food. EXPRESSION: spinning eyes of overwhelmed joy, bib on, fork raised. MOOD: Christmas feast incoming, stomach ready.`},
+    {hora:"3:00 PM",tipo:"Siesta navideña",prompt:`${LITO_BASE} POSE: completely knocked out on a sofa, Santa hat tilted, fully at peace. EXPRESSION: deeply asleep content smile, Christmas lights reflected on peaceful face. MOOD: post-feast legendary Christmas nap.`},
+    {hora:"8:00 PM",tipo:"Noche buena",prompt:`${LITO_BASE} POSE: dancing under mistletoe in an ugly Christmas sweater, snowflakes falling. EXPRESSION: euphoric Christmas night smile, eyes sparkling, gills bouncing. MOOD: Christmas night magic, the best night of the year.`},
+  ]},
+  {nombre:"Año Nuevo",fecha:"1 Enero",emoji:"🎆",color:"#eab308",prompts:[
+    {hora:"12:00 AM",tipo:"Cuenta regresiva",prompt:`${LITO_BASE} POSE: looking upward at firework explosions, mouth wide open in wonder. EXPRESSION: eyes reflecting gold and silver bursts, tiny party hat on, awestruck. MOOD: New Year countdown moment, pure magic.`},
+    {hora:"8:00 AM",tipo:"Resaca",prompt:`${LITO_BASE} POSE: barely upright, hat still on from last night, confetti stuck to face. EXPRESSION: one eye barely open, the other closed, tongue slightly out. MOOD: New Year Day is here and the body is not prepared.`},
+    {hora:"11:00 AM",tipo:"Propósitos",prompt:`${LITO_BASE} POSE: writing furiously on a tiny notepad, tongue out, fire in determined eyes. EXPRESSION: intense resolution-setting focus, brow furrowed with purpose. MOOD: this year will be different, writing it all down now.`},
+    {hora:"3:00 PM",tipo:"Ya se olvidaron",prompt:`${LITO_BASE} POSE: holding a torn ripped-up notepad, shredded pieces floating down. EXPRESSION: guilty eyes looking sideways, sheepish apologetic half-smile, hands up. MOOD: resolutions lasted approximately four hours, it happens.`},
+    {hora:"6:00 PM",tipo:"Reflexión",prompt:`${LITO_BASE} POSE: sitting on a small cliff edge, legs dangling, watching a golden sunset. EXPRESSION: one nostalgic tear, peaceful accepting smile, soft light on face. MOOD: reflecting on the year just ended, grateful and ready.`},
+  ]},
+  {nombre:"San Valentín",fecha:"14 Feb",emoji:"💝",color:"#e11d48",prompts:[
+    {hora:"7:00 AM",tipo:"Soltero orgulloso",prompt:`${LITO_BASE} POSE: seated in center of a pile of chocolates, heart-shaped sunglasses on, arms spread. EXPRESSION: absolutely thriving face, zero sadness, self-love is the vibe. MOOD: single on Valentine's Day and fully unbothered, actually winning.`},
+    {hora:"10:00 AM",tipo:"Enamorado intenso",prompt:`${LITO_BASE} POSE: floating inches off the ground surrounded by orbiting hearts, spinning slowly. EXPRESSION: literal cartoon heart pupils, cheeks glowing, lovestruck beyond reason. MOOD: completely consumed by love energy, no thoughts only hearts.`},
+    {hora:"12:00 PM",tipo:"Comida del amor",prompt:`${LITO_BASE} POSE: presenting a heart-shaped pizza toward viewer with both hands extended, very proud. EXPRESSION: triumphant chef smile, rose petals raining. MOOD: love language is food, this pizza is the declaration.`},
+    {hora:"3:00 PM",tipo:"Anti San Valentín",prompt:`${LITO_BASE} POSE: draped in a dramatic black cloak, arms folded, surrounded by broken heart symbols. EXPRESSION: theatrical pout, dramatic eyebrow, very committed to the bit. MOOD: Valentine's Day is a social construct, and Lito has opinions.`},
+    {hora:"7:00 PM",tipo:"Cita de noche",prompt:`${LITO_BASE} POSE: walking confidently under string lights, tiny bow tie on, rose held in mouth. EXPRESSION: suave confident expression, eyes soft with romance. MOOD: Valentine's night date energy activated, ready.`},
+  ]},
+  {nombre:"Halloween",fecha:"31 Oct",emoji:"🎃",color:"#ea580c",prompts:[
+    {hora:"7:00 AM",tipo:"Despertar terrorífico",prompt:`${LITO_BASE} POSE: rising from a tiny coffin lid, vampire cape on, hair chaos. EXPRESSION: confused groggy morning face with tiny fangs, one eye open. MOOD: Halloween morning is technically still morning, body didn't get the memo.`},
+    {hora:"10:00 AM",tipo:"Disfraz reveal",prompt:`${LITO_BASE} POSE: standing in a ghost costume sheet with cut-out eyes, jazz hands spread wide. EXPRESSION: theatrical spooky pose, very proud of the choice. MOOD: costume reveal moment, prepare to be haunted or at least mildly spooked.`},
+    {hora:"3:00 PM",tipo:"Dulces o travesuras",prompt:`${LITO_BASE} POSE: running at full speed holding an enormous candy bag, completely determined. EXPRESSION: laser-focused mission face, eyes forward, candy is the objective. MOOD: Halloween candy acquisition mission, efficiency is everything.`},
+    {hora:"6:00 PM",tipo:"Susto épico",prompt:`${LITO_BASE} POSE: launched into the air by fright, all four limbs splayed, gills on end. EXPRESSION: O_O maximum terror circles, mouth screaming shape, entire body rigid with shock. MOOD: Halloween jumpscare hit perfectly, full body response.`},
+    {hora:"10:00 PM",tipo:"Noche de brujas",prompt:`${LITO_BASE} POSE: flying on a tiny broomstick against a full moon, determined forward lean. EXPRESSION: focused witch energy, pointy hat, stars trailing behind. MOOD: Halloween night is in full effect, the magic is real tonight.`},
+  ]},
+  {nombre:"Día de Muertos",fecha:"1-2 Nov",emoji:"🌺",color:"#7c3aed",prompts:[
+    {hora:"8:00 AM",tipo:"Ofrenda",prompt:`${LITO_BASE} POSE: holding a single marigold flower reverently with both hands, face painted as sugar skull. EXPRESSION: respectful tender smile, eyes soft with love for ancestors. MOOD: honoring those who came before, gentle and sincere.`},
+    {hora:"12:00 PM",tipo:"Comida ofrenda",prompt:`${LITO_BASE} POSE: standing before a colorful spread of traditional Day of Dead offerings, eyes wide. EXPRESSION: appreciation and reverence, marigold petals falling. MOOD: the ofrenda is complete, the food is lovingly placed.`},
+    {hora:"4:00 PM",tipo:"Altar familiar",prompt:`${LITO_BASE} POSE: gently placing a small framed photo on a candlelit altar surrounded by marigolds. EXPRESSION: solemn tender loving expression, eyes soft. MOOD: remembering loved ones with care and intention.`},
+    {hora:"7:00 PM",tipo:"Celebración",prompt:`${LITO_BASE} POSE: dancing joyfully with skeleton silhouette companions, marigolds raining down. EXPRESSION: tearful joyful smile, sugar skull paint on face, arms raised in celebration. MOOD: celebrating life and death as one, Día de Muertos magic.`},
+    {hora:"9:00 PM",tipo:"Reflexión nocturna",prompt:`${LITO_BASE} POSE: sitting beside the glowing altar in candlelight, hands folded, peaceful. EXPRESSION: serene contemplative face, soft warm glow, petals floating gently. MOOD: quiet spiritual night reflection, connection across time.`},
+  ]},
+  {nombre:"Inicio Clases",fecha:"Regreso escolar",emoji:"🎒",color:"#0284c7",prompts:[
+    {hora:"6:00 AM",tipo:"Primer día",prompt:`${LITO_BASE} POSE: standing with a backpack literally twice the size of body, new supplies everywhere. EXPRESSION: nervous excited smile, sweat drop, pencil gripped like a weapon. MOOD: first day of school, terrifying, thrilling, pencil case is immaculate.`},
+    {hora:"8:00 AM",tipo:"Llegada al salón",prompt:`${LITO_BASE} POSE: peeking through a classroom door, one foot in, one foot still out, scouting. EXPRESSION: scanning eyes, anxious smile, deciding whether to fully commit. MOOD: entering new classroom requires reconnaissance first.`},
+    {hora:"12:00 PM",tipo:"Lonchera épica",prompt:`${LITO_BASE} POSE: opening a lunchbox to reveal a dream lunch, angel light beaming out. EXPRESSION: sparkle eyes, steam rising, this is the highlight of the day. MOOD: school lunch is the reward, the reason to persist.`},
+    {hora:"3:00 PM",tipo:"Salida",prompt:`${LITO_BASE} POSE: bursting through school doors at cartoon speed, backpack bouncing wildly, pure joy. EXPRESSION: biggest grin of freedom, eyes lit with escape energy. MOOD: school is out, freedom achieved, body moving before brain decided.`},
+    {hora:"9:00 PM",tipo:"Tarea 11pm",prompt:`${LITO_BASE} POSE: hunched over open textbooks, surrounded by crumpled paper, one candle burning low. EXPRESSION: dead exhausted eyes, disheveled, questioning life choices. MOOD: homework existed and was ignored until now, consequences arrived.`},
+  ]},
+  {nombre:"Partido Grande",fecha:"Temporada",emoji:"⚽",color:"#15803d",prompts:[
+    {hora:"11:00 AM",tipo:"Pre-partido hype",prompt:`${LITO_BASE} POSE: face painted with team colors, waving a giant foam finger, screaming silently. EXPRESSION: ultimate game day hype face, veins of excitement. MOOD: pre-match energy is at dangerous levels, stadium volume.`},
+    {hora:"2:00 PM",tipo:"Kickoff",prompt:`${LITO_BASE} POSE: leaning so far off the couch edge toward the tiny TV it's physics-defying. EXPRESSION: intense locked-in watching face, snacks scattered around forgotten. MOOD: kickoff moment, the world has narrowed to this screen.`},
+    {hora:"4:00 PM",tipo:"Va perdiendo",prompt:`${LITO_BASE} POSE: head buried in both hands, slumped forward in despair, jersey ruffled. EXPRESSION: the single tear of sporting heartbreak, devastated face. MOOD: team is losing and the emotional investment was too high, this hurts.`},
+    {hora:"5:00 PM",tipo:"Remontada",prompt:`${LITO_BASE} POSE: launched completely off the couch mid-air, both fists pumping, snacks flying everywhere. EXPRESSION: disbelief joy explosion, can't process fast enough, screaming with no sound. MOOD: epic comeback happening in real time, body left the couch involuntarily.`},
+    {hora:"7:00 PM",tipo:"Post-partido",prompt:`${LITO_BASE} POSE: collapsed back on couch in survivor posture, jersey on, empty snack bowls. EXPRESSION: exhausted victorious peaceful face, one thumb up, done. MOOD: survived the match, emotionally drained, would do it again immediately.`},
+  ]},
+];
+
+// ─── STATIC DATA ──────────────────────────────────────────────────────────────
+const humorTypes=[
+  {id:"negro",label:"Negro / Pesado",emoji:"🖤",desc:"Dark humor, ironía que duele pero ríes"},
+  {id:"absurdo",label:"Absurdo",emoji:"🌀",desc:"Sin sentido total, humor surrealista"},
+  {id:"relatable",label:"Relatable",emoji:"😭",desc:"Situaciones cotidianas que duelen de verdad"},
+  {id:"cringe",label:"Cringe",emoji:"😬",desc:"Momentos vergonzosos universales"},
+  {id:"nostalgia",label:"Nostalgia",emoji:"🥹",desc:"Cosas del pasado que ya no existen"},
+  {id:"existencial",label:"Existencial",emoji:"🌌",desc:"Crisis existenciales en formato cómico"},
+  {id:"adulting",label:"Adulting",emoji:"💀",desc:"El horror de las responsabilidades adultas"},
+  {id:"pareja",label:"Relaciones",emoji:"💔",desc:"Pareja, soltería, apps de citas, el drama"},
+];
+const formatTypes=[
+  {id:"single",label:"Imagen única",emoji:"🖼️",desc:"Un meme en una imagen"},
+  {id:"comic2",label:"Historia 2p",emoji:"📖",desc:"Setup → Remate"},
+  {id:"comic3",label:"Historia 3p",emoji:"📚",desc:"Setup → Giro → Remate"},
+];
+const days=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+const dayColors={Lunes:"#4ade80",Martes:"#c084fc",Miércoles:"#fb923c",Jueves:"#facc15",Viernes:"#f472b6",Sábado:"#38bdf8",Domingo:"#a78bfa"};
+
+const IMG_SERVICES=[
+  {id:"flux_schnell",label:"FLUX Schnell",emoji:"⚡",desc:"Rápido · ~$0.003",steps:4,endpoint:"https://fal.run/fal-ai/flux/schnell"},
+  {id:"flux_dev",label:"FLUX Dev",emoji:"🎨",desc:"Mejor calidad · ~$0.025",steps:28,endpoint:"https://fal.run/fal-ai/flux/dev"},
+  {id:"flux_pro",label:"FLUX Pro",emoji:"💎",desc:"Premium · ~$0.05",steps:30,endpoint:"https://fal.run/fal-ai/flux-pro/v1.1"},
+];
+const ASPECT_RATIOS=[
+  {id:"square_hd",label:"1:1",emoji:"⬛",desc:"Feed / Post"},
+  {id:"portrait_16_9",label:"9:16",emoji:"📱",desc:"Stories"},
+  {id:"landscape_16_9",label:"16:9",emoji:"🖥️",desc:"Landscape"},
+  {id:"portrait_4_3",label:"4:5",emoji:"📷",desc:"Instagram"},
+];
+const VID_SERVICES=[
+  {id:"wan_1_3b",label:"Wan2.1 Fast",emoji:"⚡",desc:"~$0.03 · rápido",model:"fal-ai/wan/v2.1/1.3b/image-to-video"},
+  {id:"wan_14b",label:"Wan2.1 Pro",emoji:"🎬",desc:"~$0.08 · más calidad",model:"fal-ai/wan/v2.1/14b/image-to-video"},
+];
+const VID_DURATIONS=[
+  {id:"49",label:"~2s",emoji:"⚡",frames:49},
+  {id:"81",label:"~3s",emoji:"▶️",frames:81},
+  {id:"129",label:"~5s",emoji:"🎬",frames:129},
+];
+
+const DEFAULT_CHARACTERS=[{
+  id:"lito",nombre:"Lito",emoji:"🫧",color:"#4ade80",referenceUrl:"",
+  descripcion:`Round chubby chibi axolotl named Lito, mint green body #98E8D0 soft gradient, THREE pairs fluffy cotton-candy-pink feathery external gills, large glossy sparkly eyes with white catchlight dot, rosy circular blush cheeks, tiny cute mouth, stubby mini arms and legs. Kawaii 2D flat NOT 3D, thick black sticker outlines, soft cel-shading.`,
+}];
+
+const C={bg:"#0f0817",surface:"#1a1030",card:"#241640",border:"#3d2b6b",accent:"#7c3aed",green:"#10b981",text:"#f1f0ff",muted:"#8b7ab8",grad:"linear-gradient(135deg,#7c3aed,#db2777)"};
+
+// ─── HOOKS ────────────────────────────────────────────────────────────────────
+function usePersisted(key,def){
+  const [v,setV]=useState(()=>{try{const s=localStorage.getItem(key);return s!==null?JSON.parse(s):def;}catch{return def;}});
+  const set=useCallback(val=>{setV(val);try{localStorage.setItem(key,JSON.stringify(val));}catch{}},[key]);
+  return [v,set];
+}
+
+// ─── UI COMPONENTS ────────────────────────────────────────────────────────────
+const Btn=({children,onClick,disabled,variant="primary",style={}})=>{
+  const v={primary:{background:C.grad,color:"#fff",border:"none",boxShadow:"0 4px 20px #7c3aed44"},secondary:{background:C.card,color:C.text,border:`1.5px solid ${C.border}`},ghost:{background:"transparent",color:C.muted,border:`1.5px solid ${C.border}`},success:{background:"linear-gradient(135deg,#059669,#10b981)",color:"#fff",border:"none"},danger:{background:"linear-gradient(135deg,#dc2626,#f97316)",color:"#fff",border:"none"}};
+  return<button onClick={onClick} disabled={disabled} style={{padding:"12px 18px",borderRadius:12,fontWeight:700,fontSize:13,cursor:disabled?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6,transition:"all 0.15s",opacity:disabled?0.5:1,...v[variant],...style}}>{children}</button>;
+};
+const Card=({children,style={}})=><div style={{background:C.card,borderRadius:16,border:`1.5px solid ${C.border}`,padding:16,...style}}>{children}</div>;
+const Label=({children,style={}})=><div style={{fontSize:11,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:1,marginBottom:8,...style}}>{children}</div>;
+const OptionRow=({label,options,value,onChange})=>(
+  <div style={{marginBottom:10}}>
+    <div style={{fontSize:10,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:0.8,marginBottom:6}}>{label}</div>
+    <div style={{display:"flex",gap:6,overflowX:"auto",scrollbarWidth:"none"}}>
+      {options.map(o=>{const isA=value===o.id;return<button key={o.id} onClick={()=>onChange(o.id)} style={{flexShrink:0,padding:"6px 10px",borderRadius:10,fontSize:11,cursor:"pointer",border:`1.5px solid ${isA?C.accent:C.border}`,background:isA?`${C.accent}22`:"transparent",color:isA?"#fff":C.muted,fontWeight:isA?800:600,textAlign:"center",whiteSpace:"nowrap"}}><span style={{fontSize:13}}>{o.emoji}</span><br/><span style={{fontWeight:800}}>{o.label}</span><br/><span style={{fontSize:9,opacity:.7}}>{o.desc}</span></button>;})}
+    </div>
+  </div>
+);
+
+// ─── API ──────────────────────────────────────────────────────────────────────
+async function uploadToFal(falKey,base64){
+  const res=await fetch(base64);
+  const blob=await res.blob();
+  const form=new FormData();
+  form.append("file",blob,"ref.png");
+  const r=await fetch("https://fal.run/storage/upload",{method:"POST",headers:{"Authorization":`Key ${falKey}`},body:form});
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(`Upload falló ${r.status}: ${e?.message||"error"}`);}
+  const d=await r.json();
+  const url=d.url||d.file_url||d.access_url||d.storage_url;
+  if(!url)throw new Error("fal.ai no devolvió URL tras subir imagen");
+  return url;
+}
+
+async function callGroq(key,sys,usr){
+  const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{"Authorization":`Bearer ${key}`,"Content-Type":"application/json"},body:JSON.stringify({model:"llama-3.3-70b-versatile",messages:[{role:"system",content:sys},{role:"user",content:usr}],max_tokens:1000,temperature:0.9})});
+  if(!r.ok){const e=await r.json().catch(()=>{});throw new Error(e?.error?.message||`Groq HTTP ${r.status}`);}
+  return(await r.json()).choices?.[0]?.message?.content||"";
+}
+
+async function genHooks(key,tipo,dia,prompt){
+  const t=await callGroq(key,
+    "Experto contenido viral Facebook en español latino. Genera frases hook para posts de memes del personaje Lito (ajolotito chibi adorable). Las frases deben: estar en español coloquial natural, tener 5-20 palabras máximo, incitar a comentar/etiquetar/compartir, incluir emojis relevantes, ser muy relatable y virales. NO seas formal. Responde SOLO con un JSON array de 5 strings, sin explicaciones ni markdown.",
+    `Día: ${dia}\nTipo de post: ${tipo}\nContexto visual: ${prompt.slice(0,180)}\nGenera 5 frases hook virales perfectas para este meme.`
+  );
+  return JSON.parse(t.replace(/```json|```/g,"").trim());
+}
+
+async function genMemeIA(key,humor,format,topic,charsDesc){
+  const h=humorTypes.find(x=>x.id===humor);
+  const p=format==="single"?1:format==="comic2"?2:3;
+  const schema=p===1?`{"titulo":"...","concepto":"...","prompt_imagen":"...","frase_hook":"...","frase_alternativa":"..."}`:p===2?`{"titulo":"...","concepto":"...","panel1":{"descripcion":"...","prompt_imagen":"..."},"panel2":{"descripcion":"...","prompt_imagen":"..."},"frase_hook":"...","frase_alternativa":"..."}`:
+  `{"titulo":"...","concepto":"...","panel1":{"descripcion":"...","prompt_imagen":"..."},"panel2":{"descripcion":"...","prompt_imagen":"..."},"panel3":{"descripcion":"...","prompt_imagen":"..."},"frase_hook":"...","frase_alternativa":"..."}`;
+  const t=await callGroq(key,
+    `Experto en contenido viral para Facebook en español latino. Creas memes con personajes chibi. Incluye SIEMPRE la descripción completa del personaje en cada prompt_imagen. Los prompts de imagen deben describir: pose exacta, expresión facial detallada, props, mood y ambiente. Las frases hook deben ser en español coloquial, máximo 20 palabras, con emojis, incitar a comentar. Responde SOLO con JSON válido sin markdown. Schema exacto: ${schema}`,
+    `Tipo de humor: ${h.label} — ${h.desc}\nFormato: ${p===1?"imagen única":`mini historieta ${p} paneles`}\n${topic?`Tema específico: ${topic}`:"Tema libre, lo más viral y relatable posible"}\n${charsDesc?`Personajes a incluir:\n${charsDesc}`:""}\nObjetivo: que la gente quiera comentar, etiquetar a alguien o compartir.`
+  );
+  return JSON.parse(t.replace(/```json|```/g,"").trim());
+}
+
+async function genImage(falKey,prompt,refUrl,serviceId="flux_schnell",aspectRatio="square_hd"){
+  const svc=IMG_SERVICES.find(s=>s.id===serviceId)||IMG_SERVICES[0];
+
+  // img2img cuando hay referencia
+  if(refUrl&&refUrl.trim()){
+    let imgUrl=refUrl.trim();
+    if(imgUrl.startsWith("data:")){
+      imgUrl=await uploadToFal(falKey,imgUrl);
+    }
+    const r=await fetch("https://fal.run/fal-ai/flux/dev/image-to-image",{
+      method:"POST",
+      headers:{"Authorization":`Key ${falKey}`,"Content-Type":"application/json"},
+      body:JSON.stringify({image_url:imgUrl,prompt:prompt.slice(0,600),strength:0.62,num_inference_steps:28,guidance_scale:3.5,image_size:aspectRatio}),
+    });
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(`img2img error ${r.status}: ${e?.detail||e?.message||"fallo"}`);}
+    const d=await r.json();
+    const u=d.images?.[0]?.url;
+    if(!u)throw new Error("img2img no devolvió imagen");
+    return u;
+  }
+
+  // text2img normal
+  const r=await fetch(svc.endpoint,{
+    method:"POST",
+    headers:{"Authorization":`Key ${falKey}`,"Content-Type":"application/json"},
+    body:JSON.stringify({prompt:prompt.slice(0,500),image_size:aspectRatio,num_images:1,num_inference_steps:svc.steps}),
+  });
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.detail||e?.message||`HTTP ${r.status}`);}
+  const d=await r.json();
+  const u=d.images?.[0]?.url;
+  if(!u)throw new Error("fal.ai no devolvió imagen");
+  return u;
+}
+
+async function genVideo(falKey,imageUrl,serviceId="wan_1_3b",durationId="81"){
+  const svc=VID_SERVICES.find(s=>s.id===serviceId)||VID_SERVICES[0];
+  const dur=VID_DURATIONS.find(d=>d.id===durationId)||VID_DURATIONS[1];
+  const s=await fetch(`https://queue.fal.run/${svc.model}`,{method:"POST",headers:{"Authorization":`Key ${falKey}`,"Content-Type":"application/json"},body:JSON.stringify({image_url:imageUrl,prompt:"cute chibi axolotl character blinking slowly, fluffy pink gills wiggling gently, subtle breathing movement, smooth looping 2D cartoon animation",num_frames:dur.frames,resolution:"480p",num_inference_steps:20})});
+  if(!s.ok){const e=await s.json().catch(()=>({}));throw new Error(e?.detail||`Error ${s.status}`);}
+  const{request_id}=await s.json();
+  if(!request_id)throw new Error("No se recibió request_id");
+  const url=`https://queue.fal.run/${svc.model}/requests/${request_id}`;
+  for(let i=0;i<72;i++){
+    await new Promise(r=>setTimeout(r,2500));
+    const p=await fetch(url,{headers:{"Authorization":`Key ${falKey}`}});
+    const d=await p.json();
+    if(d.status==="COMPLETED"&&d.output?.video?.url)return d.output.video.url;
+    if(d.status==="FAILED")throw new Error(`${svc.label} falló al generar video`);
+  }
+  throw new Error("Tiempo de espera agotado");
+}
+
+// ─── PROMPTS TAB ──────────────────────────────────────────────────────────────
+function PromptsTab({groqKey}){
+  const [view,setView]=useState("semanal");
+  const [activeDay,setActiveDay]=useState("Lunes");
+  const [activeDate,setActiveDate]=useState(0);
+  const [expanded,setExpanded]=useState(null);
+  const [copied,setCopied]=useState(null);
+  // Hooks state per item (keyed by item key)
+  const [hooksState,setHooksState]=useState({}); // {key: {loading,hooks,err,copiedIdx}}
+
+  const copy=(t,k)=>{navigator.clipboard.writeText(t);setCopied(k);setTimeout(()=>setCopied(null),2000);};
+  const items=view==="semanal"
+    ?weeklyMemes[activeDay].map((prompt,i)=>({hora:schedule[i].hora,emoji:schedule[i].emoji,tipo:schedule[i].tipo,prompt}))
+    :specialDates[activeDate].prompts;
+  const accent=view==="semanal"?dayColors[activeDay]:specialDates[activeDate].color;
+
+  const getHState=(key)=>hooksState[key]||{loading:false,hooks:[],err:"",copiedIdx:null};
+  const setHState=(key,patch)=>setHooksState(prev=>({...prev,[key]:{...getHState(key),...patch}}));
+
+  const generateHooks=async(key,tipo,dia,prompt)=>{
+    if(!groqKey){setHState(key,{err:"Agrega tu Groq key en ⚙️ Config"});return;}
+    setHState(key,{loading:true,err:"",hooks:[]});
+    try{
+      const h=await genHooks(groqKey,tipo,dia,prompt);
+      setHState(key,{hooks:h,loading:false});
+    }catch(e){setHState(key,{loading:false,err:e.message});}
+  };
+
+  const copyHook=(key,text,idx)=>{
+    navigator.clipboard.writeText(text);
+    setHState(key,{copiedIdx:idx});
+    setTimeout(()=>setHState(key,{copiedIdx:null}),2000);
+  };
+
+  return(
+    <div style={{paddingBottom:80}}>
+      {/* View toggle */}
+      <div style={{display:"flex",gap:8,padding:"12px 16px"}}>
+        {[["semanal","📅 Semanal"],["especial","🎉 Especiales"]].map(([k,l])=>
+          <button key={k} onClick={()=>{setView(k);setExpanded(null);}} style={{flex:1,padding:"10px",borderRadius:10,border:"none",cursor:"pointer",background:view===k?C.accent:C.card,color:view===k?"#fff":C.muted,fontWeight:view===k?800:600,fontSize:13}}>{l}</button>
+        )}
+      </div>
+
+      {/* Day / date selector */}
+      <div style={{overflowX:"auto",display:"flex",gap:8,padding:"0 16px 12px",scrollbarWidth:"none"}}>
+        {view==="semanal"
+          ?days.map(d=>{const isA=d===activeDay;return<button key={d} onClick={()=>{setActiveDay(d);setExpanded(null);}} style={{flexShrink:0,padding:"7px 14px",borderRadius:50,fontSize:12,cursor:"pointer",border:`2px solid ${isA?dayColors[d]:C.border}`,background:isA?`${dayColors[d]}22`:"transparent",color:isA?"#fff":C.muted,fontWeight:isA?800:600}}>{d}</button>;})
+          :specialDates.map((d,i)=>{const isA=i===activeDate;return<button key={i} onClick={()=>{setActiveDate(i);setExpanded(null);}} style={{flexShrink:0,padding:"7px 12px",borderRadius:50,fontSize:11,cursor:"pointer",border:`2px solid ${isA?d.color:C.border}`,background:isA?`${d.color}22`:"transparent",color:isA?"#fff":C.muted,fontWeight:isA?800:600}}>{d.emoji} {d.nombre}</button>;})
+        }
+      </div>
+
+      {/* Items list */}
+      <div style={{padding:"0 16px",display:"flex",flexDirection:"column",gap:8}}>
+        {items.map((item,i)=>{
+          const isOpen=expanded===i;
+          const key=`${view}-${view==="semanal"?activeDay:activeDate}-${i}`;
+          const hs=getHState(key);
+          return(
+            <div key={i} style={{background:C.card,borderRadius:14,border:`1.5px solid ${isOpen?accent:C.border}`,overflow:"hidden",transition:"border-color 0.2s"}}>
+              {/* Header row */}
+              <button onClick={()=>setExpanded(isOpen?null:i)} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:"transparent",border:"none",cursor:"pointer",textAlign:"left"}}>
+                <div style={{background:isOpen?`${accent}22`:"transparent",border:`1.5px solid ${isOpen?accent:C.border}`,borderRadius:8,padding:"4px 8px",minWidth:62,textAlign:"center",flexShrink:0}}>
+                  <div style={{fontSize:10,color:isOpen?accent:C.muted,fontWeight:800}}>{item.hora}</div>
+                </div>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:13,fontWeight:700,color:C.text}}>{item.emoji} {item.tipo}</div>
+                </div>
+                <div style={{fontSize:14,color:isOpen?accent:C.muted,transform:isOpen?"rotate(180deg)":"none",transition:"transform 0.2s"}}>⌄</div>
+              </button>
+
+              {/* Expanded content */}
+              {isOpen&&(
+                <div style={{padding:"0 14px 14px",animation:"fadeUp 0.2s ease"}}>
+                  {/* Full prompt */}
+                  <div style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:10,padding:"10px 12px",fontSize:11,color:C.muted,lineHeight:1.7,fontFamily:"monospace",marginBottom:10}}>
+                    {item.prompt}
+                  </div>
+
+                  {/* Copy prompt button - full width */}
+                  <button onClick={()=>copy(item.prompt,key)} style={{
+                    width:"100%",padding:"11px",borderRadius:10,marginBottom:12,cursor:"pointer",fontWeight:700,fontSize:13,
+                    border:`1.5px solid ${copied===key?accent:C.border}`,
+                    background:copied===key?`${accent}33`:"transparent",
+                    color:copied===key?"#fff":C.muted,
+                  }}>
+                    {copied===key?"✅ Prompt copiado — pégalo en Crear 🎨":"📋 Copiar prompt"}
+                  </button>
+
+                  {/* Divider */}
+                  <div style={{height:1,background:C.border,marginBottom:12}}/>
+
+                  {/* Hooks generator */}
+                  <div style={{fontSize:11,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:0.8,marginBottom:8}}>
+                    ✨ Frases hook para el post (Groq · gratis)
+                  </div>
+                  <button onClick={()=>generateHooks(key,item.tipo,view==="semanal"?activeDay:specialDates[activeDate].nombre,item.prompt)} disabled={hs.loading} style={{
+                    width:"100%",padding:"10px",borderRadius:10,border:`1.5px solid ${C.border}`,cursor:hs.loading?"not-allowed":"pointer",
+                    background:"transparent",color:hs.loading?C.muted:C.text,fontWeight:700,fontSize:12,
+                    display:"flex",alignItems:"center",justifyContent:"center",gap:6,marginBottom:8,opacity:hs.loading?0.6:1,
+                  }}>
+                    {hs.loading?<><span style={{animation:"spin 0.8s linear infinite",display:"inline-block"}}>✦</span> Generando con Groq...</>:hs.hooks.length?"🔄 Regenerar frases hook":"✨ Generar frases hook"}
+                  </button>
+
+                  {hs.err&&<div style={{fontSize:11,color:"#f87171",marginBottom:8,padding:"6px 10px",background:"#2d0a0a",borderRadius:8}}>{hs.err}</div>}
+
+                  {hs.hooks.length>0&&(
+                    <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                      <div style={{fontSize:10,color:C.muted,marginBottom:2}}>Toca para copiar:</div>
+                      {hs.hooks.map((h,hi)=>(
+                        <button key={hi} onClick={()=>copyHook(key,h,hi)} style={{
+                          textAlign:"left",padding:"10px 12px",borderRadius:10,cursor:"pointer",
+                          background:hs.copiedIdx===hi?`${accent}33`:C.bg,
+                          color:hs.copiedIdx===hi?"#fff":C.text,
+                          border:`1.5px solid ${hs.copiedIdx===hi?accent:C.border}`,
+                          fontWeight:600,fontSize:13,lineHeight:1.5,
+                        }}>
+                          {hs.copiedIdx===hi?"✅ ¡Copiado!":h}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── CREATOR TAB ──────────────────────────────────────────────────────────────
+function CreatorTab({initialPrompt,falKey,groqKey,characters}){
+  const [prompt,setPrompt]=useState(initialPrompt||"");
+  const [selChars,setSelChars]=useState(characters.slice(0,1).map(c=>c.id));
+  const [imgService,setImgService]=useState("flux_schnell");
+  const [aspect,setAspect]=useState("square_hd");
+  const [vidService,setVidService]=useState("wan_1_3b");
+  const [vidDur,setVidDur]=useState("81");
+  const [imgSt,setImgSt]=useState("idle");
+  const [imgSrc,setImgSrc]=useState(null);
+  const [imgErr,setImgErr]=useState("");
+  const [imgT,setImgT]=useState(0);
+  const [vidSt,setVidSt]=useState("idle");
+  const [vidUrl,setVidUrl]=useState(null);
+  const [vidErr,setVidErr]=useState("");
+  const [vidT,setVidT]=useState(0);
+
+  useEffect(()=>{
+    if(initialPrompt){setPrompt(initialPrompt);setImgSt("idle");setImgSrc(null);setVidSt("idle");setVidUrl(null);}
+  },[initialPrompt]);
+
+  const activeChars=characters.filter(c=>selChars.includes(c.id));
+  const charWithRef=activeChars.find(c=>c.referenceUrl&&c.referenceUrl.trim());
+  const toggleChar=id=>setSelChars(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);
+
+  const buildPrompt=()=>{
+    // Si el prompt ya tiene descripción del personaje (viene del calendario), no duplicar
+    const alreadyHas=prompt.toLowerCase().includes("lito")||prompt.toLowerCase().includes("axolotl")||prompt.toLowerCase().includes("mint green");
+    if(alreadyHas)return prompt;
+    const desc=activeChars.map(c=>c.descripcion).join(". ");
+    return desc?desc+". "+prompt:prompt;
+  };
+
+  const doImg=async()=>{
+    if(!falKey){setImgErr("Agrega tu fal.ai key en ⚙️ Config");setImgSt("error");return;}
+    if(!prompt.trim()){setImgErr("Escribe un prompt primero");setImgSt("error");return;}
+    setImgSt("loading");setImgSrc(null);setImgErr("");setImgT(0);setVidSt("idle");setVidUrl(null);
+    const t=setInterval(()=>setImgT(s=>s+1),1000);
+    try{
+      const u=await genImage(falKey,buildPrompt(),charWithRef?.referenceUrl||null,imgService,aspect);
+      setImgSrc(u);setImgSt("done");
+    }catch(e){setImgErr(e.message);setImgSt("error");}
+    finally{clearInterval(t);}
+  };
+
+  const doVid=async()=>{
+    if(!falKey||!imgSrc)return;
+    setVidSt("loading");setVidUrl(null);setVidErr("");setVidT(0);
+    const t=setInterval(()=>setVidT(s=>s+1),1000);
+    try{const u=await genVideo(falKey,imgSrc,vidService,vidDur);setVidUrl(u);setVidSt("done");}
+    catch(e){setVidErr(e.message);setVidSt("error");}
+    finally{clearInterval(t);}
+  };
+
+  const svcLabel=IMG_SERVICES.find(s=>s.id===imgService)||IMG_SERVICES[0];
+  const vidSvcLabel=VID_SERVICES.find(s=>s.id===vidService)||VID_SERVICES[0];
+  const vidDurLabel=VID_DURATIONS.find(d=>d.id===vidDur)||VID_DURATIONS[1];
+
+  return(
+    <div style={{padding:"12px 16px",paddingBottom:80,display:"flex",flexDirection:"column",gap:12}}>
+      {/* Tip */}
+      <div style={{padding:"10px 14px",background:`${C.accent}11`,borderRadius:12,border:`1px solid ${C.border}`,fontSize:12,color:C.muted}}>
+        💡 Copia un prompt desde <strong style={{color:C.text}}>📅 Prompts</strong>, pégalo aquí y genera la imagen.
+      </div>
+
+      {/* Characters */}
+      {characters.length>0&&(
+        <Card>
+          <Label>🎭 Personajes</Label>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+            {characters.map(c=>{const isSel=selChars.includes(c.id);return<button key={c.id} onClick={()=>toggleChar(c.id)} style={{padding:"6px 12px",borderRadius:50,fontSize:12,fontWeight:isSel?800:600,cursor:"pointer",border:`2px solid ${isSel?c.color:C.border}`,background:isSel?`${c.color}22`:"transparent",color:isSel?"#fff":C.muted}}>{c.emoji} {c.nombre}{isSel&&c.referenceUrl?" 🎯":""}</button>;})}
+          </div>
+          {charWithRef?(
+            <div style={{marginTop:6,fontSize:10,color:C.green,padding:"4px 8px",background:"#0a2e1a",borderRadius:6}}>
+              🎯 img2img activo con referencia de {charWithRef.nombre} · máxima consistencia
+            </div>
+          ):(
+            <div style={{marginTop:6,fontSize:10,color:C.muted}}>Sin referencia · text2img. Agrega imagen de referencia en ⚙️ para más consistencia.</div>
+          )}
+        </Card>
+      )}
+
+      {/* Prompt input */}
+      <Card style={{padding:0,overflow:"hidden"}}>
+        <textarea value={prompt} onChange={e=>setPrompt(e.target.value)}
+          placeholder={"Pega aquí el prompt del calendario o escribe uno propio...\n\nEj: POSE: trudging forward with tiny legs dragging. EXPRESSION: completely dead flat eyes..."}
+          rows={7} style={{width:"100%",padding:"14px 16px",background:"transparent",border:"none",color:C.text,fontSize:12,lineHeight:1.65,outline:"none"}}/>
+        <div style={{padding:"8px 14px",borderTop:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style={{fontSize:10,color:C.muted}}>{prompt.length} chars</span>
+          {prompt&&<button onClick={()=>setPrompt("")} style={{fontSize:10,color:C.muted,background:"none",border:"none",cursor:"pointer"}}>Limpiar ✕</button>}
+        </div>
+      </Card>
+
+      {/* Image options */}
+      <Card>
+        <OptionRow label="🖼️ Servicio de imagen" options={IMG_SERVICES} value={imgService} onChange={setImgService}/>
+        <OptionRow label="📐 Relación de aspecto" options={ASPECT_RATIOS} value={aspect} onChange={setAspect}/>
+      </Card>
+
+      {/* Generate button */}
+      <Btn onClick={doImg} disabled={imgSt==="loading"||!prompt.trim()} style={{width:"100%",padding:"14px",fontSize:14,fontWeight:900,borderRadius:14}}>
+        {imgSt==="loading"
+          ?<><span style={{animation:"spin 0.8s linear infinite",display:"inline-block"}}>✦</span> Generando con {svcLabel.label}... {imgT}s</>
+          :<>{svcLabel.emoji} Generar imagen · {svcLabel.label} {charWithRef?"(img2img 🎯)":"(text2img)"}</>}
+      </Btn>
+
+      {imgSt==="error"&&(
+        <Card style={{textAlign:"center"}}>
+          <div style={{fontSize:20,marginBottom:6}}>⚠️</div>
+          <div style={{color:"#f87171",fontSize:12,marginBottom:10,lineHeight:1.6}}>{imgErr}</div>
+          <Btn onClick={doImg} variant="danger" style={{width:"100%"}}>🔄 Reintentar</Btn>
+        </Card>
+      )}
+
+      {imgSt==="done"&&imgSrc&&(
+        <Card style={{padding:0,overflow:"hidden",animation:"fadeUp 0.3s ease"}}>
+          <img src={imgSrc} alt="Lito generado" style={{width:"100%",display:"block"}}/>
+          <div style={{padding:"10px 12px",display:"flex",gap:8}}>
+            <a href={imgSrc} target="_blank" rel="noreferrer" style={{flex:1,padding:"10px",textAlign:"center",background:C.grad,color:"white",borderRadius:10,fontWeight:700,fontSize:12,textDecoration:"none",display:"block"}}>⬇️ Guardar imagen</a>
+            <button onClick={doImg} style={{padding:"10px 12px",background:C.surface,color:C.muted,border:`1.5px solid ${C.border}`,borderRadius:10,fontWeight:700,fontSize:12,cursor:"pointer"}}>🔄</button>
+          </div>
+          <div style={{padding:"0 12px 12px",display:"flex",flexDirection:"column",gap:8}}>
+            {vidSt==="idle"&&(
+              <div>
+                <OptionRow label="🎬 Servicio de video" options={VID_SERVICES} value={vidService} onChange={setVidService}/>
+                <OptionRow label="⏱ Duración" options={VID_DURATIONS} value={vidDur} onChange={setVidDur}/>
+                <Btn onClick={doVid} variant="secondary" style={{width:"100%"}}>
+                  {vidSvcLabel.emoji} Animar · {vidSvcLabel.label} · {vidDurLabel.label} · {vidSvcLabel.desc}
+                </Btn>
+              </div>
+            )}
+            {vidSt==="loading"&&<div style={{padding:"16px",textAlign:"center",background:`${C.accent}11`,borderRadius:12,border:`1px solid ${C.border}`}}><div style={{fontSize:28,animation:"spin 1.5s linear infinite",display:"inline-block",marginBottom:6}}>🫧</div><div style={{fontSize:12,color:C.muted,fontWeight:700}}>{vidSvcLabel.label} · {vidDurLabel.label} · ⏱ {vidT}s</div><div style={{fontSize:10,color:C.muted,marginTop:2}}>Wan tarda ~60-120 seg</div></div>}
+            {vidSt==="error"&&<div style={{textAlign:"center"}}><div style={{color:"#f87171",fontSize:11,marginBottom:8,lineHeight:1.5}}>{vidErr}</div><Btn onClick={doVid} variant="danger" style={{width:"100%"}}>🔄 Reintentar video</Btn></div>}
+            {vidSt==="done"&&vidUrl&&<div style={{animation:"fadeUp 0.3s ease"}}><video src={vidUrl} controls autoPlay loop playsInline style={{width:"100%",borderRadius:10,marginBottom:8}}/><a href={vidUrl} target="_blank" rel="noreferrer" style={{display:"block",padding:"10px",textAlign:"center",background:"linear-gradient(135deg,#059669,#10b981)",color:"white",borderRadius:10,fontWeight:700,fontSize:12,textDecoration:"none"}}>⬇️ Guardar video</a></div>}
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+// ─── IA TAB ───────────────────────────────────────────────────────────────────
+function IATab({groqKey,onSend}){
+  const [characters]=usePersisted("lito_characters",DEFAULT_CHARACTERS);
+  const [selChars,setSelChars]=useState(["lito"]);
+  const [humor,setHumor]=useState("negro");
+  const [format,setFormat]=useState("single");
+  const [topic,setTopic]=useState("");
+  const [loading,setLoading]=useState(false);
+  const [result,setResult]=useState(null);
+  const [error,setError]=useState("");
+  const [selHook,setSelHook]=useState(null);
+  const [copied,setCopied]=useState(null);
+  const toggleChar=id=>setSelChars(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);
+  const activeChars=characters.filter(c=>selChars.includes(c.id));
+  const charsDesc=activeChars.map(c=>`${c.nombre}: ${c.descripcion}`).join("\n");
+  const copy=(t,k)=>{navigator.clipboard.writeText(t);setCopied(k);setTimeout(()=>setCopied(null),2000);};
+
+  const generate=async()=>{
+    if(!groqKey){setError("Agrega tu Groq key en ⚙️ Config");return;}
+    setLoading(true);setResult(null);setError("");setSelHook(null);
+    try{const d=await genMemeIA(groqKey,humor,format,topic,charsDesc);setResult(d);}
+    catch(e){setError(e.message||"Error generando");}
+    setLoading(false);
+  };
+
+  const panelKeys=result?["panel1","panel2","panel3"].filter(k=>result[k]):[];
+  const hooks=result?[result.frase_hook,result.frase_alternativa].filter(Boolean):[];
+  const prompts=result?(panelKeys.length>0?panelKeys.map(k=>result[k].prompt_imagen):[result.prompt_imagen]).filter(Boolean):[];
+
+  return(
+    <div style={{padding:"12px 16px",paddingBottom:80,display:"flex",flexDirection:"column",gap:12}}>
+      <Card>
+        <Label>🎭 Personajes</Label>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+          {characters.map(c=>{const isSel=selChars.includes(c.id);return<button key={c.id} onClick={()=>toggleChar(c.id)} style={{padding:"6px 14px",borderRadius:50,fontSize:12,cursor:"pointer",border:`2px solid ${isSel?c.color:C.border}`,background:isSel?`${c.color}22`:"transparent",color:isSel?"#fff":C.muted,fontWeight:isSel?800:600}}>{c.emoji} {c.nombre}</button>;})}
+        </div>
+      </Card>
+      <Card>
+        <Label>🎭 Tipo de humor</Label>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>
+          {humorTypes.map(h=>{const isA=humor===h.id;return<button key={h.id} onClick={()=>setHumor(h.id)} style={{padding:"6px 12px",borderRadius:50,fontSize:12,cursor:"pointer",border:`2px solid ${isA?"#f97316":C.border}`,background:isA?"#f9731622":"transparent",color:isA?"#fff":C.muted,fontWeight:isA?800:600}}>{h.emoji} {h.label}</button>;})}
+        </div>
+        <div style={{fontSize:11,color:C.muted,padding:"6px 10px",background:C.bg,borderRadius:8}}>💡 {humorTypes.find(h=>h.id===humor)?.desc}</div>
+      </Card>
+      <Card>
+        <Label>📐 Formato</Label>
+        <div style={{display:"flex",gap:8}}>
+          {formatTypes.map(f=>{const isA=format===f.id;return<button key={f.id} onClick={()=>setFormat(f.id)} style={{flex:1,padding:"10px 6px",borderRadius:12,textAlign:"center",cursor:"pointer",border:`2px solid ${isA?"#f97316":C.border}`,background:isA?"#f9731622":"transparent",color:isA?"#fff":C.muted,fontWeight:isA?800:600,fontSize:11}}><div style={{fontSize:20,marginBottom:3}}>{f.emoji}</div><div>{f.label}</div></button>;})}
+        </div>
+      </Card>
+      <Card style={{padding:0,overflow:"hidden"}}>
+        <input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Tema específico (opcional)..." style={{width:"100%",padding:"14px 16px",background:"transparent",border:"none",color:C.text,fontSize:13,outline:"none"}}/>
+      </Card>
+      <Btn onClick={generate} disabled={loading} style={{width:"100%",padding:"15px",fontSize:15,fontWeight:900,borderRadius:14}}>
+        {loading?<><span style={{animation:"spin 0.8s linear infinite",display:"inline-block"}}>✦</span> Creando con Groq AI...</>:"🎲 Generar meme con IA (Groq · gratis)"}
+      </Btn>
+      {error&&<Card style={{textAlign:"center"}}><div style={{color:"#f87171",fontSize:12}}>{error}</div></Card>}
+      {result&&(
+        <div style={{display:"flex",flexDirection:"column",gap:10,animation:"fadeUp 0.3s ease"}}>
+          <Card style={{background:"linear-gradient(135deg,#1a0533,#0f0817)"}}>
+            <div style={{fontSize:16,fontWeight:900,color:"#fff",marginBottom:4}}>🎯 {result.titulo}</div>
+            <div style={{fontSize:12,color:C.muted,lineHeight:1.6}}>{result.concepto}</div>
+          </Card>
+          {panelKeys.length>0&&(
+            <Card>
+              <Label>🎬 Guion</Label>
+              {panelKeys.map((k,i)=><div key={k} style={{display:"flex",gap:10,marginBottom:6,padding:"8px 10px",background:C.bg,borderRadius:8}}><div style={{width:20,height:20,borderRadius:"50%",background:C.grad,color:"#fff",fontSize:10,fontWeight:900,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{i+1}</div><div style={{fontSize:11,color:C.muted}}><strong style={{color:C.text}}>{i===0?"Setup":i===panelKeys.length-1?"🔥 Remate":"Giro"}:</strong> {result[k].descripcion}</div></div>)}
+            </Card>
+          )}
+          <Card>
+            <Label>💬 Frases hook · elige una</Label>
+            {hooks.map((h,i)=><button key={i} onClick={()=>setSelHook(selHook===h?null:h)} style={{display:"block",width:"100%",textAlign:"left",padding:"10px 12px",marginBottom:6,background:selHook===h?`${C.accent}33`:C.bg,color:selHook===h?"#fff":C.text,border:`1.5px solid ${selHook===h?C.accent:C.border}`,borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:700,lineHeight:1.5}}>{selHook===h?"✅ ":""}{h}</button>)}
+            {selHook&&<button onClick={()=>copy(selHook,"hook")} style={{width:"100%",padding:"9px",borderRadius:9,cursor:"pointer",background:copied==="hook"?C.green:"transparent",color:copied==="hook"?"#fff":C.muted,border:`1.5px solid ${copied==="hook"?C.green:C.border}`,fontWeight:700,fontSize:12}}>{copied==="hook"?"✅ ¡Copiada!":"📋 Copiar frase"}</button>}
+          </Card>
+          <Card style={{background:"linear-gradient(135deg,#1a0533,#241640)"}}>
+            <Label>🎨 Enviar al Creador</Label>
+            <div style={{fontSize:12,color:C.muted,marginBottom:8}}>{prompts.length===1?"Envía el prompt al Creador para generar la imagen":`${prompts.length} paneles — envía cada uno al Creador`}</div>
+            {prompts.map((p,i)=><button key={i} onClick={()=>onSend(p)} style={{display:"block",width:"100%",padding:"11px",marginBottom:6,borderRadius:10,border:"none",background:C.grad,color:"white",fontWeight:800,fontSize:13,cursor:"pointer"}}>{prompts.length>1?`🎨 Crear panel ${i+1} →`:"🎨 Crear imagen en Generador →"}</button>)}
+          </Card>
+          <Btn onClick={generate} variant="ghost" style={{width:"100%"}}>🔄 Generar otro concepto</Btn>
+        </div>
+      )}
+      {!result&&!loading&&(
+        <div style={{textAlign:"center",padding:"40px 20px",color:C.muted}}>
+          <div style={{fontSize:52,marginBottom:12}}>🎲</div>
+          <div style={{fontWeight:700,fontSize:14,color:C.text,marginBottom:6}}>Modo Creativo · Groq AI</div>
+          <div style={{fontSize:12,lineHeight:1.7}}>La IA crea el concepto, guion<br/>y frases hook <strong style={{color:C.green}}>gratis</strong><br/>Luego vas al Creador 🎨 para generar</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── SETTINGS TAB ─────────────────────────────────────────────────────────────
+function SettingsTab({groqKey,setGroqKey,falKey,setFalKey,characters,setCharacters}){
+  const [st,setSt]=useState("keys");
+  const [gIn,setGIn]=useState("");
+  const [fIn,setFIn]=useState("");
+  const [editing,setEditing]=useState(null);
+  const [newC,setNewC]=useState({nombre:"",emoji:"🐾",descripcion:"",referenceUrl:"",color:"#f472b6"});
+  const [showNew,setShowNew]=useState(false);
+  const COLS=["#4ade80","#f472b6","#fb923c","#38bdf8","#a78bfa","#facc15","#f87171","#34d399"];
+  const saveC=c=>{if(!c.nombre.trim())return;if(editing){setCharacters(cs=>cs.map(x=>x.id===c.id?c:x));setEditing(null);}else{setCharacters(cs=>[...cs,{...c,id:Date.now().toString()}]);setNewC({nombre:"",emoji:"🐾",descripcion:"",referenceUrl:"",color:"#f472b6"});setShowNew(false);}};
+
+  const CharForm=({char,setChar,onSave,onCancel,title})=>{
+    const fileRef=useRef(null);
+    const handleFile=e=>{
+      const f=e.target.files?.[0];
+      if(!f)return;
+      const reader=new FileReader();
+      reader.onload=ev=>setChar({...char,referenceUrl:ev.target.result});
+      reader.readAsDataURL(f);
+    };
+    return(
+      <div style={{background:C.bg,borderRadius:12,padding:14,border:`1.5px solid ${C.border}`,marginTop:8}}>
+        <div style={{fontWeight:800,fontSize:13,color:C.text,marginBottom:10}}>{title}</div>
+        <div style={{display:"flex",gap:8,marginBottom:8}}>
+          <input value={char.emoji} onChange={e=>setChar({...char,emoji:e.target.value})} style={{width:46,padding:"8px",background:C.surface,border:`1.5px solid ${C.border}`,borderRadius:8,fontSize:18,textAlign:"center",color:"#fff",outline:"none"}} maxLength={2}/>
+          <input value={char.nombre} onChange={e=>setChar({...char,nombre:e.target.value})} placeholder="Nombre" style={{flex:1,padding:"8px 12px",background:C.surface,border:`1.5px solid ${C.border}`,borderRadius:8,fontSize:13,color:C.text,outline:"none"}}/>
+        </div>
+        <div style={{display:"flex",gap:5,marginBottom:8,flexWrap:"wrap"}}>
+          {COLS.map(c=><button key={c} onClick={()=>setChar({...char,color:c})} style={{width:24,height:24,borderRadius:"50%",background:c,border:char.color===c?"3px solid #fff":"none",cursor:"pointer"}}/>)}
+        </div>
+        <textarea value={char.descripcion} onChange={e=>setChar({...char,descripcion:e.target.value})} placeholder="Descripción en inglés para los prompts: forma del cuerpo, colores exactos, rasgos faciales, estilo de ilustración..." rows={4} style={{width:"100%",padding:"8px 12px",background:C.surface,border:`1.5px solid ${C.border}`,borderRadius:8,fontSize:11,color:C.text,outline:"none",marginBottom:8,resize:"none",lineHeight:1.6}}/>
+
+        {/* Reference image section */}
+        <div style={{fontSize:10,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:0.8,marginBottom:8}}>🎯 Imagen de referencia (img2img)</div>
+        <input ref={fileRef} type="file" accept="image/*" style={{display:"none"}} onChange={handleFile}/>
+        <button onClick={()=>fileRef.current?.click()} style={{width:"100%",padding:"10px",background:"linear-gradient(135deg,#059669,#10b981)",color:"white",border:"none",borderRadius:10,fontWeight:800,fontSize:13,cursor:"pointer",marginBottom:8}}>
+          📷 Subir foto desde galería del celular
+        </button>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+          <div style={{flex:1,height:1,background:C.border}}/>
+          <span style={{fontSize:10,color:C.muted}}>o pega una URL</span>
+          <div style={{flex:1,height:1,background:C.border}}/>
+        </div>
+        <input
+          value={char.referenceUrl?.startsWith("data:")?"":char.referenceUrl||""}
+          onChange={e=>setChar({...char,referenceUrl:e.target.value})}
+          placeholder="https://i.imgur.com/xxxxxx.png"
+          style={{width:"100%",padding:"8px 12px",background:C.surface,border:`1.5px solid ${C.border}`,borderRadius:8,fontSize:11,color:C.text,outline:"none",marginBottom:8}}
+        />
+        {char.referenceUrl&&(
+          <div style={{marginBottom:10,position:"relative"}}>
+            <img src={char.referenceUrl} alt="ref" style={{width:"100%",maxHeight:140,objectFit:"contain",borderRadius:8,background:"#222",display:"block"}} onError={e=>e.target.style.display="none"}/>
+            <button onClick={()=>setChar({...char,referenceUrl:""})} style={{position:"absolute",top:6,right:6,width:24,height:24,borderRadius:"50%",background:"rgba(0,0,0,0.8)",color:"white",border:"none",cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+            <div style={{fontSize:9,color:char.referenceUrl.startsWith("data:")?C.green:C.muted,marginTop:4,textAlign:"center",fontWeight:700}}>
+              {char.referenceUrl.startsWith("data:")?"📷 Imagen subida desde galería ✅":"🔗 URL externa"}
+            </div>
+          </div>
+        )}
+        {!char.referenceUrl&&(
+          <div style={{padding:"8px 10px",background:`${C.accent}11`,borderRadius:8,fontSize:10,color:C.muted,marginBottom:10,lineHeight:1.6}}>
+            💡 Con referencia activa, todas las generaciones usarán <strong style={{color:C.text}}>img2img</strong> — Lito siempre se verá igual.
+          </div>
+        )}
+        <div style={{display:"flex",gap:8}}>
+          <Btn onClick={()=>saveC(char)} style={{flex:1,background:`linear-gradient(135deg,${char.color},${char.color}99)`}}>✅ Guardar</Btn>
+          <Btn onClick={onCancel} variant="ghost" style={{padding:"12px 14px"}}>✕</Btn>
+        </div>
+      </div>
+    );
+  };
+
+  return(
+    <div style={{padding:"12px 16px",paddingBottom:80}}>
+      <div style={{display:"flex",gap:8,marginBottom:16}}>
+        {[["keys","🔑 API Keys"],["chars","🎭 Personajes"]].map(([k,l])=><button key={k} onClick={()=>setSt(k)} style={{flex:1,padding:"11px",borderRadius:12,border:"none",background:st===k?C.accent:C.card,color:st===k?"#fff":C.muted,fontWeight:st===k?800:600,fontSize:13,cursor:"pointer"}}>{l}</button>)}
+      </div>
+
+      {st==="keys"&&(
+        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+          {/* Groq */}
+          <Card style={{background:groqKey?"#0a2e1a":C.card,border:`1.5px solid ${groqKey?"#16a34a":C.border}`}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:groqKey?0:10}}>
+              <div>
+                <div style={{fontWeight:800,fontSize:13,color:groqKey?C.green:C.text}}>🤖 Groq · prompts gratis {groqKey?"✅":""}</div>
+                <div style={{fontSize:10,color:C.muted}}>{groqKey?"Llama 3.3 · 14,400 req/día · $0":"console.groq.com → API Keys → Create"}</div>
+              </div>
+              {groqKey&&<button onClick={()=>setGroqKey("")} style={{fontSize:10,color:"#f87171",background:"none",border:"none",cursor:"pointer"}}>Cambiar</button>}
+            </div>
+            {!groqKey&&<>
+              <input type="password" value={gIn} onChange={e=>setGIn(e.target.value)} placeholder="gsk_..." style={{width:"100%",padding:"10px 12px",background:C.bg,border:`1.5px solid ${C.border}`,borderRadius:10,fontSize:12,color:C.text,marginBottom:8,fontFamily:"monospace",outline:"none"}}/>
+              <Btn onClick={()=>{if(gIn.trim()){setGroqKey(gIn.trim());setGIn("");}}} variant="success" style={{width:"100%"}}>Guardar Groq Key</Btn>
+            </>}
+          </Card>
+
+          {/* fal.ai */}
+          <Card style={{background:falKey?"#1a0a3a":C.card,border:`1.5px solid ${falKey?C.accent:C.border}`}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:falKey?0:10}}>
+              <div>
+                <div style={{fontWeight:800,fontSize:13,color:falKey?"#a78bfa":C.text}}>⚡ fal.ai · imágenes + videos {falKey?"✅":""}</div>
+                <div style={{fontSize:10,color:C.muted}}>{falKey?"FLUX + Wan2.1 · ~$10/mes":"fal.ai → Dashboard → API Keys"}</div>
+              </div>
+              {falKey&&<button onClick={()=>setFalKey("")} style={{fontSize:10,color:"#f87171",background:"none",border:"none",cursor:"pointer"}}>Cambiar</button>}
+            </div>
+            {!falKey&&<>
+              <input type="password" value={fIn} onChange={e=>setFIn(e.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx:xxxxxx" style={{width:"100%",padding:"10px 12px",background:C.bg,border:`1.5px solid ${C.border}`,borderRadius:10,fontSize:12,color:C.text,marginBottom:8,fontFamily:"monospace",outline:"none"}}/>
+              <Btn onClick={()=>{if(fIn.trim()){setFalKey(fIn.trim());setFIn("");}}} variant="primary" style={{width:"100%"}}>Guardar fal.ai Key</Btn>
+            </>}
+          </Card>
+
+          <Card style={{textAlign:"center",padding:"14px 16px"}}>
+            <div style={{fontSize:11,color:C.muted,lineHeight:2}}>
+              🤖 Groq prompts: <strong style={{color:C.green}}>$0/mes</strong><br/>
+              🖼️ 300 imgs FLUX Schnell: <strong style={{color:"#a78bfa"}}>~$1/mes</strong><br/>
+              🎬 300 videos Wan2.1: <strong style={{color:"#a78bfa"}}>~$9/mes</strong>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {st==="chars"&&(
+        <div>
+          <div style={{fontSize:12,color:C.muted,marginBottom:12,lineHeight:1.6}}>Hasta 6 personajes. Sube una foto de referencia para que img2img mantenga al personaje consistente en todas las generaciones.</div>
+          {characters.map(c=>(
+            <div key={c.id} style={{marginBottom:8}}>
+              {editing?.id===c.id
+                ?<CharForm char={editing} setChar={setEditing} onSave={()=>saveC(editing)} onCancel={()=>setEditing(null)} title={`Editar ${c.nombre}`}/>
+                :<div style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:C.card,borderRadius:12,border:`1.5px solid ${C.border}`}}>
+                  <div style={{width:38,height:38,borderRadius:"50%",background:`${c.color}22`,border:`2px solid ${c.color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>
+                    {c.referenceUrl
+                      ?<img src={c.referenceUrl} style={{width:34,height:34,borderRadius:"50%",objectFit:"cover"}} onError={e=>{e.target.style.display="none"}} alt="ref"/>
+                      :c.emoji
+                    }
+                  </div>
+                  <div style={{flex:1}}>
+                    <div style={{fontWeight:800,fontSize:13,color:C.text}}>{c.nombre}</div>
+                    <div style={{fontSize:10,color:c.referenceUrl?C.green:C.muted,fontWeight:c.referenceUrl?700:400}}>{c.referenceUrl?"🎯 img2img activo ✅":"Sin referencia · agrega una imagen"}</div>
+                  </div>
+                  <button onClick={()=>setEditing({...c})} style={{padding:"5px 9px",background:C.surface,border:`1px solid ${C.border}`,borderRadius:8,fontSize:11,cursor:"pointer",color:C.muted}}>✏️</button>
+                  {c.id!=="lito"&&<button onClick={()=>setCharacters(cs=>cs.filter(x=>x.id!==c.id))} style={{padding:"5px 9px",background:"#2d0a0a",border:"1px solid #5a1a1a",borderRadius:8,fontSize:11,cursor:"pointer",color:"#f87171"}}>🗑️</button>}
+                </div>
+              }
+            </div>
+          ))}
+          {characters.length<6&&!showNew&&!editing&&<Btn onClick={()=>setShowNew(true)} style={{width:"100%",marginTop:4}}>➕ Agregar personaje</Btn>}
+          {showNew&&<CharForm char={newC} setChar={setNewC} onSave={()=>saveC(newC)} onCancel={()=>setShowNew(false)} title="Nuevo personaje"/>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── BOTTOM NAV ───────────────────────────────────────────────────────────────
+function BottomNav({active,onChange,hasKeys}){
+  const tabs=[{id:"prompts",icon:"📅",label:"Prompts"},{id:"creator",icon:"🎨",label:"Crear"},{id:"ia",icon:"🎲",label:"IA"},{id:"settings",icon:"⚙️",label:"Config",badge:!hasKeys}];
+  return(
+    <div style={{position:"fixed",bottom:0,left:0,right:0,zIndex:100,background:C.surface,borderTop:`1.5px solid ${C.border}`,display:"flex",paddingBottom:"env(safe-area-inset-bottom,8px)"}}>
+      {tabs.map(t=>(
+        <button key={t.id} onClick={()=>onChange(t.id)} style={{flex:1,padding:"10px 0 6px",background:"transparent",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2,position:"relative"}}>
+          <span style={{fontSize:22}}>{t.icon}</span>
+          <span style={{fontSize:10,fontWeight:active===t.id?800:500,color:active===t.id?"#fff":C.muted}}>{t.label}</span>
+          {active===t.id&&<div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:28,height:2,background:C.grad,borderRadius:"0 0 4px 4px"}}/>}
+          {t.badge&&<div style={{position:"absolute",top:8,right:"22%",width:7,height:7,background:"#f97316",borderRadius:"50%"}}/>}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
+function App(){
+  const [tab,setTab]=useState("prompts");
+  const [groqKey,setGroqKey]=usePersisted("lito_groq_key","");
+  const [falKey,setFalKey]=usePersisted("lito_fal_key","");
+  const [characters,setCharacters]=usePersisted("lito_characters",DEFAULT_CHARACTERS);
+  const [sharedPrompt,setSharedPrompt]=useState("");
+
+  const sendToCreator=prompt=>{setSharedPrompt(prompt);setTab("creator");window.scrollTo(0,0);};
+  const tabLabels={prompts:"📅 Prompts del calendario",creator:"🎨 Generador",ia:"🎲 Modo IA creativo",settings:"⚙️ Configuración"};
+
+  return(
+    <div style={{minHeight:"100vh",background:C.bg,color:C.text}}>
+      {/* Header */}
+      <div style={{padding:"12px 16px 10px",background:C.surface,borderBottom:`1.5px solid ${C.border}`,display:"flex",alignItems:"center",gap:10,position:"sticky",top:0,zIndex:50}}>
+        <span style={{fontSize:24}}>🫧</span>
+        <div style={{flex:1}}>
+          <div style={{fontSize:15,fontWeight:900,color:C.text,lineHeight:1}}>Lito Studio</div>
+          <div style={{fontSize:10,color:C.muted}}>{tabLabels[tab]}</div>
+        </div>
+        <div style={{display:"flex",gap:5}}>
+          {groqKey&&<div style={{padding:"2px 8px",background:"#0a2e1a",border:"1px solid #16a34a",borderRadius:50,fontSize:9,color:C.green,fontWeight:700}}>Groq ✓</div>}
+          {falKey&&<div style={{padding:"2px 8px",background:"#1a0a3a",border:`1px solid ${C.accent}`,borderRadius:50,fontSize:9,color:"#a78bfa",fontWeight:700}}>fal.ai ✓</div>}
+        </div>
+      </div>
+
+      {tab==="prompts"&&<PromptsTab groqKey={groqKey}/>}
+      {tab==="creator"&&<CreatorTab initialPrompt={sharedPrompt} falKey={falKey} groqKey={groqKey} characters={characters}/>}
+      {tab==="ia"&&<IATab groqKey={groqKey} onSend={sendToCreator}/>}
+      {tab==="settings"&&<SettingsTab groqKey={groqKey} setGroqKey={setGroqKey} falKey={falKey} setFalKey={setFalKey} characters={characters} setCharacters={setCharacters}/>}
+
+      <BottomNav active={tab} onChange={setTab} hasKeys={!!(groqKey&&falKey)}/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+<script>
+if("serviceWorker"in navigator){
+  const c=`const V="lito-v4";self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(["./"])));self.skipWaiting();});self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V).map(x=>caches.delete(x)))));self.clients.claim();});self.addEventListener("fetch",e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});`;
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([c],{type:"application/javascript"}))).catch(()=>{});
+}
+</script>
+</body>
+</html>
