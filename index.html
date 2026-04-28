@@ -1,0 +1,2904 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<title>Lito Studio · Ideas</title>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Lito Studio"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#7c3aed"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫧</text></svg>"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%237c3aed'/><text x='50' y='72' font-size='60' text-anchor='middle'>🫧</text></svg>"/>
+<script>
+const mf={name:"Lito Studio",short_name:"Lito",start_url:"./",display:"standalone",background_color:"#0f0817",theme_color:"#7c3aed",icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='112' fill='%237c3aed'/><text x='256' y='380' font-size='320' text-anchor='middle'>🫧</text></svg>",sizes:"512x512",type:"image/svg+xml"}]};
+const lk=document.createElement("link");lk.rel="manifest";lk.href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:"application/json"}));document.head.appendChild(lk);
+</script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:#0f0817;color:#fff;font-family:'Segoe UI',system-ui,sans-serif;}
+::-webkit-scrollbar{display:none;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+input,button,textarea,select{font-family:inherit;}
+textarea{resize:none;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel-jsx-source">
+/* This is the source. Compiled version is below. */
+</script>
+<script>
+const {
+  useState,
+  useEffect,
+  useCallback,
+  useRef
+} = React;
+
+// ─── DATOS ────────────────────────────────────────────────────────────────────
+const OCASIONES = [
+// Cotidiano
+{
+  id: "lunes",
+  label: "Lunes",
+  emoji: "😩",
+  grupo: "cotidiano"
+}, {
+  id: "viernes",
+  label: "Viernes",
+  emoji: "🎉",
+  grupo: "cotidiano"
+}, {
+  id: "finde",
+  label: "Fin de semana",
+  emoji: "🏖️",
+  grupo: "cotidiano"
+}, {
+  id: "trabajo",
+  label: "Trabajo",
+  emoji: "💼",
+  grupo: "cotidiano"
+}, {
+  id: "escuela",
+  label: "Escuela",
+  emoji: "📚",
+  grupo: "cotidiano"
+}, {
+  id: "comida",
+  label: "Comida",
+  emoji: "🍕",
+  grupo: "cotidiano"
+}, {
+  id: "siesta",
+  label: "Siesta",
+  emoji: "😴",
+  grupo: "cotidiano"
+}, {
+  id: "trafico",
+  label: "Tráfico",
+  emoji: "🚗",
+  grupo: "cotidiano"
+},
+// Fechas especiales
+{
+  id: "madres",
+  label: "Día de las Madres",
+  emoji: "💐",
+  grupo: "fechas"
+}, {
+  id: "padres",
+  label: "Día del Padre",
+  emoji: "👔",
+  grupo: "fechas"
+}, {
+  id: "navidad",
+  label: "Navidad",
+  emoji: "🎄",
+  grupo: "fechas"
+}, {
+  id: "anonuevo",
+  label: "Año Nuevo",
+  emoji: "🎆",
+  grupo: "fechas"
+}, {
+  id: "valentin",
+  label: "San Valentín",
+  emoji: "💝",
+  grupo: "fechas"
+}, {
+  id: "halloween",
+  label: "Halloween",
+  emoji: "🎃",
+  grupo: "fechas"
+}, {
+  id: "muertos",
+  label: "Día de Muertos",
+  emoji: "🌺",
+  grupo: "fechas"
+}, {
+  id: "clases",
+  label: "Inicio de clases",
+  emoji: "🎒",
+  grupo: "fechas"
+}, {
+  id: "cumple",
+  label: "Cumpleaños",
+  emoji: "🎂",
+  grupo: "fechas"
+}, {
+  id: "reyes",
+  label: "Día de Reyes",
+  emoji: "👑",
+  grupo: "fechas"
+},
+// Temporadas
+{
+  id: "verano",
+  label: "Verano",
+  emoji: "☀️",
+  grupo: "temporada"
+}, {
+  id: "lluvia",
+  label: "Temporada lluvia",
+  emoji: "🌧️",
+  grupo: "temporada"
+}, {
+  id: "frio",
+  label: "Frío",
+  emoji: "🥶",
+  grupo: "temporada"
+},
+// Trending
+{
+  id: "futbol",
+  label: "Partido importante",
+  emoji: "⚽",
+  grupo: "trending"
+}, {
+  id: "premios",
+  label: "Premios / Awards",
+  emoji: "🏆",
+  grupo: "trending"
+}, {
+  id: "redessoc",
+  label: "Drama redes sociales",
+  emoji: "📱",
+  grupo: "trending"
+}, {
+  id: "noticia",
+  label: "Noticia viral",
+  emoji: "📰",
+  grupo: "trending"
+},
+// Vida
+{
+  id: "adulting",
+  label: "Ser adulto",
+  emoji: "💀",
+  grupo: "vida"
+}, {
+  id: "ex",
+  label: "El/la ex",
+  emoji: "💔",
+  grupo: "vida"
+}, {
+  id: "crush",
+  label: "El/la crush",
+  emoji: "😳",
+  grupo: "vida"
+}, {
+  id: "soltero",
+  label: "Vida de soltero",
+  emoji: "🍷",
+  grupo: "vida"
+}, {
+  id: "familia",
+  label: "Familia",
+  emoji: "👨‍👩‍👧",
+  grupo: "vida"
+}, {
+  id: "amigos",
+  label: "Amigos",
+  emoji: "🤝",
+  grupo: "vida"
+}, {
+  id: "dinero",
+  label: "Sin dinero",
+  emoji: "💸",
+  grupo: "vida"
+}, {
+  id: "gym",
+  label: "Gym / Ejercicio",
+  emoji: "💪",
+  grupo: "vida"
+}, {
+  id: "dieta",
+  label: "Dieta",
+  emoji: "🥗",
+  grupo: "vida"
+}];
+const GRUPOS_OCASION = [{
+  id: "cotidiano",
+  label: "Cotidiano",
+  emoji: "☕"
+}, {
+  id: "fechas",
+  label: "Fechas",
+  emoji: "📅"
+}, {
+  id: "temporada",
+  label: "Temporada",
+  emoji: "🌤️"
+}, {
+  id: "trending",
+  label: "Trending",
+  emoji: "🔥"
+}, {
+  id: "vida",
+  label: "Vida",
+  emoji: "💭"
+}];
+const TIPOS_HUMOR = [{
+  id: "negro",
+  label: "Negro / Pesado",
+  emoji: "🖤",
+  desc: "Dark humor que pega fuerte"
+}, {
+  id: "absurdo",
+  label: "Absurdo",
+  emoji: "🌀",
+  desc: "Sin sentido total"
+}, {
+  id: "relatable",
+  label: "Relatable",
+  emoji: "😭",
+  desc: "Situaciones que TODOS vivimos"
+}, {
+  id: "cringe",
+  label: "Cringe",
+  emoji: "😬",
+  desc: "Vergüenza ajena universal"
+}, {
+  id: "nostalgia",
+  label: "Nostalgia",
+  emoji: "🥹",
+  desc: "Cosas del pasado que duelen"
+}, {
+  id: "existencial",
+  label: "Existencial",
+  emoji: "🌌",
+  desc: "Crisis cósmicas en chiquito"
+}, {
+  id: "amor",
+  label: "Amor / Tierno",
+  emoji: "🥰",
+  desc: "Wholesome, sentimental"
+}, {
+  id: "motivacional",
+  label: "Motivacional",
+  emoji: "💪",
+  desc: "Inspirador pero gracioso"
+}, {
+  id: "sarcasmo",
+  label: "Sarcasmo",
+  emoji: "🙃",
+  desc: "Sarcasmo elegante"
+}, {
+  id: "pareja",
+  label: "Pareja / Soltería",
+  emoji: "💔",
+  desc: "Drama romántico moderno"
+}, {
+  id: "adulto",
+  label: "Adulting",
+  emoji: "💀",
+  desc: "Horror de ser adulto"
+}];
+const ANGULOS = [{
+  id: "libre",
+  label: "Sorpréndeme",
+  emoji: "🎲"
+}, {
+  id: "pregunta",
+  label: "Pregunta viral",
+  emoji: "❓"
+}, {
+  id: "declaracion",
+  label: "Declaración hot take",
+  emoji: "🔥"
+}, {
+  id: "confesion",
+  label: "Confesión",
+  emoji: "🤫"
+}, {
+  id: "reto",
+  label: "Reto / Etiqueta",
+  emoji: "📣"
+}, {
+  id: "caso",
+  label: "Casos imposibles",
+  emoji: "🤔"
+}, {
+  id: "queja",
+  label: "Queja universal",
+  emoji: "😤"
+}];
+const FORMATOS = [{
+  id: "single",
+  label: "Imagen única",
+  emoji: "🖼️",
+  desc: "Un meme directo"
+}, {
+  id: "comic2",
+  label: "Mini-historieta 2",
+  emoji: "📖",
+  desc: "Setup → Remate"
+}, {
+  id: "comic3",
+  label: "Mini-historieta 3",
+  emoji: "📚",
+  desc: "Setup → Giro → Remate"
+}, {
+  id: "comic4",
+  label: "Mini-historieta 4",
+  emoji: "📰",
+  desc: "Historia más desarrollada"
+}];
+const DURACIONES_VIDEO = [{
+  id: "corto",
+  label: "5-10 seg",
+  desc: "Reel rápido",
+  segundos: 8
+}, {
+  id: "medio",
+  label: "15-30 seg",
+  desc: "TikTok / Reel",
+  segundos: 20
+}, {
+  id: "largo",
+  label: "30-60 seg",
+  desc: "Historia completa",
+  segundos: 45
+}, {
+  id: "xlargo",
+  label: "1-2 min",
+  desc: "Mini-película",
+  segundos: 90
+}];
+const ESTILOS_VIDEO = [{
+  id: "narrativo",
+  label: "Narrativo",
+  emoji: "📖",
+  desc: "Historia con principio-medio-fin"
+}, {
+  id: "sketch",
+  label: "Sketch cómico",
+  emoji: "🎭",
+  desc: "Comedia tipo sketch"
+}, {
+  id: "reaccion",
+  label: "Reacción",
+  emoji: "😱",
+  desc: "Reaccionando a algo"
+}, {
+  id: "tutorial",
+  label: "Tutorial absurdo",
+  emoji: "📝",
+  desc: "Cómo hacer X (mal)"
+}, {
+  id: "dia_vida",
+  label: "Día en la vida",
+  emoji: "🎬",
+  desc: "POV / día típico"
+}, {
+  id: "trend",
+  label: "Trend / challenge",
+  emoji: "🎵",
+  desc: "Adapta un trend viral"
+}];
+const DEFAULT_CHARACTERS = [{
+  id: "lito",
+  nombre: "Lito",
+  emoji: "🫧",
+  color: "#4ade80",
+  descripcion: "Chibi axolotl named Lito, mint green body #98E8D0 with soft gradient, THREE pairs of fluffy cotton-candy-pink feathery external gills, huge glossy sparkly eyes with white catchlight dot, rosy circular blushed cheeks, tiny cute mouth, stubby round mini hands and feet, kawaii 2D flat sticker style with thick black outlines, NOT 3D"
+}];
+
+// ─── DESIGN TOKENS ────────────────────────────────────────────────────────────
+const C = {
+  bg: "#0f0817",
+  surface: "#1a1030",
+  card: "#241640",
+  cardHi: "#2d1c52",
+  border: "#3d2b6b",
+  accent: "#7c3aed",
+  accent2: "#db2777",
+  green: "#10b981",
+  amber: "#f59e0b",
+  text: "#f1f0ff",
+  muted: "#8b7ab8",
+  grad: "linear-gradient(135deg,#7c3aed,#db2777)",
+  gradGreen: "linear-gradient(135deg,#059669,#10b981)"
+};
+
+// ─── HOOKS ────────────────────────────────────────────────────────────────────
+function usePersisted(key, def) {
+  const [v, setV] = useState(() => {
+    try {
+      const s = localStorage.getItem(key);
+      return s !== null ? JSON.parse(s) : def;
+    } catch {
+      return def;
+    }
+  });
+  const set = useCallback(val => {
+    setV(val);
+    try {
+      localStorage.setItem(key, JSON.stringify(val));
+    } catch {}
+  }, [key]);
+  return [v, set];
+}
+
+// ─── UI PRIMITIVES ────────────────────────────────────────────────────────────
+const Btn = ({
+  children,
+  onClick,
+  disabled,
+  variant = "primary",
+  style = {}
+}) => {
+  const v = {
+    primary: {
+      background: C.grad,
+      color: "#fff",
+      border: "none",
+      boxShadow: "0 4px 20px #7c3aed44"
+    },
+    secondary: {
+      background: C.card,
+      color: C.text,
+      border: `1.5px solid ${C.border}`
+    },
+    ghost: {
+      background: "transparent",
+      color: C.muted,
+      border: `1.5px solid ${C.border}`
+    },
+    success: {
+      background: C.gradGreen,
+      color: "#fff",
+      border: "none"
+    },
+    danger: {
+      background: "linear-gradient(135deg,#dc2626,#f97316)",
+      color: "#fff",
+      border: "none"
+    }
+  };
+  return /*#__PURE__*/React.createElement("button", {
+    onClick: onClick,
+    disabled: disabled,
+    style: {
+      padding: "12px 18px",
+      borderRadius: 12,
+      fontWeight: 700,
+      fontSize: 13,
+      cursor: disabled ? "not-allowed" : "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      transition: "all 0.15s",
+      opacity: disabled ? 0.5 : 1,
+      ...v[variant],
+      ...style
+    }
+  }, children);
+};
+const Card = ({
+  children,
+  style = {}
+}) => /*#__PURE__*/React.createElement("div", {
+  style: {
+    background: C.card,
+    borderRadius: 16,
+    border: `1.5px solid ${C.border}`,
+    padding: 16,
+    ...style
+  }
+}, children);
+const Label = ({
+  children,
+  style = {}
+}) => /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 11,
+    fontWeight: 700,
+    color: C.muted,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 8,
+    ...style
+  }
+}, children);
+const Chip = ({
+  active,
+  color,
+  onClick,
+  children,
+  style = {}
+}) => /*#__PURE__*/React.createElement("button", {
+  onClick: onClick,
+  style: {
+    padding: "6px 12px",
+    borderRadius: 50,
+    fontSize: 12,
+    cursor: "pointer",
+    border: `2px solid ${active ? color || C.accent : C.border}`,
+    background: active ? `${color || C.accent}22` : "transparent",
+    color: active ? "#fff" : C.muted,
+    fontWeight: active ? 800 : 600,
+    transition: "all 0.15s",
+    ...style
+  }
+}, children);
+const Loading = ({
+  label,
+  elapsed
+}) => /*#__PURE__*/React.createElement("div", {
+  style: {
+    padding: "24px",
+    textAlign: "center",
+    background: `${C.accent}11`,
+    borderRadius: 14,
+    border: `1px solid ${C.border}`
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 34,
+    animation: "spin 1.5s linear infinite",
+    display: "inline-block",
+    marginBottom: 8
+  }
+}, "\uD83E\uDEE7"), /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 13,
+    color: C.text,
+    fontWeight: 700
+  }
+}, label), elapsed != null && /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 11,
+    color: C.muted,
+    marginTop: 4
+  }
+}, "\u23F1 ", elapsed, "s"));
+
+// ─── API: GROQ ────────────────────────────────────────────────────────────────
+async function callGroq(key, sys, usr, opts = {}) {
+  if (!key) throw new Error("Necesitas tu Groq API key en ⚙️");
+  const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${key}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      messages: [{
+        role: "system",
+        content: sys
+      }, {
+        role: "user",
+        content: usr
+      }],
+      max_tokens: opts.max_tokens || 2000,
+      temperature: opts.temperature ?? 0.95
+    })
+  });
+  if (!r.ok) {
+    const e = await r.json().catch(() => ({}));
+    throw new Error(e?.error?.message || `Groq HTTP ${r.status}`);
+  }
+  const data = await r.json();
+  return data.choices?.[0]?.message?.content || "";
+}
+function parseJson(text) {
+  const clean = text.replace(/```json|```/g, "").trim();
+  // Sometimes the model adds a preamble; try to extract JSON
+  const jsonStart = clean.indexOf("{") >= 0 ? clean.indexOf("{") : clean.indexOf("[");
+  if (jsonStart > 0) {
+    return JSON.parse(clean.slice(jsonStart));
+  }
+  return JSON.parse(clean);
+}
+
+// ─── GENERADOR DE IDEAS DE IMAGEN ─────────────────────────────────────────────
+async function generateImageIdeas(groqKey, params) {
+  const {
+    ocasion,
+    humor,
+    angulo,
+    formato,
+    charactersDesc,
+    customTopic,
+    count
+  } = params;
+  const oc = OCASIONES.find(o => o.id === ocasion);
+  const hu = TIPOS_HUMOR.find(h => h.id === humor);
+  const an = ANGULOS.find(a => a.id === angulo);
+  const fm = FORMATOS.find(f => f.id === formato);
+  const panels = formato === "single" ? 1 : formato === "comic2" ? 2 : formato === "comic3" ? 3 : 4;
+  const panelSchema = panels === 1 ? `"prompt_imagen": "prompt completo en INGLÉS para generador de imágenes, incluye descripción del personaje, pose exacta, expresión facial detallada, props, mood, fondo"` : Array.from({
+    length: panels
+  }, (_, i) => `"panel${i + 1}": {"descripcion":"qué pasa en este panel en español, breve","prompt_imagen":"prompt completo EN INGLÉS"}`).join(",\n    ");
+  const sys = `Eres un experto en contenido viral para Facebook en español latino, especializado en memes con personajes chibi adorables.
+
+REGLAS CRÍTICAS:
+1. Cada idea debe ser ÚNICA y diferente entre sí. NO repitas conceptos.
+2. Los prompts de imagen deben estar en INGLÉS y describir: pose exacta, expresión facial muy detallada, props específicos, mood, fondo simple.
+3. Las frases hook deben estar en español latino coloquial natural — máximo 20 palabras, con emojis, que inciten a comentar/etiquetar/compartir.
+4. Cada idea debe tener un "viral_score" honesto del 1-10 con razón breve.
+5. Responde SOLO con JSON válido, sin markdown, sin explicaciones extra.
+
+PERSONAJES (incluye su descripción en cada prompt_imagen):
+${charactersDesc}
+
+SCHEMA exacto:
+{
+  "ideas": [
+    {
+      "titulo": "título corto y atractivo (max 6 palabras)",
+      "concepto": "explicación del meme en 1-2 frases",
+      ${panelSchema},
+      "frases_hook": ["frase 1 con emojis", "frase 2 distinta", "frase 3 distinta", "frase 4 distinta", "frase 5 distinta"],
+      "viral_score": 8,
+      "viral_razon": "por qué funcionaría brevemente",
+      "engagement_tip": "consejo concreto para maximizar engagement"
+    }
+  ]
+}`;
+  const usr = `Genera ${count} IDEAS DIFERENTES Y CREATIVAS de memes de Lito.
+
+CONTEXTO:
+- Ocasión/tema: ${oc.label} ${oc.emoji}
+- Tipo de humor: ${hu.label} — ${hu.desc}
+- Ángulo creativo: ${an.label}
+- Formato: ${fm.label} (${panels} ${panels === 1 ? "imagen" : "paneles"})
+${customTopic ? `- Detalle adicional: ${customTopic}` : ""}
+
+OBJETIVO: ${count} ideas que sean MUY virales en Facebook México/Latino. Que la gente quiera etiquetar a sus amigos, comentar, compartir.
+
+Mezcla ${oc.label} + ${hu.label} de formas inesperadas. Sé creativo, no obvio.`;
+  const text = await callGroq(groqKey, sys, usr, {
+    temperature: 0.95,
+    max_tokens: 4000
+  });
+  const parsed = parseJson(text);
+  return parsed.ideas || [];
+}
+
+// ─── GENERADOR DE GUIONES DE VIDEO ────────────────────────────────────────────
+async function generateVideoIdeas(groqKey, params) {
+  const {
+    ocasion,
+    humor,
+    estilo,
+    duracion,
+    charactersDesc,
+    charactersList,
+    customTopic,
+    count
+  } = params;
+  const oc = OCASIONES.find(o => o.id === ocasion);
+  const hu = TIPOS_HUMOR.find(h => h.id === humor);
+  const es = ESTILOS_VIDEO.find(e => e.id === estilo);
+  const du = DURACIONES_VIDEO.find(d => d.id === duracion);
+  const sys = `Eres un experto en guiones para videos virales de redes sociales (TikTok, Reels, Shorts) con personajes chibi animados.
+
+REGLAS:
+1. Cada idea debe ser un GUION COMPLETO y DIFERENTE.
+2. Cada escena debe tener: descripción visual, prompt de imagen en inglés (para img2video), diálogo del personaje (en español), duración aproximada en segundos.
+3. La duración total debe ajustarse a: ${du.label} (~${du.segundos} segundos).
+4. Las frases hook van en el caption del post, en español latino coloquial.
+5. Responde SOLO con JSON válido, sin markdown.
+
+PERSONAJES DISPONIBLES:
+${charactersDesc}
+
+SCHEMA:
+{
+  "videos": [
+    {
+      "titulo": "título atractivo del video (max 6 palabras)",
+      "concepto": "explicación del video en 1-2 frases",
+      "personajes_usados": ["nombre1", "nombre2"],
+      "duracion_total_seg": 20,
+      "escenas": [
+        {
+          "numero": 1,
+          "duracion_seg": 5,
+          "descripcion_visual": "qué se ve en la escena",
+          "prompt_imagen": "prompt completo EN INGLÉS para generar el frame inicial",
+          "personaje": "Lito",
+          "dialogo": "Lo que dice el personaje en español, NULL si no hay diálogo",
+          "expresion": "expresión / emoción del personaje",
+          "movimiento": "qué movimiento hace para video"
+        }
+      ],
+      "musica_sugerida": "tipo de música/sonido recomendado",
+      "frases_hook_caption": ["caption viral 1", "caption 2", "caption 3"],
+      "viral_score": 8,
+      "viral_razon": "por qué funcionaría",
+      "engagement_tip": "consejo específico para maximizar views"
+    }
+  ]
+}`;
+  const usr = `Genera ${count} GUIONES DIFERENTES de video.
+
+CONTEXTO:
+- Ocasión: ${oc.label} ${oc.emoji}
+- Tipo de humor: ${hu.label}
+- Estilo: ${es.label} — ${es.desc}
+- Duración: ${du.label} (~${du.segundos} segundos)
+- Personajes a usar: ${charactersList.join(", ")}
+${customTopic ? `- Detalle: ${customTopic}` : ""}
+
+Distribuye las escenas para sumar ~${du.segundos} segundos. Mínimo 2 escenas, máximo según duración (5-10 seg = 2-3 escenas, 30+ seg = 4-6 escenas).
+
+Que sean muy virales para Facebook/TikTok México.`;
+  const text = await callGroq(groqKey, sys, usr, {
+    temperature: 0.92,
+    max_tokens: 5000
+  });
+  const parsed = parseJson(text);
+  return parsed.videos || [];
+}
+
+// ─── GENERADOR DE SERIES (varias ideas conectadas) ────────────────────────────
+async function generateSeries(groqKey, params) {
+  const {
+    ocasion,
+    humor,
+    charactersDesc,
+    count,
+    dias
+  } = params;
+  const oc = OCASIONES.find(o => o.id === ocasion);
+  const hu = TIPOS_HUMOR.find(h => h.id === humor);
+  const sys = `Eres un estratega de contenido para Facebook México. Generas series de posts conectados que la gente sigue durante días.
+
+REGLAS:
+1. Las ideas DEBEN estar conectadas como una historia/serie.
+2. Cada post debe poder leerse solo PERO también funcionar como parte del arco.
+3. Devuelve un calendario de posting con horarios óptimos.
+4. Responde SOLO JSON válido sin markdown.
+
+PERSONAJES:
+${charactersDesc}
+
+SCHEMA:
+{
+  "serie_titulo": "nombre de la serie",
+  "serie_concepto": "premisa que conecta todo",
+  "posts": [
+    {
+      "dia": 1,
+      "horario_recomendado": "9:00 AM",
+      "tipo": "tipo de post (intro/desarrollo/clímax/cierre)",
+      "titulo": "título corto",
+      "concepto": "qué pasa",
+      "prompt_imagen": "prompt en INGLÉS",
+      "frases_hook": ["caption 1", "caption 2", "caption 3"],
+      "conexion_serie": "cómo conecta con el siguiente"
+    }
+  ],
+  "estrategia_engagement": "consejo general para la serie"
+}`;
+  const usr = `Crea una SERIE de ${count} posts para Facebook a lo largo de ${dias} días.
+
+Tema: ${oc.label}
+Humor: ${hu.label}
+
+Crea un arco narrativo que enganche y haga que la gente espere el siguiente post. Distribuye los posts inteligentemente en los ${dias} días.`;
+  const text = await callGroq(groqKey, sys, usr, {
+    temperature: 0.9,
+    max_tokens: 5000
+  });
+  return parseJson(text);
+}
+
+// ─── HOOKS GENERATOR (para ideas existentes) ──────────────────────────────────
+async function regenerateHooks(groqKey, idea) {
+  const sys = `Genera frases hook virales para Facebook México. Frases en español latino coloquial, max 20 palabras, con emojis, que inciten a comentar/etiquetar/compartir. Responde SOLO con JSON array de 5 strings, sin markdown.`;
+  const usr = `Idea del meme: ${idea.titulo}\nConcepto: ${idea.concepto}\n\nGenera 5 frases hook NUEVAS y diferentes a las anteriores.`;
+  const text = await callGroq(groqKey, sys, usr, {
+    temperature: 1.0
+  });
+  return parseJson(text);
+}
+
+// ─── COMPONENTE: SELECTOR DE OCASIÓN CON GRUPOS ──────────────────────────────
+function OcasionSelector({
+  value,
+  onChange
+}) {
+  const [grupo, setGrupo] = useState(GRUPOS_OCASION[0].id);
+  const items = OCASIONES.filter(o => o.grupo === grupo);
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      overflowX: "auto",
+      marginBottom: 10,
+      scrollbarWidth: "none"
+    }
+  }, GRUPOS_OCASION.map(g => /*#__PURE__*/React.createElement("button", {
+    key: g.id,
+    onClick: () => setGrupo(g.id),
+    style: {
+      flexShrink: 0,
+      padding: "6px 12px",
+      borderRadius: 8,
+      fontSize: 11,
+      cursor: "pointer",
+      background: grupo === g.id ? C.accent : C.card,
+      color: grupo === g.id ? "#fff" : C.muted,
+      border: "none",
+      fontWeight: grupo === g.id ? 800 : 600
+    }
+  }, g.emoji, " ", g.label))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, items.map(o => /*#__PURE__*/React.createElement(Chip, {
+    key: o.id,
+    active: value === o.id,
+    onClick: () => onChange(o.id)
+  }, o.emoji, " ", o.label))));
+}
+
+// ─── COMPONENTE: VIRAL SCORE BADGE ───────────────────────────────────────────
+function ViralBadge({
+  score
+}) {
+  const color = score >= 8 ? "#10b981" : score >= 6 ? "#f59e0b" : "#ef4444";
+  const label = score >= 8 ? "🔥 Alto potencial" : score >= 6 ? "⚡ Buen potencial" : "💭 Considera mejorar";
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 6,
+      padding: "4px 10px",
+      borderRadius: 50,
+      background: `${color}22`,
+      border: `1px solid ${color}`,
+      fontSize: 11,
+      fontWeight: 800,
+      color: color
+    }
+  }, label, " \xB7 ", score, "/10");
+}
+
+// ─── COMPONENTE: IDEA CARD (imagen) ──────────────────────────────────────────
+function IdeaCard({
+  idea,
+  idx,
+  onSave,
+  isSaved,
+  groqKey
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [copied, setCopied] = useState(null);
+  const [hooks, setHooks] = useState(idea.frases_hook || []);
+  const [regenerating, setRegenerating] = useState(false);
+  const copy = (text, key) => {
+    navigator.clipboard.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied(null), 1500);
+  };
+  const regenHooks = async () => {
+    setRegenerating(true);
+    try {
+      const newHooks = await regenerateHooks(groqKey, idea);
+      setHooks(newHooks);
+    } catch (e) {
+      alert(e.message);
+    }
+    setRegenerating(false);
+  };
+
+  // Get all panel prompts
+  const panels = ["panel1", "panel2", "panel3", "panel4"].filter(k => idea[k]).map(k => idea[k]);
+  const isComic = panels.length > 0;
+  return /*#__PURE__*/React.createElement(Card, {
+    style: {
+      padding: 0,
+      overflow: "hidden",
+      animation: "fadeUp 0.3s ease"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "14px 16px",
+      display: "flex",
+      alignItems: "flex-start",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 32,
+      height: 32,
+      borderRadius: "50%",
+      flexShrink: 0,
+      background: C.grad,
+      color: "#fff",
+      fontWeight: 900,
+      fontSize: 13,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  }, idx + 1), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 900,
+      color: C.text,
+      marginBottom: 3
+    }
+  }, idea.titulo), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: C.muted,
+      lineHeight: 1.5
+    }
+  }, idea.concepto)), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onSave(idea),
+    style: {
+      padding: "5px 8px",
+      background: isSaved ? C.amber + "33" : "transparent",
+      border: `1.5px solid ${isSaved ? C.amber : C.border}`,
+      borderRadius: 8,
+      fontSize: 14,
+      cursor: "pointer",
+      color: isSaved ? C.amber : C.muted,
+      flexShrink: 0
+    }
+  }, isSaved ? "⭐" : "☆")), idea.viral_score && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "0 16px 12px"
+    }
+  }, /*#__PURE__*/React.createElement(ViralBadge, {
+    score: idea.viral_score
+  }), idea.viral_razon && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: C.muted,
+      marginTop: 6,
+      lineHeight: 1.5
+    }
+  }, idea.viral_razon)), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setExpanded(!expanded),
+    style: {
+      width: "100%",
+      padding: "10px",
+      background: C.surface,
+      border: "none",
+      cursor: "pointer",
+      color: C.muted,
+      fontSize: 11,
+      fontWeight: 700,
+      borderTop: `1px solid ${C.border}`,
+      borderBottom: expanded ? `1px solid ${C.border}` : "none",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6
+    }
+  }, expanded ? "▲ Ocultar detalles" : "▼ Ver prompts y frases hook"), expanded && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "14px 16px",
+      display: "flex",
+      flexDirection: "column",
+      gap: 12,
+      animation: "fadeUp 0.2s"
+    }
+  }, !isComic && idea.prompt_imagen && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Label, null, "\uD83C\uDFA8 Prompt de imagen"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: C.bg,
+      border: `1px solid ${C.border}`,
+      borderRadius: 10,
+      padding: "10px 12px",
+      fontSize: 11,
+      color: C.muted,
+      lineHeight: 1.6,
+      fontFamily: "monospace",
+      marginBottom: 8,
+      maxHeight: 160,
+      overflowY: "auto"
+    }
+  }, idea.prompt_imagen), /*#__PURE__*/React.createElement("button", {
+    onClick: () => copy(idea.prompt_imagen, "prompt"),
+    style: {
+      width: "100%",
+      padding: 9,
+      borderRadius: 9,
+      cursor: "pointer",
+      background: copied === "prompt" ? `${C.accent}33` : "transparent",
+      color: copied === "prompt" ? "#fff" : C.muted,
+      border: `1.5px solid ${copied === "prompt" ? C.accent : C.border}`,
+      fontWeight: 700,
+      fontSize: 12
+    }
+  }, copied === "prompt" ? "✅ ¡Copiado!" : "📋 Copiar prompt para Gemini/Leonardo")), isComic && panels.map((panel, i) => /*#__PURE__*/React.createElement("div", {
+    key: i
+  }, /*#__PURE__*/React.createElement(Label, null, "\uD83C\uDFAC Panel ", i + 1, i === 0 ? " — Setup" : i === panels.length - 1 ? " — 🔥 Remate" : " — Giro"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: C.text,
+      marginBottom: 6,
+      fontStyle: "italic"
+    }
+  }, panel.descripcion), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: C.bg,
+      border: `1px solid ${C.border}`,
+      borderRadius: 10,
+      padding: "10px 12px",
+      fontSize: 11,
+      color: C.muted,
+      lineHeight: 1.6,
+      fontFamily: "monospace",
+      marginBottom: 8,
+      maxHeight: 140,
+      overflowY: "auto"
+    }
+  }, panel.prompt_imagen), /*#__PURE__*/React.createElement("button", {
+    onClick: () => copy(panel.prompt_imagen, `panel${i}`),
+    style: {
+      width: "100%",
+      padding: 9,
+      borderRadius: 9,
+      cursor: "pointer",
+      background: copied === `panel${i}` ? `${C.accent}33` : "transparent",
+      color: copied === `panel${i}` ? "#fff" : C.muted,
+      border: `1.5px solid ${copied === `panel${i}` ? C.accent : C.border}`,
+      fontWeight: 700,
+      fontSize: 12
+    }
+  }, copied === `panel${i}` ? "✅ ¡Copiado!" : `📋 Copiar prompt panel ${i + 1}`))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement(Label, {
+    style: {
+      marginBottom: 0
+    }
+  }, "\uD83D\uDCAC Frases hook (", hooks.length, ")"), /*#__PURE__*/React.createElement("button", {
+    onClick: regenHooks,
+    disabled: regenerating,
+    style: {
+      fontSize: 10,
+      color: C.accent,
+      background: "transparent",
+      border: `1px solid ${C.border}`,
+      borderRadius: 6,
+      padding: "3px 8px",
+      cursor: regenerating ? "not-allowed" : "pointer",
+      fontWeight: 700
+    }
+  }, regenerating ? "⏳" : "🔄 Nuevas")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 6
+    }
+  }, hooks.map((h, i) => /*#__PURE__*/React.createElement("button", {
+    key: i,
+    onClick: () => copy(h, `hook${i}`),
+    style: {
+      textAlign: "left",
+      padding: "10px 12px",
+      borderRadius: 9,
+      cursor: "pointer",
+      background: copied === `hook${i}` ? `${C.accent}33` : C.bg,
+      color: copied === `hook${i}` ? "#fff" : C.text,
+      border: `1.5px solid ${copied === `hook${i}` ? C.accent : C.border}`,
+      fontWeight: 600,
+      fontSize: 13,
+      lineHeight: 1.5
+    }
+  }, copied === `hook${i}` ? "✅ ¡Copiado!" : h)))), idea.engagement_tip && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "10px 12px",
+      background: `${C.amber}11`,
+      border: `1px solid ${C.amber}44`,
+      borderRadius: 10,
+      fontSize: 11,
+      color: C.text,
+      lineHeight: 1.6
+    }
+  }, "\uD83D\uDCA1 ", /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: C.amber
+    }
+  }, "Tip:"), " ", idea.engagement_tip)));
+}
+
+// ─── COMPONENTE: VIDEO IDEA CARD ─────────────────────────────────────────────
+function VideoCard({
+  video,
+  idx,
+  onSave,
+  isSaved
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [copied, setCopied] = useState(null);
+  const copy = (text, key) => {
+    navigator.clipboard.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied(null), 1500);
+  };
+  const fullScript = video.escenas.map((e, i) => `ESCENA ${e.numero || i + 1} (${e.duracion_seg}s):\nVisual: ${e.descripcion_visual}\n${e.dialogo ? `${e.personaje}: "${e.dialogo}"` : "[Sin diálogo]"}\nMovimiento: ${e.movimiento}\n`).join("\n");
+  return /*#__PURE__*/React.createElement(Card, {
+    style: {
+      padding: 0,
+      overflow: "hidden",
+      animation: "fadeUp 0.3s ease"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "14px 16px",
+      display: "flex",
+      alignItems: "flex-start",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 32,
+      height: 32,
+      borderRadius: "50%",
+      flexShrink: 0,
+      background: C.gradGreen,
+      color: "#fff",
+      fontWeight: 900,
+      fontSize: 13,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  }, idx + 1), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 900,
+      color: C.text,
+      marginBottom: 3
+    }
+  }, "\uD83C\uDFAC ", video.titulo), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: C.muted,
+      lineHeight: 1.5
+    }
+  }, video.concepto), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: C.green,
+      marginTop: 4,
+      fontWeight: 700
+    }
+  }, "\u23F1 ", video.duracion_total_seg, "s \xB7 ", video.escenas.length, " escenas \xB7 ", video.personajes_usados?.join(", "))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onSave(video),
+    style: {
+      padding: "5px 8px",
+      background: isSaved ? C.amber + "33" : "transparent",
+      border: `1.5px solid ${isSaved ? C.amber : C.border}`,
+      borderRadius: 8,
+      fontSize: 14,
+      cursor: "pointer",
+      color: isSaved ? C.amber : C.muted,
+      flexShrink: 0
+    }
+  }, isSaved ? "⭐" : "☆")), video.viral_score && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "0 16px 12px"
+    }
+  }, /*#__PURE__*/React.createElement(ViralBadge, {
+    score: video.viral_score
+  }), video.viral_razon && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: C.muted,
+      marginTop: 6,
+      lineHeight: 1.5
+    }
+  }, video.viral_razon)), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setExpanded(!expanded),
+    style: {
+      width: "100%",
+      padding: "10px",
+      background: C.surface,
+      border: "none",
+      cursor: "pointer",
+      color: C.muted,
+      fontSize: 11,
+      fontWeight: 700,
+      borderTop: `1px solid ${C.border}`,
+      borderBottom: expanded ? `1px solid ${C.border}` : "none"
+    }
+  }, expanded ? "▲ Ocultar guion" : "▼ Ver guion completo"), expanded && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "14px 16px",
+      display: "flex",
+      flexDirection: "column",
+      gap: 12
+    }
+  }, video.escenas.map((escena, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      background: C.bg,
+      border: `1px solid ${C.border}`,
+      borderRadius: 12,
+      padding: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 24,
+      height: 24,
+      borderRadius: "50%",
+      background: C.gradGreen,
+      color: "#fff",
+      fontWeight: 900,
+      fontSize: 11,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0
+    }
+  }, escena.numero || i + 1), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: C.green,
+      fontWeight: 700
+    }
+  }, "Escena ", i + 1, " \xB7 ", escena.duracion_seg, "s")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: C.text,
+      marginBottom: 6
+    }
+  }, /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: C.muted
+    }
+  }, "Visual:"), " ", escena.descripcion_visual), escena.dialogo && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: C.text,
+      marginBottom: 6,
+      padding: "8px 10px",
+      background: `${C.accent}11`,
+      borderRadius: 8,
+      borderLeft: `3px solid ${C.accent}`
+    }
+  }, /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: C.accent
+    }
+  }, escena.personaje, ":"), " \"", escena.dialogo, "\""), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: C.muted,
+      lineHeight: 1.6
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("strong", null, "Expresi\xF3n:"), " ", escena.expresion), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("strong", null, "Movimiento:"), " ", escena.movimiento)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 8,
+      padding: "8px 10px",
+      background: C.surface,
+      borderRadius: 8,
+      fontSize: 10,
+      color: C.muted,
+      fontFamily: "monospace",
+      lineHeight: 1.5,
+      maxHeight: 100,
+      overflowY: "auto"
+    }
+  }, escena.prompt_imagen), /*#__PURE__*/React.createElement("button", {
+    onClick: () => copy(escena.prompt_imagen, `scene${i}`),
+    style: {
+      width: "100%",
+      padding: 7,
+      marginTop: 6,
+      borderRadius: 8,
+      background: copied === `scene${i}` ? `${C.accent}33` : "transparent",
+      color: copied === `scene${i}` ? "#fff" : C.muted,
+      border: `1px solid ${copied === `scene${i}` ? C.accent : C.border}`,
+      fontSize: 11,
+      fontWeight: 700,
+      cursor: "pointer"
+    }
+  }, copied === `scene${i}` ? "✅ Copiado" : "📋 Copiar prompt"))), video.musica_sugerida && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "10px 12px",
+      background: `${C.accent2}11`,
+      border: `1px solid ${C.accent2}44`,
+      borderRadius: 10,
+      fontSize: 12,
+      color: C.text
+    }
+  }, "\uD83C\uDFB5 ", /*#__PURE__*/React.createElement("strong", null, "M\xFAsica:"), " ", video.musica_sugerida), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Label, null, "\uD83D\uDCAC Captions virales"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 6
+    }
+  }, (video.frases_hook_caption || []).map((h, i) => /*#__PURE__*/React.createElement("button", {
+    key: i,
+    onClick: () => copy(h, `cap${i}`),
+    style: {
+      textAlign: "left",
+      padding: "10px 12px",
+      borderRadius: 9,
+      cursor: "pointer",
+      background: copied === `cap${i}` ? `${C.accent}33` : C.bg,
+      color: copied === `cap${i}` ? "#fff" : C.text,
+      border: `1.5px solid ${copied === `cap${i}` ? C.accent : C.border}`,
+      fontWeight: 600,
+      fontSize: 13,
+      lineHeight: 1.5
+    }
+  }, copied === `cap${i}` ? "✅ Copiado" : h)))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => copy(fullScript, "full"),
+    style: {
+      width: "100%",
+      padding: 11,
+      borderRadius: 10,
+      cursor: "pointer",
+      background: copied === "full" ? C.gradGreen : C.surface,
+      color: "#fff",
+      border: "none",
+      fontWeight: 800,
+      fontSize: 13
+    }
+  }, copied === "full" ? "✅ Guion completo copiado" : "📋 Copiar guion completo del video"), video.engagement_tip && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "10px 12px",
+      background: `${C.amber}11`,
+      border: `1px solid ${C.amber}44`,
+      borderRadius: 10,
+      fontSize: 11,
+      color: C.text,
+      lineHeight: 1.6
+    }
+  }, "\uD83D\uDCA1 ", /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: C.amber
+    }
+  }, "Tip:"), " ", video.engagement_tip)));
+}
+
+// ─── PESTAÑA: IMAGEN ─────────────────────────────────────────────────────────
+function ImageTab({
+  groqKey,
+  characters,
+  savedIdeas,
+  setSavedIdeas
+}) {
+  const [ocasion, setOcasion] = useState("lunes");
+  const [humor, setHumor] = useState("relatable");
+  const [angulo, setAngulo] = useState("libre");
+  const [formato, setFormato] = useState("single");
+  const [count, setCount] = useState(5);
+  const [customTopic, setCustomTopic] = useState("");
+  const [selChars, setSelChars] = useState(characters.slice(0, 1).map(c => c.id));
+  const [loading, setLoading] = useState(false);
+  const [ideas, setIdeas] = useState([]);
+  const [error, setError] = useState("");
+  const [elapsed, setElapsed] = useState(0);
+  const toggleChar = id => setSelChars(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
+  const activeChars = characters.filter(c => selChars.includes(c.id));
+  const charsDesc = activeChars.map(c => `${c.nombre}: ${c.descripcion}`).join("\n\n");
+  const isSaved = idea => savedIdeas.some(s => s.titulo === idea.titulo && s.tipo === "imagen");
+  const toggleSave = idea => {
+    if (isSaved(idea)) {
+      setSavedIdeas(savedIdeas.filter(s => !(s.titulo === idea.titulo && s.tipo === "imagen")));
+    } else {
+      setSavedIdeas([...savedIdeas, {
+        ...idea,
+        tipo: "imagen",
+        saved_at: Date.now()
+      }]);
+    }
+  };
+  const generate = async () => {
+    if (!groqKey) {
+      setError("Agrega tu Groq key en ⚙️ Config");
+      return;
+    }
+    if (activeChars.length === 0) {
+      setError("Selecciona al menos 1 personaje");
+      return;
+    }
+    setLoading(true);
+    setIdeas([]);
+    setError("");
+    setElapsed(0);
+    const t = setInterval(() => setElapsed(s => s + 1), 1000);
+    try {
+      const result = await generateImageIdeas(groqKey, {
+        ocasion,
+        humor,
+        angulo,
+        formato,
+        count,
+        customTopic,
+        charactersDesc: charsDesc
+      });
+      setIdeas(result);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      clearInterval(t);
+      setLoading(false);
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "12px 16px",
+      paddingBottom: 80,
+      display: "flex",
+      flexDirection: "column",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83D\uDCCD Ocasi\xF3n / Tema"), /*#__PURE__*/React.createElement(OcasionSelector, {
+    value: ocasion,
+    onChange: setOcasion
+  })), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83C\uDFAD Tipo de humor"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6,
+      marginBottom: 8
+    }
+  }, TIPOS_HUMOR.map(h => /*#__PURE__*/React.createElement(Chip, {
+    key: h.id,
+    active: humor === h.id,
+    onClick: () => setHumor(h.id)
+  }, h.emoji, " ", h.label))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: C.muted,
+      padding: "6px 10px",
+      background: C.bg,
+      borderRadius: 8
+    }
+  }, "\uD83D\uDCA1 ", TIPOS_HUMOR.find(h => h.id === humor)?.desc)), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83C\uDFAF \xC1ngulo creativo"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, ANGULOS.map(a => /*#__PURE__*/React.createElement(Chip, {
+    key: a.id,
+    active: angulo === a.id,
+    onClick: () => setAngulo(a.id)
+  }, a.emoji, " ", a.label)))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83D\uDCD0 Formato"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, FORMATOS.map(f => /*#__PURE__*/React.createElement(Chip, {
+    key: f.id,
+    active: formato === f.id,
+    onClick: () => setFormato(f.id)
+  }, f.emoji, " ", f.label)))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83C\uDFAD Personajes"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, characters.map(c => /*#__PURE__*/React.createElement(Chip, {
+    key: c.id,
+    color: c.color,
+    active: selChars.includes(c.id),
+    onClick: () => toggleChar(c.id)
+  }, c.emoji, " ", c.nombre)))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83D\uDD22 Cantidad de ideas"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6
+    }
+  }, [3, 5, 8, 10].map(n => /*#__PURE__*/React.createElement(Chip, {
+    key: n,
+    active: count === n,
+    onClick: () => setCount(n),
+    style: {
+      flex: 1
+    }
+  }, n, " ideas")))), /*#__PURE__*/React.createElement(Card, {
+    style: {
+      padding: 0,
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    value: customTopic,
+    onChange: e => setCustomTopic(e.target.value),
+    placeholder: "Detalle adicional (opcional) \xB7 Ej: el wifi que se cae cuando m\xE1s necesitas...",
+    style: {
+      width: "100%",
+      padding: "14px 16px",
+      background: "transparent",
+      border: "none",
+      color: C.text,
+      fontSize: 13,
+      outline: "none"
+    }
+  })), /*#__PURE__*/React.createElement(Btn, {
+    onClick: generate,
+    disabled: loading,
+    style: {
+      width: "100%",
+      padding: "15px",
+      fontSize: 15,
+      fontWeight: 900,
+      borderRadius: 14
+    }
+  }, loading ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+    style: {
+      animation: "spin 0.8s linear infinite",
+      display: "inline-block"
+    }
+  }, "\u2726"), " Generando ", count, " ideas... ", elapsed, "s") : `🎨 Generar ${count} ideas de imagen`), error && /*#__PURE__*/React.createElement(Card, {
+    style: {
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: "#f87171",
+      fontSize: 12
+    }
+  }, error)), loading && /*#__PURE__*/React.createElement(Loading, {
+    label: "Groq AI creando ideas virales...",
+    elapsed: elapsed
+  }), ideas.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "10px 14px",
+      background: `${C.green}11`,
+      border: `1px solid ${C.green}44`,
+      borderRadius: 10,
+      fontSize: 12,
+      color: C.text
+    }
+  }, "\u2728 ", /*#__PURE__*/React.createElement("strong", null, ideas.length, " ideas generadas"), " \u2014 toca cada una para ver prompts y frases hook"), ideas.map((idea, i) => /*#__PURE__*/React.createElement(IdeaCard, {
+    key: i,
+    idea: idea,
+    idx: i,
+    onSave: toggleSave,
+    isSaved: isSaved(idea),
+    groqKey: groqKey
+  }))), !loading && ideas.length === 0 && !error && /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      padding: "40px 20px",
+      color: C.muted
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 48,
+      marginBottom: 12
+    }
+  }, "\uD83C\uDFA8"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 700,
+      fontSize: 14,
+      color: C.text,
+      marginBottom: 6
+    }
+  }, "Generador de ideas virales"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      lineHeight: 1.7
+    }
+  }, "Combina ocasi\xF3n + humor + \xE1ngulo", /*#__PURE__*/React.createElement("br", null), "para obtener ideas listas para Gemini, Leonardo, Midjourney", /*#__PURE__*/React.createElement("br", null), "con frases hook y an\xE1lisis viral \uD83D\uDD25")));
+}
+
+// ─── PESTAÑA: VIDEO ──────────────────────────────────────────────────────────
+function VideoTab({
+  groqKey,
+  characters,
+  savedIdeas,
+  setSavedIdeas
+}) {
+  const [ocasion, setOcasion] = useState("lunes");
+  const [humor, setHumor] = useState("relatable");
+  const [estilo, setEstilo] = useState("narrativo");
+  const [duracion, setDuracion] = useState("medio");
+  const [count, setCount] = useState(3);
+  const [customTopic, setCustomTopic] = useState("");
+  const [selChars, setSelChars] = useState(characters.slice(0, 1).map(c => c.id));
+  const [loading, setLoading] = useState(false);
+  const [videos, setVideos] = useState([]);
+  const [error, setError] = useState("");
+  const [elapsed, setElapsed] = useState(0);
+  const toggleChar = id => setSelChars(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
+  const activeChars = characters.filter(c => selChars.includes(c.id));
+  const charsDesc = activeChars.map(c => `${c.nombre}: ${c.descripcion}`).join("\n\n");
+  const isSaved = v => savedIdeas.some(s => s.titulo === v.titulo && s.tipo === "video");
+  const toggleSave = v => {
+    if (isSaved(v)) setSavedIdeas(savedIdeas.filter(s => !(s.titulo === v.titulo && s.tipo === "video")));else setSavedIdeas([...savedIdeas, {
+      ...v,
+      tipo: "video",
+      saved_at: Date.now()
+    }]);
+  };
+  const generate = async () => {
+    if (!groqKey) {
+      setError("Agrega tu Groq key en ⚙️ Config");
+      return;
+    }
+    if (activeChars.length === 0) {
+      setError("Selecciona al menos 1 personaje");
+      return;
+    }
+    setLoading(true);
+    setVideos([]);
+    setError("");
+    setElapsed(0);
+    const t = setInterval(() => setElapsed(s => s + 1), 1000);
+    try {
+      const result = await generateVideoIdeas(groqKey, {
+        ocasion,
+        humor,
+        estilo,
+        duracion,
+        count,
+        customTopic,
+        charactersDesc: charsDesc,
+        charactersList: activeChars.map(c => c.nombre)
+      });
+      setVideos(result);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      clearInterval(t);
+      setLoading(false);
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "12px 16px",
+      paddingBottom: 80,
+      display: "flex",
+      flexDirection: "column",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83D\uDCCD Ocasi\xF3n"), /*#__PURE__*/React.createElement(OcasionSelector, {
+    value: ocasion,
+    onChange: setOcasion
+  })), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83C\uDFAD Tipo de humor"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, TIPOS_HUMOR.map(h => /*#__PURE__*/React.createElement(Chip, {
+    key: h.id,
+    active: humor === h.id,
+    onClick: () => setHumor(h.id)
+  }, h.emoji, " ", h.label)))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83C\uDFAC Estilo de video"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6,
+      marginBottom: 8
+    }
+  }, ESTILOS_VIDEO.map(e => /*#__PURE__*/React.createElement(Chip, {
+    key: e.id,
+    active: estilo === e.id,
+    onClick: () => setEstilo(e.id)
+  }, e.emoji, " ", e.label))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: C.muted,
+      padding: "6px 10px",
+      background: C.bg,
+      borderRadius: 8
+    }
+  }, "\uD83D\uDCA1 ", ESTILOS_VIDEO.find(e => e.id === estilo)?.desc)), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\u23F1 Duraci\xF3n del video"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, DURACIONES_VIDEO.map(d => /*#__PURE__*/React.createElement(Chip, {
+    key: d.id,
+    active: duracion === d.id,
+    onClick: () => setDuracion(d.id),
+    style: {
+      flex: "1 1 calc(50% - 3px)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 800
+    }
+  }, d.label), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      opacity: 0.7,
+      marginTop: 2
+    }
+  }, d.desc)))))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83C\uDFAD Personajes en el video"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, characters.map(c => /*#__PURE__*/React.createElement(Chip, {
+    key: c.id,
+    color: c.color,
+    active: selChars.includes(c.id),
+    onClick: () => toggleChar(c.id)
+  }, c.emoji, " ", c.nombre))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 6,
+      fontSize: 10,
+      color: C.muted
+    }
+  }, activeChars.length > 1 ? `✅ ${activeChars.length} personajes interactuarán entre sí` : "Selecciona varios para historias con interacción")), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83D\uDD22 Cantidad de guiones"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6
+    }
+  }, [2, 3, 5].map(n => /*#__PURE__*/React.createElement(Chip, {
+    key: n,
+    active: count === n,
+    onClick: () => setCount(n),
+    style: {
+      flex: 1
+    }
+  }, n, " guiones")))), /*#__PURE__*/React.createElement(Card, {
+    style: {
+      padding: 0,
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    value: customTopic,
+    onChange: e => setCustomTopic(e.target.value),
+    placeholder: "Detalle adicional (opcional)...",
+    style: {
+      width: "100%",
+      padding: "14px 16px",
+      background: "transparent",
+      border: "none",
+      color: C.text,
+      fontSize: 13,
+      outline: "none"
+    }
+  })), /*#__PURE__*/React.createElement(Btn, {
+    onClick: generate,
+    disabled: loading,
+    variant: "success",
+    style: {
+      width: "100%",
+      padding: "15px",
+      fontSize: 15,
+      fontWeight: 900,
+      borderRadius: 14
+    }
+  }, loading ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+    style: {
+      animation: "spin 0.8s linear infinite",
+      display: "inline-block"
+    }
+  }, "\u2726"), " Creando guiones... ", elapsed, "s") : `🎬 Generar ${count} guiones de video`), error && /*#__PURE__*/React.createElement(Card, {
+    style: {
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: "#f87171",
+      fontSize: 12
+    }
+  }, error)), loading && /*#__PURE__*/React.createElement(Loading, {
+    label: "Escribiendo guiones virales...",
+    elapsed: elapsed
+  }), videos.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "10px 14px",
+      background: `${C.green}11`,
+      border: `1px solid ${C.green}44`,
+      borderRadius: 10,
+      fontSize: 12,
+      color: C.text
+    }
+  }, "\uD83C\uDFAC ", /*#__PURE__*/React.createElement("strong", null, videos.length, " guiones generados"), " \u2014 incluyen escenas, di\xE1logos, prompts y captions"), videos.map((v, i) => /*#__PURE__*/React.createElement(VideoCard, {
+    key: i,
+    video: v,
+    idx: i,
+    onSave: toggleSave,
+    isSaved: isSaved(v)
+  }))), !loading && videos.length === 0 && !error && /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      padding: "40px 20px",
+      color: C.muted
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 48,
+      marginBottom: 12
+    }
+  }, "\uD83C\uDFAC"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 700,
+      fontSize: 14,
+      color: C.text,
+      marginBottom: 6
+    }
+  }, "Generador de guiones de video"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      lineHeight: 1.7
+    }
+  }, "Genera guiones completos con escenas,", /*#__PURE__*/React.createElement("br", null), "di\xE1logos por personaje, m\xFAsica y captions", /*#__PURE__*/React.createElement("br", null), "listos para producir tu video \uD83C\uDFA5")));
+}
+
+// ─── PESTAÑA: SERIES ─────────────────────────────────────────────────────────
+function SeriesTab({
+  groqKey,
+  characters
+}) {
+  const [ocasion, setOcasion] = useState("lunes");
+  const [humor, setHumor] = useState("relatable");
+  const [count, setCount] = useState(7);
+  const [dias, setDias] = useState(7);
+  const [selChars, setSelChars] = useState(characters.slice(0, 1).map(c => c.id));
+  const [loading, setLoading] = useState(false);
+  const [serie, setSerie] = useState(null);
+  const [error, setError] = useState("");
+  const [elapsed, setElapsed] = useState(0);
+  const [copied, setCopied] = useState(null);
+  const toggleChar = id => setSelChars(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
+  const activeChars = characters.filter(c => selChars.includes(c.id));
+  const charsDesc = activeChars.map(c => `${c.nombre}: ${c.descripcion}`).join("\n\n");
+  const copy = (t, k) => {
+    navigator.clipboard.writeText(t);
+    setCopied(k);
+    setTimeout(() => setCopied(null), 1500);
+  };
+  const generate = async () => {
+    if (!groqKey) {
+      setError("Agrega tu Groq key en ⚙️ Config");
+      return;
+    }
+    setLoading(true);
+    setSerie(null);
+    setError("");
+    setElapsed(0);
+    const t = setInterval(() => setElapsed(s => s + 1), 1000);
+    try {
+      const result = await generateSeries(groqKey, {
+        ocasion,
+        humor,
+        count,
+        dias,
+        charactersDesc: charsDesc
+      });
+      setSerie(result);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      clearInterval(t);
+      setLoading(false);
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "12px 16px",
+      paddingBottom: 80,
+      display: "flex",
+      flexDirection: "column",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "10px 14px",
+      background: `${C.amber}11`,
+      border: `1px solid ${C.amber}44`,
+      borderRadius: 10,
+      fontSize: 12,
+      color: C.text,
+      lineHeight: 1.6
+    }
+  }, "\uD83C\uDFAF ", /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: C.amber
+    }
+  }, "Series conectadas:"), " genera varios posts que cuentan una historia continua. Tu audiencia esperar\xE1 el siguiente cap\xEDtulo cada d\xEDa \uD83D\uDCC5"), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83D\uDCCD Tema de la serie"), /*#__PURE__*/React.createElement(OcasionSelector, {
+    value: ocasion,
+    onChange: setOcasion
+  })), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83C\uDFAD Tono"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, TIPOS_HUMOR.map(h => /*#__PURE__*/React.createElement(Chip, {
+    key: h.id,
+    active: humor === h.id,
+    onClick: () => setHumor(h.id)
+  }, h.emoji, " ", h.label)))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83C\uDFAD Personajes"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, characters.map(c => /*#__PURE__*/React.createElement(Chip, {
+    key: c.id,
+    color: c.color,
+    active: selChars.includes(c.id),
+    onClick: () => toggleChar(c.id)
+  }, c.emoji, " ", c.nombre)))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83D\uDD22 Cantidad de posts"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6
+    }
+  }, [5, 7, 10, 14].map(n => /*#__PURE__*/React.createElement(Chip, {
+    key: n,
+    active: count === n,
+    onClick: () => setCount(n),
+    style: {
+      flex: 1
+    }
+  }, n)))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(Label, null, "\uD83D\uDCC5 Distribuir en (d\xEDas)"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6
+    }
+  }, [3, 7, 14, 30].map(n => /*#__PURE__*/React.createElement(Chip, {
+    key: n,
+    active: dias === n,
+    onClick: () => setDias(n),
+    style: {
+      flex: 1
+    }
+  }, n, " d\xEDas")))), /*#__PURE__*/React.createElement(Btn, {
+    onClick: generate,
+    disabled: loading,
+    style: {
+      width: "100%",
+      padding: "15px",
+      fontSize: 15,
+      fontWeight: 900,
+      borderRadius: 14
+    }
+  }, loading ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+    style: {
+      animation: "spin 0.8s linear infinite",
+      display: "inline-block"
+    }
+  }, "\u2726"), " Dise\xF1ando serie... ", elapsed, "s") : `🎯 Generar serie de ${count} posts`), error && /*#__PURE__*/React.createElement(Card, {
+    style: {
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: "#f87171",
+      fontSize: 12
+    }
+  }, error)), loading && /*#__PURE__*/React.createElement(Loading, {
+    label: "Conectando narrativa...",
+    elapsed: elapsed
+  }), serie && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 10,
+      animation: "fadeUp 0.3s"
+    }
+  }, /*#__PURE__*/React.createElement(Card, {
+    style: {
+      background: "linear-gradient(135deg,#1a0533,#0f0817)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 18,
+      fontWeight: 900,
+      color: "#fff",
+      marginBottom: 6
+    }
+  }, "\uD83C\uDFAC ", serie.serie_titulo), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: C.muted,
+      lineHeight: 1.6,
+      marginBottom: 8
+    }
+  }, serie.serie_concepto), serie.estrategia_engagement && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "8px 10px",
+      background: `${C.amber}11`,
+      border: `1px solid ${C.amber}44`,
+      borderRadius: 8,
+      fontSize: 11,
+      color: C.text,
+      lineHeight: 1.5
+    }
+  }, "\uD83D\uDCA1 ", serie.estrategia_engagement)), serie.posts.map((post, i) => /*#__PURE__*/React.createElement(Card, {
+    key: i,
+    style: {
+      padding: "14px 16px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "3px 10px",
+      background: C.grad,
+      color: "#fff",
+      borderRadius: 50,
+      fontSize: 11,
+      fontWeight: 800
+    }
+  }, "D\xEDa ", post.dia), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: C.muted
+    }
+  }, post.horario_recomendado), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: C.green,
+      marginLeft: "auto",
+      fontWeight: 700,
+      padding: "2px 8px",
+      background: `${C.green}22`,
+      borderRadius: 50
+    }
+  }, post.tipo)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 800,
+      color: C.text,
+      marginBottom: 4
+    }
+  }, post.titulo), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: C.muted,
+      lineHeight: 1.5,
+      marginBottom: 10
+    }
+  }, post.concepto), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: C.bg,
+      border: `1px solid ${C.border}`,
+      borderRadius: 10,
+      padding: "10px 12px",
+      fontSize: 11,
+      color: C.muted,
+      lineHeight: 1.6,
+      fontFamily: "monospace",
+      marginBottom: 8,
+      maxHeight: 120,
+      overflowY: "auto"
+    }
+  }, post.prompt_imagen), /*#__PURE__*/React.createElement("button", {
+    onClick: () => copy(post.prompt_imagen, `p${i}`),
+    style: {
+      width: "100%",
+      padding: 8,
+      borderRadius: 9,
+      marginBottom: 10,
+      cursor: "pointer",
+      background: copied === `p${i}` ? `${C.accent}33` : "transparent",
+      color: copied === `p${i}` ? "#fff" : C.muted,
+      border: `1.5px solid ${copied === `p${i}` ? C.accent : C.border}`,
+      fontWeight: 700,
+      fontSize: 11
+    }
+  }, copied === `p${i}` ? "✅ Copiado" : "📋 Copiar prompt"), /*#__PURE__*/React.createElement(Label, {
+    style: {
+      fontSize: 10,
+      marginBottom: 6
+    }
+  }, "\uD83D\uDCAC Captions"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 5
+    }
+  }, (post.frases_hook || []).map((h, hi) => /*#__PURE__*/React.createElement("button", {
+    key: hi,
+    onClick: () => copy(h, `p${i}h${hi}`),
+    style: {
+      textAlign: "left",
+      padding: "8px 10px",
+      borderRadius: 8,
+      cursor: "pointer",
+      background: copied === `p${i}h${hi}` ? `${C.accent}33` : C.bg,
+      color: copied === `p${i}h${hi}` ? "#fff" : C.text,
+      border: `1px solid ${copied === `p${i}h${hi}` ? C.accent : C.border}`,
+      fontWeight: 600,
+      fontSize: 12,
+      lineHeight: 1.5
+    }
+  }, copied === `p${i}h${hi}` ? "✅" : h))), post.conexion_serie && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 8,
+      padding: "6px 10px",
+      background: `${C.accent}11`,
+      borderRadius: 8,
+      fontSize: 10,
+      color: C.muted,
+      fontStyle: "italic"
+    }
+  }, "\uD83D\uDD17 ", post.conexion_serie)))));
+}
+
+// ─── PESTAÑA: GUARDADAS ──────────────────────────────────────────────────────
+function SavedTab({
+  savedIdeas,
+  setSavedIdeas,
+  groqKey
+}) {
+  const [filter, setFilter] = useState("todas");
+  const filtered = filter === "todas" ? savedIdeas : savedIdeas.filter(s => s.tipo === filter);
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "12px 16px",
+      paddingBottom: 80,
+      display: "flex",
+      flexDirection: "column",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6
+    }
+  }, [["todas", "⭐ Todas"], ["imagen", "🎨 Imágenes"], ["video", "🎬 Videos"]].map(([k, l]) => /*#__PURE__*/React.createElement(Chip, {
+    key: k,
+    active: filter === k,
+    onClick: () => setFilter(k),
+    style: {
+      flex: 1
+    }
+  }, l))), filtered.length === 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      padding: "40px 20px",
+      color: C.muted
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 48,
+      marginBottom: 12
+    }
+  }, "\u2B50"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 700,
+      fontSize: 14,
+      color: C.text,
+      marginBottom: 6
+    }
+  }, "Sin ideas guardadas"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      lineHeight: 1.7
+    }
+  }, "Toca la estrella \u2606 en cualquier idea", /*#__PURE__*/React.createElement("br", null), "para guardarla aqu\xED \uD83D\uDCBE")), filtered.map((item, i) => {
+    if (item.tipo === "imagen") {
+      return /*#__PURE__*/React.createElement(IdeaCard, {
+        key: i,
+        idea: item,
+        idx: i,
+        onSave: () => setSavedIdeas(savedIdeas.filter(s => !(s.titulo === item.titulo && s.tipo === "imagen"))),
+        isSaved: true,
+        groqKey: groqKey
+      });
+    } else {
+      return /*#__PURE__*/React.createElement(VideoCard, {
+        key: i,
+        video: item,
+        idx: i,
+        onSave: () => setSavedIdeas(savedIdeas.filter(s => !(s.titulo === item.titulo && s.tipo === "video"))),
+        isSaved: true
+      });
+    }
+  }));
+}
+
+// ─── PESTAÑA: CONFIGURACIÓN ──────────────────────────────────────────────────
+function SettingsTab({
+  groqKey,
+  setGroqKey,
+  characters,
+  setCharacters
+}) {
+  const [st, setSt] = useState("keys");
+  const [gIn, setGIn] = useState("");
+  const [editing, setEditing] = useState(null);
+  const [newC, setNewC] = useState({
+    nombre: "",
+    emoji: "🐾",
+    descripcion: "",
+    color: "#f472b6"
+  });
+  const [showNew, setShowNew] = useState(false);
+  const COLS = ["#4ade80", "#f472b6", "#fb923c", "#38bdf8", "#a78bfa", "#facc15", "#f87171", "#34d399"];
+  const saveC = c => {
+    if (!c.nombre.trim()) return;
+    if (editing) {
+      setCharacters(characters.map(x => x.id === c.id ? c : x));
+      setEditing(null);
+    } else {
+      setCharacters([...characters, {
+        ...c,
+        id: Date.now().toString()
+      }]);
+      setNewC({
+        nombre: "",
+        emoji: "🐾",
+        descripcion: "",
+        color: "#f472b6"
+      });
+      setShowNew(false);
+    }
+  };
+  const CharForm = ({
+    char,
+    setChar,
+    title
+  }) => /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: C.bg,
+      borderRadius: 12,
+      padding: 14,
+      border: `1.5px solid ${C.border}`,
+      marginTop: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 800,
+      fontSize: 13,
+      color: C.text,
+      marginBottom: 10
+    }
+  }, title), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    value: char.emoji,
+    onChange: e => setChar({
+      ...char,
+      emoji: e.target.value
+    }),
+    maxLength: 2,
+    style: {
+      width: 46,
+      padding: "8px",
+      background: C.surface,
+      border: `1.5px solid ${C.border}`,
+      borderRadius: 8,
+      fontSize: 18,
+      textAlign: "center",
+      color: "#fff",
+      outline: "none"
+    }
+  }), /*#__PURE__*/React.createElement("input", {
+    value: char.nombre,
+    onChange: e => setChar({
+      ...char,
+      nombre: e.target.value
+    }),
+    placeholder: "Nombre",
+    style: {
+      flex: 1,
+      padding: "8px 12px",
+      background: C.surface,
+      border: `1.5px solid ${C.border}`,
+      borderRadius: 8,
+      fontSize: 13,
+      color: C.text,
+      outline: "none"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 5,
+      marginBottom: 8,
+      flexWrap: "wrap"
+    }
+  }, COLS.map(c => /*#__PURE__*/React.createElement("button", {
+    key: c,
+    onClick: () => setChar({
+      ...char,
+      color: c
+    }),
+    style: {
+      width: 24,
+      height: 24,
+      borderRadius: "50%",
+      background: c,
+      border: char.color === c ? "3px solid #fff" : "none",
+      cursor: "pointer"
+    }
+  }))), /*#__PURE__*/React.createElement("textarea", {
+    value: char.descripcion,
+    onChange: e => setChar({
+      ...char,
+      descripcion: e.target.value
+    }),
+    placeholder: "Descripci\xF3n detallada en INGL\xC9S para los prompts: cuerpo, colores, rasgos, estilo...",
+    rows: 4,
+    style: {
+      width: "100%",
+      padding: "8px 12px",
+      background: C.surface,
+      border: `1.5px solid ${C.border}`,
+      borderRadius: 8,
+      fontSize: 11,
+      color: C.text,
+      outline: "none",
+      marginBottom: 10,
+      resize: "none",
+      lineHeight: 1.6
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement(Btn, {
+    onClick: () => saveC(char),
+    style: {
+      flex: 1,
+      background: `linear-gradient(135deg,${char.color},${char.color}99)`
+    }
+  }, "\u2705 Guardar"), /*#__PURE__*/React.createElement(Btn, {
+    onClick: () => {
+      setEditing(null);
+      setShowNew(false);
+    },
+    variant: "ghost",
+    style: {
+      padding: "12px 14px"
+    }
+  }, "\u2715")));
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "12px 16px",
+      paddingBottom: 80
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginBottom: 16
+    }
+  }, [["keys", "🔑 API Key"], ["chars", "🎭 Personajes"], ["info", "ℹ️ Info"]].map(([k, l]) => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    onClick: () => setSt(k),
+    style: {
+      flex: 1,
+      padding: "11px",
+      borderRadius: 12,
+      border: "none",
+      background: st === k ? C.accent : C.card,
+      color: st === k ? "#fff" : C.muted,
+      fontWeight: st === k ? 800 : 600,
+      fontSize: 12,
+      cursor: "pointer"
+    }
+  }, l))), st === "keys" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement(Card, {
+    style: {
+      background: groqKey ? "#0a2e1a" : C.card,
+      border: `1.5px solid ${groqKey ? "#16a34a" : C.border}`
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: groqKey ? 0 : 10
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 800,
+      fontSize: 14,
+      color: groqKey ? C.green : C.text
+    }
+  }, "\uD83E\uDD16 Groq API Key ", groqKey ? "✅" : ""), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: C.muted
+    }
+  }, groqKey ? "Llama 3.3 · 14,400 req/día gratis" : "Necesario para todo · 100% gratis")), groqKey && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setGroqKey(""),
+    style: {
+      fontSize: 11,
+      color: "#f87171",
+      background: "none",
+      border: "none",
+      cursor: "pointer"
+    }
+  }, "Cambiar")), !groqKey && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("input", {
+    type: "password",
+    value: gIn,
+    onChange: e => setGIn(e.target.value),
+    placeholder: "gsk_xxxxxxxxxxxx",
+    style: {
+      width: "100%",
+      padding: "10px 12px",
+      background: C.bg,
+      border: `1.5px solid ${C.border}`,
+      borderRadius: 10,
+      fontSize: 12,
+      color: C.text,
+      marginBottom: 8,
+      fontFamily: "monospace",
+      outline: "none"
+    }
+  }), /*#__PURE__*/React.createElement(Btn, {
+    onClick: () => {
+      if (gIn.trim()) {
+        setGroqKey(gIn.trim());
+        setGIn("");
+      }
+    },
+    variant: "success",
+    style: {
+      width: "100%"
+    }
+  }, "Guardar Groq Key"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 10,
+      fontSize: 11,
+      color: C.muted,
+      padding: "10px 12px",
+      background: C.bg,
+      borderRadius: 8,
+      lineHeight: 1.7
+    }
+  }, /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: C.text
+    }
+  }, "\xBFC\xF3mo obtenerla?"), /*#__PURE__*/React.createElement("br", null), "1. Ve a ", /*#__PURE__*/React.createElement("strong", null, "console.groq.com"), /*#__PURE__*/React.createElement("br", null), "2. Login con Google/GitHub", /*#__PURE__*/React.createElement("br", null), "3. API Keys \u2192 Create API Key", /*#__PURE__*/React.createElement("br", null), "4. Copia y pega aqu\xED", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: C.green
+    }
+  }, "100% gratis \xB7 14,400 requests por d\xEDa"))))), st === "chars" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "10px 14px",
+      background: `${C.accent}11`,
+      border: `1px solid ${C.border}`,
+      borderRadius: 10,
+      fontSize: 11,
+      color: C.muted,
+      marginBottom: 12,
+      lineHeight: 1.7
+    }
+  }, "\uD83D\uDCA1 ", /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: C.text
+    }
+  }, "Personajes:"), " hasta 6. La descripci\xF3n debe estar en ", /*#__PURE__*/React.createElement("strong", null, "ingl\xE9s"), " para que los prompts funcionen mejor en Gemini, Leonardo y Midjourney."), characters.map(c => /*#__PURE__*/React.createElement("div", {
+    key: c.id,
+    style: {
+      marginBottom: 8
+    }
+  }, editing?.id === c.id ? /*#__PURE__*/React.createElement(CharForm, {
+    char: editing,
+    setChar: setEditing,
+    title: `Editar ${c.nombre}`
+  }) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      padding: "12px 14px",
+      background: C.card,
+      borderRadius: 12,
+      border: `1.5px solid ${C.border}`
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 38,
+      height: 38,
+      borderRadius: "50%",
+      background: `${c.color}22`,
+      border: `2px solid ${c.color}`,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 20,
+      flexShrink: 0
+    }
+  }, c.emoji), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 800,
+      fontSize: 13,
+      color: C.text
+    }
+  }, c.nombre), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: C.muted,
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis"
+    }
+  }, c.descripcion.slice(0, 80), "...")), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setEditing({
+      ...c
+    }),
+    style: {
+      padding: "5px 9px",
+      background: C.surface,
+      border: `1px solid ${C.border}`,
+      borderRadius: 8,
+      fontSize: 11,
+      cursor: "pointer",
+      color: C.muted
+    }
+  }, "\u270F\uFE0F"), c.id !== "lito" && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setCharacters(characters.filter(x => x.id !== c.id)),
+    style: {
+      padding: "5px 9px",
+      background: "#2d0a0a",
+      border: "1px solid #5a1a1a",
+      borderRadius: 8,
+      fontSize: 11,
+      cursor: "pointer",
+      color: "#f87171"
+    }
+  }, "\uD83D\uDDD1\uFE0F")))), characters.length < 6 && !showNew && !editing && /*#__PURE__*/React.createElement(Btn, {
+    onClick: () => setShowNew(true),
+    style: {
+      width: "100%",
+      marginTop: 4
+    }
+  }, "\u2795 Agregar personaje"), showNew && /*#__PURE__*/React.createElement(CharForm, {
+    char: newC,
+    setChar: setNewC,
+    title: "Nuevo personaje"
+  })), st === "info" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 800,
+      color: C.text,
+      marginBottom: 8
+    }
+  }, "\uD83E\uDEE7 Lito Studio \xB7 Generador de Ideas"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: C.muted,
+      lineHeight: 1.7
+    }
+  }, "App profesional para generar ideas virales de contenido para Facebook, TikTok e Instagram.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: C.text
+    }
+  }, "3 generadores principales:"), /*#__PURE__*/React.createElement("br", null), "\uD83C\uDFA8 ", /*#__PURE__*/React.createElement("strong", null, "Im\xE1genes"), " \u2014 memes con prompts y frases hook", /*#__PURE__*/React.createElement("br", null), "\uD83C\uDFAC ", /*#__PURE__*/React.createElement("strong", null, "Videos"), " \u2014 guiones completos con escenas, di\xE1logos y captions", /*#__PURE__*/React.createElement("br", null), "\uD83C\uDFAF ", /*#__PURE__*/React.createElement("strong", null, "Series"), " \u2014 calendarios narrativos conectados", /*#__PURE__*/React.createElement("br", null))), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 800,
+      color: C.text,
+      marginBottom: 8
+    }
+  }, "\uD83D\uDCCB Flujo recomendado"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: C.muted,
+      lineHeight: 1.8
+    }
+  }, "1\uFE0F\u20E3 Genera ideas en \uD83C\uDFA8 Imagen o \uD83C\uDFAC Video", /*#__PURE__*/React.createElement("br", null), "2\uFE0F\u20E3 Guarda las que m\xE1s te gusten \u2B50", /*#__PURE__*/React.createElement("br", null), "3\uFE0F\u20E3 Copia el prompt \u2192 p\xE9galo en Gemini/Leonardo/Midjourney", /*#__PURE__*/React.createElement("br", null), "4\uFE0F\u20E3 Copia la frase hook como caption", /*#__PURE__*/React.createElement("br", null), "5\uFE0F\u20E3 Sube a Facebook con la estrategia recomendada")), /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 800,
+      color: C.text,
+      marginBottom: 8
+    }
+  }, "\uD83D\uDD25 Tips para maximizar viralidad"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: C.muted,
+      lineHeight: 1.8
+    }
+  }, "\u2705 Usa el ", /*#__PURE__*/React.createElement("strong", null, "viral_score"), " como gu\xEDa", /*#__PURE__*/React.createElement("br", null), "\u2705 Posts con humor ", /*#__PURE__*/React.createElement("strong", null, "relatable + cringe"), " performan mejor", /*#__PURE__*/React.createElement("br", null), "\u2705 Series conectadas crean audiencia recurrente", /*#__PURE__*/React.createElement("br", null), "\u2705 Mejor horario: 9-11 AM y 7-10 PM", /*#__PURE__*/React.createElement("br", null), "\u2705 Pregunta directa al final del caption", /*#__PURE__*/React.createElement("br", null), "\u2705 Etiqueta: \"Etiqueta a alguien que...\"")), /*#__PURE__*/React.createElement(Card, {
+    style: {
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: C.muted
+    }
+  }, "v5.0 \xB7 Idea Generator", /*#__PURE__*/React.createElement("br", null), "Powered by Groq Llama 3.3 (free tier)"))));
+}
+
+// ─── BOTTOM NAV ──────────────────────────────────────────────────────────────
+function BottomNav({
+  active,
+  onChange,
+  hasKeys,
+  savedCount
+}) {
+  const tabs = [{
+    id: "image",
+    icon: "🎨",
+    label: "Imagen"
+  }, {
+    id: "video",
+    icon: "🎬",
+    label: "Video"
+  }, {
+    id: "series",
+    icon: "🎯",
+    label: "Series"
+  }, {
+    id: "saved",
+    icon: "⭐",
+    label: "Guardadas",
+    badge: savedCount > 0 ? savedCount : null
+  }, {
+    id: "settings",
+    icon: "⚙️",
+    label: "Config",
+    dot: !hasKeys
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "fixed",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 100,
+      background: C.surface,
+      borderTop: `1.5px solid ${C.border}`,
+      display: "flex",
+      paddingBottom: "env(safe-area-inset-bottom,8px)"
+    }
+  }, tabs.map(t => /*#__PURE__*/React.createElement("button", {
+    key: t.id,
+    onClick: () => onChange(t.id),
+    style: {
+      flex: 1,
+      padding: "10px 0 6px",
+      background: "transparent",
+      border: "none",
+      cursor: "pointer",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 2,
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 20
+    }
+  }, t.icon), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 9,
+      fontWeight: active === t.id ? 800 : 500,
+      color: active === t.id ? "#fff" : C.muted
+    }
+  }, t.label), active === t.id && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: 0,
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: 24,
+      height: 2,
+      background: C.grad,
+      borderRadius: "0 0 4px 4px"
+    }
+  }), t.badge && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: 6,
+      right: "18%",
+      minWidth: 14,
+      height: 14,
+      padding: "0 4px",
+      background: C.amber,
+      borderRadius: 50,
+      fontSize: 8,
+      fontWeight: 900,
+      color: "#000",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  }, t.badge), t.dot && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: 8,
+      right: "22%",
+      width: 7,
+      height: 7,
+      background: "#f97316",
+      borderRadius: "50%"
+    }
+  }))));
+}
+
+// ─── APP ─────────────────────────────────────────────────────────────────────
+function App() {
+  const [tab, setTab] = useState("image");
+  const [groqKey, setGroqKey] = usePersisted("lito_groq_key", "");
+  const [characters, setCharacters] = usePersisted("lito_characters", DEFAULT_CHARACTERS);
+  const [savedIdeas, setSavedIdeas] = usePersisted("lito_saved_ideas", []);
+  const tabLabels = {
+    image: "🎨 Generador de imágenes virales",
+    video: "🎬 Generador de guiones de video",
+    series: "🎯 Series narrativas conectadas",
+    saved: "⭐ Mis ideas guardadas",
+    settings: "⚙️ Configuración"
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      minHeight: "100vh",
+      background: C.bg,
+      color: C.text
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "12px 16px 10px",
+      background: C.surface,
+      borderBottom: `1.5px solid ${C.border}`,
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      position: "sticky",
+      top: 0,
+      zIndex: 50
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 24
+    }
+  }, "\uD83E\uDEE7"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 900,
+      color: C.text,
+      lineHeight: 1
+    }
+  }, "Lito Studio"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: C.muted,
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis"
+    }
+  }, tabLabels[tab])), groqKey && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "2px 8px",
+      background: "#0a2e1a",
+      border: "1px solid #16a34a",
+      borderRadius: 50,
+      fontSize: 9,
+      color: C.green,
+      fontWeight: 700,
+      flexShrink: 0
+    }
+  }, "Groq \u2713")), tab === "image" && /*#__PURE__*/React.createElement(ImageTab, {
+    groqKey: groqKey,
+    characters: characters,
+    savedIdeas: savedIdeas,
+    setSavedIdeas: setSavedIdeas
+  }), tab === "video" && /*#__PURE__*/React.createElement(VideoTab, {
+    groqKey: groqKey,
+    characters: characters,
+    savedIdeas: savedIdeas,
+    setSavedIdeas: setSavedIdeas
+  }), tab === "series" && /*#__PURE__*/React.createElement(SeriesTab, {
+    groqKey: groqKey,
+    characters: characters
+  }), tab === "saved" && /*#__PURE__*/React.createElement(SavedTab, {
+    savedIdeas: savedIdeas,
+    setSavedIdeas: setSavedIdeas,
+    groqKey: groqKey
+  }), tab === "settings" && /*#__PURE__*/React.createElement(SettingsTab, {
+    groqKey: groqKey,
+    setGroqKey: setGroqKey,
+    characters: characters,
+    setCharacters: setCharacters
+  }), /*#__PURE__*/React.createElement(BottomNav, {
+    active: tab,
+    onChange: setTab,
+    hasKeys: !!groqKey,
+    savedCount: savedIdeas.length
+  }));
+}
+ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(App, null));
+</script>
+<script>
+if("serviceWorker"in navigator){
+  const c=`const V="lito-v5";self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(["./"])));self.skipWaiting();});self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V).map(x=>caches.delete(x)))));self.clients.claim();});self.addEventListener("fetch",e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});`;
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([c],{type:"application/javascript"}))).catch(()=>{});
+}
+</script>
+</body>
+</html>
