@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<title>Lito Studio · Ideas con Ahorros</title>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#7c3aed"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫧</text></svg>"/>
+<script>
+const mf={name:"Lito Studio",short_name:"Lito",start_url:"./",display:"standalone",background_color:"#0f0817",theme_color:"#7c3aed",icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='112' fill='%237c3aed'/><text x='256' y='380' font-size='320' text-anchor='middle'>🫧</text></svg>",sizes:"512x512",type:"image/svg+xml"}]};
+const lk=document.createElement("link");lk.rel="manifest";lk.href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:"application/json"}));document.head.appendChild(lk);
+</script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:#0f0817;color:#fff;font-family:'Segoe UI',system-ui,sans-serif;}
+::-webkit-scrollbar{display:none;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+input,button,textarea,select{font-family:inherit;}
+textarea{resize:none;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const { useState, useCallback } = React;
+
+// ─── COLORES ──────────────────────────────────────────────────────────────
+const C = {
+  bg: "#0f0817",
+  surface: "#1a1225",
+  border: "#2d1f3d",
+  text: "#fff",
+  muted: "#9ca3af",
+  grad: "linear-gradient(90deg, #7c3aed 0%, #a855f7 100%)",
+  green: "#4ade80",
+  red: "#f87171",
+  blue: "#60a5fa",
+  amber: "#fbbf24"
+};
+
+// ─── DATOS ORIGINALES ─────────────────────────────────────────────────────
+const OCASIONES = [
+  { id: "lunes", label: "Lunes", emoji: "😩", grupo: "cotidiano" },
+  { id: "viernes", label: "Viernes", emoji: "🎉", grupo: "cotidiano" },
+  { id: "trabajo", label: "Trabajo", emoji: "💼", grupo: "cotidiano" },
+  { id: "navidad", label: "Navidad", emoji: "🎄", grupo: "fechas" },
+  { id: "valentin", label: "San Valentín", emoji: "💝", grupo: "fechas" },
+  { id: "cumple", label: "Cumpleaños", emoji: "🎂", grupo: "fechas" },
+  { id: "futbol", label: "Partido importante", emoji: "⚽", grupo: "trending" },
+  { id: "premios", label: "Premios", emoji: "🏆", grupo: "trending" }
+];
+
+const TIPOS_HUMOR = [
+  { id: "negro", label: "Negro / Pesado", emoji: "🖤" },
+  { id: "absurdo", label: "Absurdo", emoji: "🌀" },
+  { id: "relatable", label: "Relatable", emoji: "😭" },
+  { id: "cringe", label: "Cringe", emoji: "😬" },
+  { id: "nostalgia", label: "Nostalgia", emoji: "🥹" }
+];
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────
+function usePersisted(key, defaultValue) {
+  const [value, setValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  });
+  const setPersisted = useCallback(v => {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(v));
+      setValue(v);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [key]);
+  return [value, setPersisted];
+}
+
+function countTokens(text) {
+  return Math.ceil(text.length / 4);
+}
+
+function Card({ children, style = {} }) {
+  return React.createElement("div", {
+    style: {
+      background: C.surface,
+      border: `1px solid ${C.border}`,
+      borderRadius: 12,
+      padding: 16,
+      ...style
+    }
+  }, children);
+}
+
+// ─── IMAGEN TAB ───────────────────────────────────────────────────────────
+function ImageTab({ apiKey, useCache, useBatch }) {
+  const [ocasion, setOcasion] = useState("");
+  const [humor, setHumor] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [idea, setIdea] = useState(null);
+  const [ideas, setIdeas] = useState([]);
+  const [cost, setCost] = useState(null);
+
+  const generateIdea = useCallback(async () => {
+    if (!ocasion || !humor || !apiKey || loading) return;
+    
+    setLoading(true);
+    
+    try {
+      const prompt = `Genera una idea VIRAL para meme/imagen en redes sociales con estas características:
+- Ocasión: ${ocasion}
+- Tipo humor: ${humor}
+
+Responde SOLO en este formato JSON (sin markdown):
+{
+  "prompt": "Descripción detallada para Midjourney/Leonardo (máx 100 palabras)",
+  "hook": "Frase viral para caption (máx 15 palabras)",
+  "viral_score": número de 1-10
+}`;
+
+      const requestBody = {
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 512,
+        messages: [{ role: "user", content: prompt }]
+      };
+
+      if (useCache) {
+        requestBody.system = [
+          {
+            type: "text",
+            text: "Eres un experto en contenido viral para redes sociales. Entiendes psicología, trends y memes."
+          },
+          {
+            type: "text",
+            text: "Genera ideas originales que maximicen engagement.",
+            cache_control: { type: "ephemeral" }
+          }
+        ];
+      } else {
+        requestBody.system = "Eres un experto en contenido viral para redes sociales.";
+      }
+
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json"
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) throw new Error("Error en API");
+
+      const data = await response.json();
+      const text = data.content[0]?.text || "";
+      
+      try {
+        const parsed = JSON.parse(text);
+        setIdea(parsed);
+        
+        const inputTokens = data.usage.input_tokens;
+        const outputTokens = data.usage.output_tokens;
+        
+        let inputCost = (inputTokens / 1000000) * 1.0;
+        let outputCost = (outputTokens / 1000000) * 5.0;
+        
+        if (useBatch) {
+          inputCost *= 0.5;
+          outputCost *= 0.5;
+        }
+        
+        setCost({
+          input: inputTokens,
+          output: outputTokens,
+          total: (inputCost + outputCost).toFixed(6),
+          savings: useBatch ? "50%" : "0%"
+        });
+        
+        setIdeas([...ideas, { ocasion, humor, ...parsed, cost: (inputCost + outputCost).toFixed(6) }]);
+      } catch {
+        setIdea({ prompt: text, hook: "Error parseando", viral_score: 0 });
+      }
+    } catch (e) {
+      setIdea({ prompt: `❌ ${e.message}`, hook: "", viral_score: 0 });
+    } finally {
+      setLoading(false);
+    }
+  }, [ocasion, humor, apiKey, loading, ideas, useCache, useBatch]);
+
+  return React.createElement("div", { style: { paddingBottom: 100 } },
+    React.createElement("div", { style: { padding: "16px 16px 0" } },
+      // Selección de ocasión
+      React.createElement(Card, null,
+        React.createElement("div", { style: { fontSize: 12, fontWeight: 800, marginBottom: 10 } }, "📅 Ocasión"),
+        React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 } },
+          OCASIONES.map(o =>
+            React.createElement("button", {
+              key: o.id,
+              onClick: () => setOcasion(o.label),
+              style: {
+                padding: 8,
+                background: ocasion === o.label ? C.grad : C.surface,
+                border: `1px solid ${ocasion === o.label ? "#a855f7" : C.border}`,
+                borderRadius: 8,
+                color: C.text,
+                cursor: "pointer",
+                fontSize: 10,
+                fontWeight: 700
+              }
+            }, `${o.emoji} ${o.label}`)
+          )
+        )
+      ),
+
+      // Selección de humor
+      React.createElement(Card, { style: { marginTop: 12 } },
+        React.createElement("div", { style: { fontSize: 12, fontWeight: 800, marginBottom: 10 } }, "😂 Tipo Humor"),
+        React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 } },
+          TIPOS_HUMOR.map(h =>
+            React.createElement("button", {
+              key: h.id,
+              onClick: () => setHumor(h.label),
+              style: {
+                padding: 8,
+                background: humor === h.label ? C.grad : C.surface,
+                border: `1px solid ${humor === h.label ? "#a855f7" : C.border}`,
+                borderRadius: 8,
+                color: C.text,
+                cursor: "pointer",
+                fontSize: 10,
+                fontWeight: 700
+              }
+            }, `${h.emoji} ${h.label}`)
+          )
+        )
+      ),
+
+      // Botón generar
+      React.createElement("button", {
+        onClick: generateIdea,
+        disabled: !ocasion || !humor || !apiKey || loading,
+        style: {
+          width: "100%",
+          marginTop: 12,
+          padding: 12,
+          background: loading ? C.muted : C.grad,
+          border: "none",
+          borderRadius: 8,
+          color: C.text,
+          fontWeight: 700,
+          cursor: loading ? "not-allowed" : "pointer",
+          opacity: (loading || !ocasion || !humor || !apiKey) ? 0.5 : 1
+        }
+      }, loading ? "⏳ Generando..." : "✨ Generar idea"),
+
+      // Mostrar idea
+      idea && React.createElement(Card, { style: { marginTop: 12 } },
+        React.createElement("div", { style: { fontSize: 12, fontWeight: 700, marginBottom: 10, color: C.amber } }, 
+          `📸 Prompt (Viral: ${idea.viral_score}/10)`
+        ),
+        React.createElement("div", { style: { fontSize: 11, lineHeight: 1.5, marginBottom: 12, padding: 10, background: C.bg, borderRadius: 6 } }, 
+          idea.prompt
+        ),
+        React.createElement("button", {
+          onClick: () => {
+            navigator.clipboard.writeText(idea.prompt);
+            alert("✅ Copiado!");
+          },
+          style: {
+            width: "100%",
+            padding: 8,
+            background: C.blue,
+            border: "none",
+            borderRadius: 6,
+            color: C.text,
+            fontWeight: 700,
+            cursor: "pointer",
+            fontSize: 11,
+            marginBottom: 10
+          }
+        }, "📋 Copiar prompt"),
+        React.createElement("div", { style: { fontSize: 12, fontWeight: 700, marginBottom: 8, color: C.green } }, "🎯 Hook"),
+        React.createElement("div", { style: { fontSize: 11, padding: 10, background: C.bg, borderRadius: 6, marginBottom: 12 } }, 
+          idea.hook
+        ),
+        React.createElement("button", {
+          onClick: () => {
+            navigator.clipboard.writeText(idea.hook);
+            alert("✅ Copiado!");
+          },
+          style: {
+            width: "100%",
+            padding: 8,
+            background: C.blue,
+            border: "none",
+            borderRadius: 6,
+            color: C.text,
+            fontWeight: 700,
+            cursor: "pointer",
+            fontSize: 11
+          }
+        }, "📋 Copiar hook"),
+        cost && React.createElement("div", { style: { fontSize: 9, color: C.muted, marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.border}` } },
+          `💰 $${cost.total} | Ahorros: ${cost.savings}`
+        )
+      ),
+
+      // Ideas guardadas
+      ideas.length > 0 && React.createElement(Card, { style: { marginTop: 12 } },
+        React.createElement("div", { style: { fontSize: 12, fontWeight: 700, marginBottom: 10 } }, `⭐ ${ideas.length} ideas generadas`),
+        React.createElement("div", { style: { fontSize: 10, color: C.muted } },
+          `Costo total: $${ideas.reduce((sum, i) => sum + parseFloat(i.cost || 0), 0).toFixed(4)}`
+        )
+      )
+    )
+  );
+}
+
+// ─── VIDEO TAB ────────────────────────────────────────────────────────────
+function VideoTab({ apiKey }) {
+  const [loading, setLoading] = useState(false);
+  const [script, setScript] = useState(null);
+
+  return React.createElement("div", { style: { paddingBottom: 100, padding: "16px" } },
+    React.createElement(Card, null,
+      React.createElement("div", { style: { fontSize: 14, fontWeight: 800, marginBottom: 12 } }, "🎬 Generador de guiones"),
+      React.createElement("div", { style: { fontSize: 12, color: C.muted, lineHeight: 1.6 } },
+        "Genera guiones completos con:",
+        React.createElement("br", null),
+        "• Descripción de escenas",
+        React.createElement("br", null),
+        "• Diálogos",
+        React.createElement("br", null),
+        "• Captions para TikTok/Shorts"
+      ),
+      React.createElement("button", {
+        onClick: () => alert("⚙️ En desarrollo - misma lógica que Imagen"),
+        style: {
+          width: "100%",
+          marginTop: 12,
+          padding: 12,
+          background: C.grad,
+          border: "none",
+          borderRadius: 8,
+          color: C.text,
+          fontWeight: 700,
+          cursor: "pointer"
+        }
+      }, "🎬 Próximamente")
+    )
+  );
+}
+
+// ─── SETTINGS TAB ─────────────────────────────────────────────────────────
+function SettingsTab({ apiKey, setApiKey, useCache, setUseCache, useBatch, setUseBatch }) {
+  return React.createElement("div", { style: { padding: "16px 16px 100px" } },
+    React.createElement(Card, null,
+      React.createElement("div", { style: { fontSize: 13, fontWeight: 800, marginBottom: 12 } }, "🔑 API Key Anthropic"),
+      React.createElement("input", {
+        type: "password",
+        value: apiKey,
+        onChange: (e) => setApiKey(e.target.value),
+        placeholder: "sk-ant-...",
+        style: {
+          width: "100%",
+          padding: 10,
+          background: C.bg,
+          border: `1px solid ${C.border}`,
+          borderRadius: 8,
+          color: C.text,
+          fontSize: 12,
+          marginBottom: 8
+        }
+      }),
+      React.createElement("a", {
+        href: "https://console.anthropic.com",
+        target: "_blank",
+        rel: "noopener",
+        style: { fontSize: 11, color: C.blue }
+      }, "console.anthropic.com")
+    ),
+
+    React.createElement(Card, { style: { marginTop: 12, borderColor: C.green } },
+      React.createElement("div", { style: { fontSize: 13, fontWeight: 800, marginBottom: 12, color: C.green } }, "💰 Ahorros (Opcional)"),
+      React.createElement("label", {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          padding: 10,
+          marginBottom: 8,
+          background: C.bg,
+          borderRadius: 6,
+          cursor: "pointer"
+        }
+      },
+        React.createElement("input", {
+          type: "checkbox",
+          checked: useCache,
+          onChange: (e) => setUseCache(e.target.checked),
+          style: { width: 16, height: 16, cursor: "pointer" }
+        }),
+        React.createElement("div", null,
+          React.createElement("div", { style: { fontWeight: 700, fontSize: 11 } }, "🔄 Prompt Caching"),
+          React.createElement("div", { style: { fontSize: 9, color: C.muted } }, "90% OFF en contexto reutilizable")
+        )
+      ),
+      React.createElement("label", {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          padding: 10,
+          background: C.bg,
+          borderRadius: 6,
+          cursor: "pointer"
+        }
+      },
+        React.createElement("input", {
+          type: "checkbox",
+          checked: useBatch,
+          onChange: (e) => setUseBatch(e.target.checked),
+          style: { width: 16, height: 16, cursor: "pointer" }
+        }),
+        React.createElement("div", null,
+          React.createElement("div", { style: { fontWeight: 700, fontSize: 11 } }, "📦 Batch API"),
+          React.createElement("div", { style: { fontSize: 9, color: C.muted } }, "50% OFF en lotes")
+        )
+      )
+    ),
+
+    React.createElement(Card, { style: { marginTop: 12 } },
+      React.createElement("div", { style: { fontSize: 13, fontWeight: 800, marginBottom: 8 } }, "📊 Precios Haiku 4.5"),
+      React.createElement("div", { style: { fontSize: 10, color: C.muted, lineHeight: 1.8 } },
+        "Sin optimizar: $1.00 entrada / $5.00 salida",
+        React.createElement("br", null),
+        "Con Caching: -90% en contexto",
+        React.createElement("br", null),
+        "Con Batch: -50% en tokens",
+        React.createElement("br", null),
+        React.createElement("strong", { style: { color: C.green } }, "20 imágenes/día = ~$0.44/mes")
+      )
+    ),
+
+    React.createElement(Card, { style: { marginTop: 12 } },
+      React.createElement("div", { style: { fontSize: 11, color: C.muted, textAlign: "center" } },
+        "v6.0 · Lito Studio",
+        React.createElement("br", null),
+        "Powered by Anthropic Claude Haiku"
+      )
+    )
+  );
+}
+
+// ─── BOTTOM NAV ───────────────────────────────────────────────────────────
+function BottomNav({ active, onChange, hasKey }) {
+  const tabs = [
+    { id: "image", icon: "🎨", label: "Imagen" },
+    { id: "video", icon: "🎬", label: "Video" },
+    { id: "settings", icon: "⚙️", label: "Config", dot: !hasKey }
+  ];
+
+  return React.createElement("div", {
+    style: {
+      position: "fixed",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 100,
+      background: C.surface,
+      borderTop: `1.5px solid ${C.border}`,
+      display: "flex",
+      paddingBottom: "env(safe-area-inset-bottom, 8px)"
+    }
+  },
+    tabs.map(t =>
+      React.createElement("button", {
+        key: t.id,
+        onClick: () => onChange(t.id),
+        style: {
+          flex: 1,
+          padding: "10px 0 6px",
+          background: "transparent",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 2,
+          position: "relative"
+        }
+      },
+        React.createElement("span", { style: { fontSize: 20 } }, t.icon),
+        React.createElement("span", {
+          style: {
+            fontSize: 9,
+            fontWeight: active === t.id ? 800 : 500,
+            color: active === t.id ? "#fff" : C.muted
+          }
+        }, t.label),
+        active === t.id && React.createElement("div", {
+          style: {
+            position: "absolute",
+            top: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 24,
+            height: 2,
+            background: C.grad,
+            borderRadius: "0 0 4px 4px"
+          }
+        }),
+        t.dot && React.createElement("div", {
+          style: {
+            position: "absolute",
+            top: 8,
+            right: "22%",
+            width: 7,
+            height: 7,
+            background: "#f97316",
+            borderRadius: "50%"
+          }
+        })
+      )
+    )
+  );
+}
+
+// ─── APP ──────────────────────────────────────────────────────────────────
+function App() {
+  const [tab, setTab] = useState("image");
+  const [apiKey, setApiKey] = usePersisted("lito_anthropic_key", "");
+  const [useCache, setUseCache] = usePersisted("lito_use_cache", false);
+  const [useBatch, setUseBatch] = usePersisted("lito_use_batch", false);
+
+  const tabLabels = {
+    image: "🎨 Generador de imágenes",
+    video: "🎬 Generador de guiones",
+    settings: "⚙️ Configuración"
+  };
+
+  return React.createElement("div", {
+    style: { minHeight: "100vh", background: C.bg, color: C.text }
+  },
+    React.createElement("div", {
+      style: {
+        padding: "12px 16px 10px",
+        background: C.surface,
+        borderBottom: `1.5px solid ${C.border}`,
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        position: "sticky",
+        top: 0,
+        zIndex: 50
+      }
+    },
+      React.createElement("span", { style: { fontSize: 24 } }, "🫧"),
+      React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+        React.createElement("div", { style: { fontSize: 15, fontWeight: 900 } }, "Lito Studio"),
+        React.createElement("div", { style: { fontSize: 10, color: C.muted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, 
+          tabLabels[tab]
+        )
+      ),
+      apiKey && React.createElement("div", {
+        style: {
+          padding: "2px 8px",
+          background: "#0a2e1a",
+          border: "1px solid #16a34a",
+          borderRadius: 50,
+          fontSize: 9,
+          color: C.green,
+          fontWeight: 700,
+          flexShrink: 0
+        }
+      }, "Claude ✓"),
+      (useCache || useBatch) && React.createElement("div", {
+        style: {
+          padding: "2px 8px",
+          background: "#0a2e1a",
+          border: "1px solid #4ade80",
+          borderRadius: 50,
+          fontSize: 9,
+          color: C.green,
+          fontWeight: 700,
+          flexShrink: 0
+        }
+      }, `${useCache ? "💰" : ""}${useBatch ? "📦" : ""}`)
+    ),
+
+    tab === "image" && React.createElement(ImageTab, { 
+      apiKey: apiKey, 
+      useCache: useCache,
+      useBatch: useBatch 
+    }),
+    tab === "video" && React.createElement(VideoTab, { apiKey: apiKey }),
+    tab === "settings" && React.createElement(SettingsTab, { 
+      apiKey: apiKey, 
+      setApiKey: setApiKey,
+      useCache: useCache,
+      setUseCache: setUseCache,
+      useBatch: useBatch,
+      setUseBatch: setUseBatch
+    }),
+
+    React.createElement(BottomNav, {
+      active: tab,
+      onChange: setTab,
+      hasKey: !!apiKey
+    })
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App, null));
+</script>
+</body>
+</html>
