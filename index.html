@@ -1,0 +1,2353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"/>
+<title>Lito Studio</title>
+<meta name="description" content="Generador profesional de contenido viral"/>
+
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Lito Studio"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#0f0817"/>
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%237c3aed'/><text x='50' y='72' font-size='60' text-anchor='middle'>🫧</text></svg>"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%237c3aed'/><text x='50' y='72' font-size='60' text-anchor='middle'>🫧</text></svg>"/>
+
+<script>
+const manifest = {
+  name: "Lito Studio",
+  short_name: "Lito Studio",
+  description: "Generador de contenido viral",
+  start_url: "./",
+  display: "standalone",
+  orientation: "portrait",
+  background_color: "#0f0817",
+  theme_color: "#7c3aed",
+  icons: [
+    { src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='112' fill='%237c3aed'/><text x='256' y='380' font-size='320' text-anchor='middle'>🫧</text></svg>", sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" },
+    { src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='42' fill='%237c3aed'/><text x='96' y='142' font-size='120' text-anchor='middle'>🫧</text></svg>", sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" }
+  ]
+};
+const link = document.createElement("link");
+link.rel = "manifest";
+link.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: "application/json" }));
+document.head.appendChild(link);
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bricolage+Grotesque:wght@500;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"/>
+
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+
+<style>
+:root {
+  --bg: #0f0817;
+  --bg-2: #150a23;
+  --surface: #1a1225;
+  --surface-2: #241834;
+  --border: #2d1f3d;
+  --border-2: #3d2c52;
+  --text: #fff;
+  --text-2: #c4b8d6;
+  --muted: #8a7a9e;
+  --purple: #a855f7;
+  --purple-2: #c084fc;
+  --pink: #ec4899;
+  --grad: linear-gradient(135deg, #7c3aed 0%, #c026d3 100%);
+  --grad-2: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
+  --grad-3: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+  --green: #4ade80;
+  --amber: #fbbf24;
+  --danger: #f87171;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea, select {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+html, body {
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  overscroll-behavior: none;
+}
+
+#root {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+  color: inherit;
+  font-size: inherit;
+}
+
+textarea { resize: none; }
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+}
+
+::-webkit-scrollbar { display: none; width: 0; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* HEADER */
+.app-header {
+  height: calc(56px + var(--safe-top));
+  padding-top: var(--safe-top);
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 50;
+}
+
+.header-content {
+  height: 56px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 10px;
+}
+
+.brand-mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.brand-icon {
+  font-size: 26px;
+  filter: drop-shadow(0 2px 4px rgba(168, 85, 247, 0.4));
+}
+
+.brand-text {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+}
+
+.tab-subtitle {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+  margin-top: -2px;
+  letter-spacing: 0.02em;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.icon-btn:active { background: var(--surface); }
+
+.status-pill {
+  padding: 5px 10px;
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.status-pill.online {
+  background: rgba(74, 222, 128, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  color: var(--green);
+}
+
+.status-pill.offline {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: var(--danger);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-bottom: calc(72px + var(--safe-bottom));
+}
+
+.tab-content {
+  padding: 16px;
+  max-width: 760px;
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* HERO SECTION (top of each tab) */
+.tab-hero {
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-hero.charco {
+  background: linear-gradient(135deg, #4a1a4f 0%, #1a0a23 100%);
+  border: 1px solid rgba(192, 38, 211, 0.3);
+}
+
+.tab-hero.meilin {
+  background: linear-gradient(135deg, #1a3a5f 0%, #0a1a2e 100%);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.tab-hero.imagen {
+  background: linear-gradient(135deg, #4a1f1a 0%, #2a1015 100%);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.tab-hero.video {
+  background: linear-gradient(135deg, #1a4a3a 0%, #0a2a20 100%);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.tab-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-emoji {
+  font-size: 32px;
+  margin-bottom: 10px;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+  line-height: 1.1;
+}
+
+.hero-subtitle {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+  max-width: 90%;
+}
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-title .req {
+  color: var(--pink);
+  font-size: 14px;
+  margin-left: 2px;
+}
+
+/* CHIPS */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 8px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chip:active {
+  transform: scale(0.96);
+}
+
+.chip.selected {
+  background: var(--grad);
+  border-color: transparent;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+/* SELECT GRID */
+.select-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.select-card {
+  padding: 12px 10px;
+  background: var(--bg-2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.select-card:active { transform: scale(0.97); }
+
+.select-card.selected {
+  border-color: var(--purple);
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.select-card-icon { font-size: 22px; }
+
+.select-card-label {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.select-card-desc {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.3;
+}
+
+/* INPUT */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg-2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--purple);
+}
+
+.textarea-field {
+  min-height: 80px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.input-help {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* GENERATE BUTTON */
+.generate-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--grad);
+  border-radius: 14px;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
+  transition: all 0.15s;
+}
+
+.generate-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.generate-btn:disabled {
+  opacity: 0.4;
+  background: var(--surface-2);
+  box-shadow: none;
+}
+
+.generate-btn.streaming {
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+  background-image: linear-gradient(90deg, var(--purple) 0%, var(--pink) 50%, var(--purple) 100%);
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* RESULT CARD */
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+
+.result-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.viral-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.viral-score.high { background: rgba(74, 222, 128, 0.15); color: var(--green); }
+.viral-score.mid { background: rgba(251, 191, 36, 0.15); color: var(--amber); }
+.viral-score.low { background: rgba(248, 113, 113, 0.15); color: var(--danger); }
+
+.result-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--bg-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-2);
+  transition: all 0.15s;
+}
+
+.action-btn:active {
+  background: var(--surface-2);
+  transform: scale(0.92);
+}
+
+.action-btn.saved { color: var(--amber); }
+
+.result-section {
+  margin-bottom: 14px;
+}
+
+.result-section:last-child { margin-bottom: 0; }
+
+.result-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.copy-mini {
+  font-size: 10px;
+  color: var(--purple-2);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.copy-mini:active { color: var(--purple); }
+
+.result-text {
+  background: var(--bg-2);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.result-text.dialog {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+.result-text.frase {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+  padding: 18px 14px;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.hashtag {
+  font-size: 11px;
+  color: var(--purple-2);
+  background: rgba(168, 85, 247, 0.1);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.cost-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* VARIATIONS */
+.variations {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.variation {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  position: relative;
+  transition: all 0.15s;
+}
+
+.variation:active { border-color: var(--border-2); }
+
+.variation-num {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.variation-text {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-right: 24px;
+  margin-bottom: 8px;
+}
+
+.variation-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.variation-action {
+  font-size: 11px;
+  color: var(--purple-2);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* EMPTY STATES */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.empty-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+  padding-bottom: var(--safe-bottom);
+  backdrop-filter: blur(20px);
+  background: rgba(15, 8, 23, 0.92);
+}
+
+.nav-tab {
+  flex: 1;
+  padding: 9px 0 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: var(--muted);
+  position: relative;
+  transition: color 0.15s;
+}
+
+.nav-tab.active {
+  color: var(--text);
+}
+
+.nav-tab-icon {
+  font-size: 20px;
+  transition: transform 0.2s;
+}
+
+.nav-tab.active .nav-tab-icon {
+  transform: scale(1.1);
+}
+
+.nav-tab-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.nav-tab.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 3px;
+  background: var(--grad);
+  border-radius: 0 0 4px 4px;
+}
+
+.nav-tab .badge {
+  position: absolute;
+  top: 4px;
+  right: calc(50% - 16px);
+  min-width: 16px;
+  height: 16px;
+  background: var(--pink);
+  border-radius: 50px;
+  font-size: 9px;
+  font-weight: 800;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.nav-tab .dot {
+  position: absolute;
+  top: 8px;
+  right: calc(50% - 14px);
+  width: 8px;
+  height: 8px;
+  background: var(--amber);
+  border-radius: 50%;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s;
+  backdrop-filter: blur(6px);
+}
+
+.modal {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-width: 540px;
+  max-height: 92dvh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  padding-bottom: var(--safe-bottom);
+}
+
+.modal-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--border-2);
+  border-radius: 2px;
+  margin: 8px auto 4px;
+  flex-shrink: 0;
+}
+
+.modal-header {
+  padding: 12px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+
+.modal-close:active {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+}
+
+.modal-section { margin-bottom: 22px; }
+.modal-section:last-child { margin-bottom: 0; }
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  gap: 12px;
+}
+
+.toggle-info { flex: 1; }
+
+.toggle-label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.toggle-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.toggle-switch {
+  width: 44px;
+  height: 26px;
+  background: var(--border);
+  border-radius: 26px;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle-switch.on { background: var(--purple); }
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.toggle-switch.on::after { transform: translateX(18px); }
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: var(--grad);
+  border-radius: 12px;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.btn-primary:active { transform: scale(0.98); }
+
+.btn-danger {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--danger);
+  border-radius: 12px;
+  color: var(--danger);
+  font-weight: 600;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.usage-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.usage-card {
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.usage-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.usage-value {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--purple-2);
+  line-height: 1.1;
+}
+
+.usage-sub {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.toast {
+  position: fixed;
+  bottom: calc(100px + var(--safe-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  padding: 10px 18px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  animation: slideUp 0.3s ease-out;
+}
+
+@media (min-width: 768px) {
+  .tab-content { padding: 24px; }
+  .select-grid { grid-template-columns: repeat(3, 1fr); }
+  .modal-overlay { align-items: center; }
+  .modal { 
+    max-width: 540px; 
+    border-radius: 24px; 
+    border: 1px solid var(--border);
+    max-height: 85vh;
+  }
+  .modal-handle { display: none; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+const { useState, useEffect, useCallback, useRef, useMemo } = React;
+const h = React.createElement;
+
+// ─── DATOS ──────────────────────────────────────────────────────────────────
+
+const CHARCO_CATEGORIAS = [
+  { id: "farandula", label: "Farándula", icon: "✨", desc: "Famosos y artistas" },
+  { id: "vecindario", label: "Vecindario", icon: "🏘️", desc: "Chisme de barrio" },
+  { id: "oficina", label: "Oficina", icon: "💼", desc: "Drama laboral" },
+  { id: "escuela", label: "Escuela", icon: "🎒", desc: "Salón de clases" },
+  { id: "familia", label: "Familia", icon: "👨‍👩‍👧", desc: "Drama familiar" },
+  { id: "redes", label: "Redes Soc.", icon: "📱", desc: "Drama digital" }
+];
+
+const CHARCO_TONOS = [
+  { id: "manchado", label: "Manchado", icon: "😈", desc: "Sin filtros, picante" },
+  { id: "ironico", label: "Irónico", icon: "🙃", desc: "Sarcasmo elegante" },
+  { id: "indignado", label: "Indignado", icon: "😤", desc: "Modo 'no puede ser'" },
+  { id: "burlon", label: "Burlón", icon: "😏", desc: "Risas a costillas" },
+  { id: "confidente", label: "Confidente", icon: "🤫", desc: "Como secreto íntimo" },
+  { id: "dramatico", label: "Dramático", icon: "🎭", desc: "Telenovela total" }
+];
+
+const CHARCO_DURACIONES = [
+  { id: "1min", label: "1 min", icon: "⏱️", desc: "~150 palabras" },
+  { id: "2min", label: "2 min", icon: "⏰", desc: "~300 palabras" },
+  { id: "3min", label: "3 min", icon: "🕒", desc: "~450 palabras" }
+];
+
+const MEILIN_TIPOS = [
+  { id: "reflexiva", label: "Reflexiva", icon: "🌙", desc: "Para pensar profundo" },
+  { id: "filosofica", label: "Filosófica", icon: "🪷", desc: "Existencia y verdad" },
+  { id: "oscura", label: "Oscura", icon: "🖤", desc: "Lado sombrío" },
+  { id: "motivacional", label: "Motivacional", icon: "🔥", desc: "Que prenda fuego" },
+  { id: "romantica", label: "Romántica", icon: "🌹", desc: "Sobre amor" },
+  { id: "misteriosa", label: "Misteriosa", icon: "🔮", desc: "Enigmática" },
+  { id: "existencial", label: "Existencial", icon: "🌌", desc: "Sentido de la vida" },
+  { id: "punzante", label: "Punzante", icon: "🗡️", desc: "Verdad cruda" }
+];
+
+const MEILIN_TONOS = [
+  { id: "suave", label: "Suave", icon: "🕊️", desc: "Calma" },
+  { id: "fuerte", label: "Fuerte", icon: "⚡", desc: "Impacto" },
+  { id: "susurrante", label: "Susurrante", icon: "🌬️", desc: "Íntimo" },
+  { id: "confrontacional", label: "Confrontacional", icon: "🥊", desc: "Directo" }
+];
+
+const IMG_OCASIONES = [
+  { id: "lunes", label: "Lunes", icon: "😩" },
+  { id: "viernes", label: "Viernes", icon: "🎉" },
+  { id: "trabajo", label: "Trabajo", icon: "💼" },
+  { id: "navidad", label: "Navidad", icon: "🎄" },
+  { id: "valentin", label: "Valentín", icon: "💝" },
+  { id: "cumple", label: "Cumple", icon: "🎂" },
+  { id: "halloween", label: "Halloween", icon: "🎃" },
+  { id: "verano", label: "Verano", icon: "☀️" },
+  { id: "lluvia", label: "Lluvia", icon: "🌧️" },
+  { id: "ex", label: "El/la ex", icon: "💔" },
+  { id: "crush", label: "Crush", icon: "😳" },
+  { id: "dinero", label: "Sin dinero", icon: "💸" }
+];
+
+const IMG_HUMOR = [
+  { id: "negro", label: "Negro", icon: "🖤" },
+  { id: "absurdo", label: "Absurdo", icon: "🌀" },
+  { id: "relatable", label: "Relatable", icon: "😭" },
+  { id: "cringe", label: "Cringe", icon: "😬" },
+  { id: "nostalgia", label: "Nostalgia", icon: "🥹" },
+  { id: "existencial", label: "Existencial", icon: "🌌" }
+];
+
+const VIDEO_FORMATOS = [
+  { id: "tiktok", label: "TikTok", icon: "🎵", desc: "15-60s vertical" },
+  { id: "reel", label: "Reel IG", icon: "📸", desc: "30-90s vertical" },
+  { id: "short", label: "Short YT", icon: "▶️", desc: "30-60s vertical" },
+  { id: "fb", label: "Facebook", icon: "👥", desc: "Cuadrado/vertical" }
+];
+
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+
+function loadStored(key, fallback) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+  catch { return fallback; }
+}
+
+function saveStored(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+}
+
+function usePersisted(key, defaultValue) {
+  const [value, setValue] = useState(() => loadStored(key, defaultValue));
+  const set = useCallback(v => {
+    const newVal = typeof v === "function" ? v(loadStored(key, defaultValue)) : v;
+    saveStored(key, newVal);
+    setValue(newVal);
+  }, [key]);
+  return [value, set];
+}
+
+// Costos por modelo Haiku 4.5: $1/$5 + cache: $1.25 write, $0.10 read
+function calcCost(usage) {
+  if (!usage) return 0;
+  return (
+    (usage.input_tokens || 0) / 1e6 * 1.0 +
+    (usage.output_tokens || 0) / 1e6 * 5.0 +
+    (usage.cache_creation_input_tokens || 0) / 1e6 * 1.25 +
+    (usage.cache_read_input_tokens || 0) / 1e6 * 0.10
+  );
+}
+
+function formatCost(c) {
+  if (c < 0.0001) return "$" + c.toFixed(6);
+  if (c < 0.01) return "$" + c.toFixed(5);
+  if (c < 1) return "$" + c.toFixed(4);
+  return "$" + c.toFixed(2);
+}
+
+function viralColor(score) {
+  if (score >= 8) return "high";
+  if (score >= 5) return "mid";
+  return "low";
+}
+
+async function callClaude(apiKey, system, userPrompt, useCache = false, jsonMode = true) {
+  const requestBody = {
+    model: "claude-haiku-4-5",
+    max_tokens: 2048,
+    messages: [{ role: "user", content: userPrompt }]
+  };
+
+  if (system) {
+    if (useCache) {
+      requestBody.system = [
+        { type: "text", text: system, cache_control: { type: "ephemeral" } }
+      ];
+    } else {
+      requestBody.system = system;
+    }
+  }
+
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "content-type": "application/json",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify(requestBody)
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: { message: "Error desconocido" } }));
+    throw new Error(err.error?.message || `HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+  const text = data.content[0]?.text || "";
+  const cost = calcCost(data.usage);
+
+  if (jsonMode) {
+    try {
+      const cleanText = text.replace(/^```json\s*/, "").replace(/```\s*$/, "").trim();
+      return { data: JSON.parse(cleanText), cost, usage: data.usage };
+    } catch (e) {
+      return { data: { error: "Parse error", raw: text }, cost, usage: data.usage };
+    }
+  }
+
+  return { data: text, cost, usage: data.usage };
+}
+
+// ─── ICONS ──────────────────────────────────────────────────────────────────
+
+const Icon = {
+  Settings: () => h("svg", { width: 20, height: 20, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2 }, h("circle", { cx: 12, cy: 12, r: 3 }), h("path", { d: "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" })),
+  Copy: () => h("svg", { width: 14, height: 14, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round" }, h("rect", { x: 9, y: 9, width: 13, height: 13, rx: 2 }), h("path", { d: "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" })),
+  Star: ({ filled }) => h("svg", { width: 16, height: 16, viewBox: "0 0 24 24", fill: filled ? "currentColor" : "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" }, h("polygon", { points: "12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" })),
+  Refresh: () => h("svg", { width: 14, height: 14, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round" }, h("polyline", { points: "23 4 23 10 17 10" }), h("polyline", { points: "1 20 1 14 7 14" }), h("path", { d: "M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" })),
+  Trash: () => h("svg", { width: 14, height: 14, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round" }, h("path", { d: "M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" })),
+  Close: () => h("svg", { width: 20, height: 20, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round" }, h("path", { d: "M18 6L6 18M6 6l12 12" })),
+  Check: () => h("svg", { width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 3, strokeLinecap: "round", strokeLinejoin: "round" }, h("polyline", { points: "20 6 9 17 4 12" }))
+};
+
+// ─── TOAST ──────────────────────────────────────────────────────────────────
+
+function Toast({ message, onClose }) {
+  useEffect(() => {
+    const t = setTimeout(onClose, 2000);
+    return () => clearTimeout(t);
+  }, [onClose]);
+  if (!message) return null;
+  return h("div", { className: "toast" }, h(Icon.Check), message);
+}
+
+// ─── CHARCO SUCIO TAB (Lito Podcast) ────────────────────────────────────────
+
+function CharcoTab({ apiKey, useCache, characters, savedIdeas, setSavedIdeas, onToast }) {
+  const [tema, setTema] = useState("");
+  const [categoria, setCategoria] = useState("");
+  const [tono, setTono] = useState("manchado");
+  const [duracion, setDuracion] = useState("2min");
+  const [loading, setLoading] = useState(false);
+  const [resultado, setResultado] = useState(null);
+  const [error, setError] = useState(null);
+
+  const palabras = duracion === "1min" ? 150 : duracion === "2min" ? 300 : 450;
+  const lito = characters.lito || "Lito es un chismoso experto, divertido, observador. Habla con energía, hace pausas dramáticas y reacciones exageradas. Mexicano, picante pero sin caer en lo vulgar.";
+
+  const generate = useCallback(async () => {
+    if (!apiKey || !tema.trim() || !categoria || !tono) {
+      setError("Completa todos los campos");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    setResultado(null);
+
+    const cat = CHARCO_CATEGORIAS.find(c => c.id === categoria);
+    const ton = CHARCO_TONOS.find(t => t.id === tono);
+
+    const system = `Eres un guionista experto en contenido viral para podcasts de chismes en redes sociales (TikTok, IG Reels, YT Shorts).
+
+PERSONAJE: ${lito}
+
+ESTILO DEL PODCAST "Charco Sucio":
+- Narrador único hablando directo a cámara
+- Tono confidente, como contándole un secreto al espectador
+- Pausas dramáticas marcadas con [PAUSA] o [...]
+- Reacciones físicas marcadas: [RISA], [CARA SORPRESA], [SUSPIRO]
+- Ganchos en los primeros 3 segundos
+- Plot twists y revelaciones progresivas
+- Cierre que invita a comentar/seguir
+
+FORMATO de respuesta JSON estricto, sin markdown:
+{
+  "titulo": "Título del episodio (máx 8 palabras, viral)",
+  "hook": "Frase de apertura (primeros 3 seg, gancho fuerte máx 15 palabras)",
+  "guion": "Guión completo con marcas [PAUSA], [RISA], etc. ~${palabras} palabras",
+  "cierre": "Frase de cierre con call-to-action",
+  "caption": "Caption para redes (máx 100 palabras, con emojis)",
+  "hashtags": ["#tag1", "#tag2", "#tag3", "#tag4", "#tag5"],
+  "viral_score": número del 1 al 10,
+  "tips_grabacion": "Consejo breve de cómo grabarlo (cámara, gestos, ritmo)"
+}`;
+
+    const userPrompt = `Genera un guión de podcast de chismes "Charco Sucio".
+
+TEMA DEL CHISME: ${tema}
+CATEGORÍA: ${cat.label} (${cat.desc})
+TONO: ${ton.label} (${ton.desc})
+DURACIÓN: ${duracion} (~${palabras} palabras del guión)
+
+Hazlo VIRAL y manchado. El chisme debe enganchar desde el primer segundo y mantener tensión. Usa lenguaje natural mexicano sin exageraciones forzadas. Incluye al menos un plot twist o revelación inesperada.
+
+Responde SOLO el JSON, sin markdown, sin texto antes o después.`;
+
+    try {
+      const result = await callClaude(apiKey, system, userPrompt, useCache);
+      if (result.data.error) {
+        setError("Error procesando respuesta. Intenta de nuevo.");
+      } else {
+        setResultado({ ...result.data, cost: result.cost, usage: result.usage });
+      }
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiKey, tema, categoria, tono, duracion, useCache, lito]);
+
+  const copy = (text, label) => {
+    navigator.clipboard.writeText(text);
+    onToast(`${label} copiado`);
+  };
+
+  const save = () => {
+    if (!resultado) return;
+    const item = {
+      id: "charco_" + Date.now(),
+      tipo: "charco",
+      titulo: resultado.titulo,
+      contenido: resultado,
+      tema, categoria, tono, duracion,
+      fecha: Date.now()
+    };
+    setSavedIdeas([item, ...savedIdeas]);
+    onToast("⭐ Guardado");
+  };
+
+  return h("div", { className: "tab-content" },
+    h("div", { className: "tab-hero charco" },
+      h("div", { className: "hero-emoji" }, "🎤"),
+      h("h1", { className: "hero-title" }, "Charco Sucio"),
+      h("p", { className: "hero-subtitle" }, "Genera guiones virales de chismes con Lito. Narrador único, pausas dramáticas, plot twists y cierre con CTA.")
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "📝 Tema del chisme", h("span", { className: "req" }, "*")),
+      h("textarea", {
+        className: "input-field textarea-field",
+        placeholder: "Ej: Mi vecina se fue de viaje con el del gym y dejó al esposo cuidando a los hijos...",
+        value: tema,
+        onChange: (e) => setTema(e.target.value),
+        maxLength: 500
+      }),
+      h("div", { className: "input-help" }, `${tema.length}/500 · Sé específico, da contexto, pero deja espacio para ficción`)
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "📁 Categoría", h("span", { className: "req" }, "*")),
+      h("div", { className: "select-grid" },
+        CHARCO_CATEGORIAS.map(c =>
+          h("button", {
+            key: c.id,
+            className: "select-card" + (categoria === c.id ? " selected" : ""),
+            onClick: () => setCategoria(c.id)
+          },
+            h("div", { className: "select-card-icon" }, c.icon),
+            h("div", { className: "select-card-label" }, c.label),
+            h("div", { className: "select-card-desc" }, c.desc)
+          )
+        )
+      )
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "🎭 Tono", h("span", { className: "req" }, "*")),
+      h("div", { className: "select-grid" },
+        CHARCO_TONOS.map(t =>
+          h("button", {
+            key: t.id,
+            className: "select-card" + (tono === t.id ? " selected" : ""),
+            onClick: () => setTono(t.id)
+          },
+            h("div", { className: "select-card-icon" }, t.icon),
+            h("div", { className: "select-card-label" }, t.label),
+            h("div", { className: "select-card-desc" }, t.desc)
+          )
+        )
+      )
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "⏱️ Duración"),
+      h("div", { className: "chips" },
+        CHARCO_DURACIONES.map(d =>
+          h("button", {
+            key: d.id,
+            className: "chip" + (duracion === d.id ? " selected" : ""),
+            onClick: () => setDuracion(d.id)
+          },
+            d.icon, " ", d.label, " · ", d.desc
+          )
+        )
+      )
+    ),
+
+    h("button", {
+      className: "generate-btn" + (loading ? " streaming" : ""),
+      onClick: generate,
+      disabled: loading || !apiKey || !tema.trim() || !categoria || !tono
+    },
+      loading ? h(React.Fragment, null, h("div", { className: "spinner" }), "Generando guión...") : 
+      h(React.Fragment, null, "🎤 Generar guión de Lito")
+    ),
+
+    error && h("div", { className: "card", style: { borderColor: "var(--danger)", color: "var(--danger)", textAlign: "center", fontSize: 13 } }, "❌ " + error),
+
+    resultado && h("div", { className: "result-card", style: { animation: "fadeIn 0.5s" } },
+      h("div", { className: "result-header" },
+        h("div", { className: "result-meta" },
+          h("div", { className: `viral-score ${viralColor(resultado.viral_score)}` }, "🔥 ", resultado.viral_score, "/10"),
+          h("div", { className: "cost-badge" }, formatCost(resultado.cost))
+        ),
+        h("div", { className: "result-actions" },
+          h("button", { className: "action-btn", onClick: () => copy(resultado.guion, "Guión") }, h(Icon.Copy)),
+          h("button", { className: "action-btn", onClick: save }, h(Icon.Star, { filled: false })),
+          h("button", { className: "action-btn", onClick: generate }, h(Icon.Refresh))
+        )
+      ),
+
+      h("div", { className: "result-section" },
+        h("div", { className: "result-label" }, "📌 Título"),
+        h("div", { className: "result-text", style: { fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700 } }, resultado.titulo)
+      ),
+
+      h("div", { className: "result-section" },
+        h("div", { className: "result-label" }, "🎣 Hook (primeros 3 seg)",
+          h("span", { className: "copy-mini", onClick: () => copy(resultado.hook, "Hook") }, "COPIAR")
+        ),
+        h("div", { className: "result-text" }, resultado.hook)
+      ),
+
+      h("div", { className: "result-section" },
+        h("div", { className: "result-label" }, "📜 Guión completo",
+          h("span", { className: "copy-mini", onClick: () => copy(resultado.guion, "Guión") }, "COPIAR")
+        ),
+        h("div", { className: "result-text dialog" }, resultado.guion)
+      ),
+
+      h("div", { className: "result-section" },
+        h("div", { className: "result-label" }, "🎬 Cierre",
+          h("span", { className: "copy-mini", onClick: () => copy(resultado.cierre, "Cierre") }, "COPIAR")
+        ),
+        h("div", { className: "result-text" }, resultado.cierre)
+      ),
+
+      h("div", { className: "result-section" },
+        h("div", { className: "result-label" }, "📱 Caption",
+          h("span", { className: "copy-mini", onClick: () => copy(resultado.caption, "Caption") }, "COPIAR")
+        ),
+        h("div", { className: "result-text" }, resultado.caption)
+      ),
+
+      h("div", { className: "result-section" },
+        h("div", { className: "result-label" }, "🏷️ Hashtags",
+          h("span", { className: "copy-mini", onClick: () => copy(resultado.hashtags.join(" "), "Hashtags") }, "COPIAR")
+        ),
+        h("div", { className: "hashtags" },
+          resultado.hashtags.map(t => h("span", { key: t, className: "hashtag" }, t))
+        )
+      ),
+
+      resultado.tips_grabacion && h("div", { className: "result-section" },
+        h("div", { className: "result-label" }, "💡 Tips de grabación"),
+        h("div", { className: "result-text", style: { fontSize: 12.5, fontStyle: "italic" } }, resultado.tips_grabacion)
+      )
+    )
+  );
+}
+
+// ─── MEI LIN TAB ────────────────────────────────────────────────────────────
+
+function MeiLinTab({ apiKey, useCache, characters, savedIdeas, setSavedIdeas, onToast }) {
+  const [tema, setTema] = useState("");
+  const [tipo, setTipo] = useState("reflexiva");
+  const [tono, setTono] = useState("suave");
+  const [loading, setLoading] = useState(false);
+  const [resultado, setResultado] = useState(null);
+  const [error, setError] = useState(null);
+
+  const meilin = characters.meilin || "Mei Lin es una mujer hermosa, etérea, con presencia magnética. Habla con calma pero cada palabra impacta. Su mirada profunda y voz suave hacen que cada frase pegue como verdad universal.";
+
+  const generate = useCallback(async () => {
+    if (!apiKey || !tema.trim() || !tipo || !tono) {
+      setError("Completa todos los campos");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    setResultado(null);
+
+    const tipoObj = MEILIN_TIPOS.find(t => t.id === tipo);
+    const tonoObj = MEILIN_TONOS.find(t => t.id === tono);
+
+    const system = `Eres un experto en frases impactantes virales para videos cortos (10 segundos máx) en redes sociales.
+
+PERSONAJE: ${meilin}
+
+REGLAS DE LAS FRASES:
+- Máximo 20 palabras (deben caber en 7-8 segundos al hablar)
+- Que peguen FUERTE, que se queden grabadas en la mente
+- Originales, NO clichés tipo "vive cada día como si fuera el último"
+- Construcción inesperada, giro al final, contraste
+- Que invite a guardar/compartir/comentar
+- Lenguaje cuidado, poético pero directo
+
+FORMATO de respuesta JSON estricto, sin markdown:
+{
+  "frases": [
+    {
+      "frase": "La frase impactante (máx 20 palabras)",
+      "setup_visual": "Descripción de cómo grabarla: ángulo, expresión, movimiento (1 oración)",
+      "caption": "Caption para el post (con emojis, máx 50 palabras)",
+      "hashtags": ["#tag1", "#tag2", "#tag3"],
+      "viral_score": número del 1 al 10
+    }
+  ],
+  "tips_globales": "Tip general de cómo entregar todas estas frases"
+}
+
+Genera EXACTAMENTE 5 frases variadas pero todas del mismo tipo y tono pedidos.`;
+
+    const userPrompt = `Genera 5 frases impactantes de 10 segundos para Mei Lin.
+
+CONTEXTO/TEMA: ${tema}
+TIPO: ${tipoObj.label} (${tipoObj.desc})
+TONO: ${tonoObj.label} (${tonoObj.desc})
+
+Cada frase debe poder leerse pausadamente en 7-8 segundos. Que cada una sea distinta entre sí pero todas dentro del tipo y tono pedidos. Evita absolutamente los clichés. Busca frases que la gente quiera guardar.
+
+Responde SOLO el JSON, sin markdown, sin texto antes o después.`;
+
+    try {
+      const result = await callClaude(apiKey, system, userPrompt, useCache);
+      if (result.data.error || !result.data.frases) {
+        setError("Error procesando respuesta. Intenta de nuevo.");
+      } else {
+        setResultado({ ...result.data, cost: result.cost, usage: result.usage });
+      }
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiKey, tema, tipo, tono, useCache, meilin]);
+
+  const copy = (text, label) => {
+    navigator.clipboard.writeText(text);
+    onToast(`${label} copiado`);
+  };
+
+  const saveFrase = (frase) => {
+    const item = {
+      id: "meilin_" + Date.now() + "_" + Math.random(),
+      tipo: "meilin",
+      titulo: frase.frase.slice(0, 50),
+      contenido: frase,
+      tema, tipoFrase: tipo, tono,
+      fecha: Date.now()
+    };
+    setSavedIdeas([item, ...savedIdeas]);
+    onToast("⭐ Frase guardada");
+  };
+
+  return h("div", { className: "tab-content" },
+    h("div", { className: "tab-hero meilin" },
+      h("div", { className: "hero-emoji" }, "💎"),
+      h("h1", { className: "hero-title" }, "Mei Lin"),
+      h("p", { className: "hero-subtitle" }, "Frases impactantes de 10 seg. Genera 5 variaciones por sesión, listas para grabar y subir.")
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "🌌 Contexto o tema", h("span", { className: "req" }, "*")),
+      h("textarea", {
+        className: "input-field textarea-field",
+        placeholder: "Ej: Sobre las personas que se fueron, el silencio antes de dormir, el miedo a empezar de nuevo...",
+        value: tema,
+        onChange: (e) => setTema(e.target.value),
+        maxLength: 300
+      }),
+      h("div", { className: "input-help" }, `${tema.length}/300 · Una idea, emoción o situación abstracta funciona mejor`)
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "✨ Tipo de frase", h("span", { className: "req" }, "*")),
+      h("div", { className: "select-grid" },
+        MEILIN_TIPOS.map(t =>
+          h("button", {
+            key: t.id,
+            className: "select-card" + (tipo === t.id ? " selected" : ""),
+            onClick: () => setTipo(t.id)
+          },
+            h("div", { className: "select-card-icon" }, t.icon),
+            h("div", { className: "select-card-label" }, t.label),
+            h("div", { className: "select-card-desc" }, t.desc)
+          )
+        )
+      )
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "🎙️ Tono"),
+      h("div", { className: "chips" },
+        MEILIN_TONOS.map(t =>
+          h("button", {
+            key: t.id,
+            className: "chip" + (tono === t.id ? " selected" : ""),
+            onClick: () => setTono(t.id)
+          },
+            t.icon, " ", t.label
+          )
+        )
+      )
+    ),
+
+    h("button", {
+      className: "generate-btn" + (loading ? " streaming" : ""),
+      onClick: generate,
+      disabled: loading || !apiKey || !tema.trim()
+    },
+      loading ? h(React.Fragment, null, h("div", { className: "spinner" }), "Generando frases...") : 
+      h(React.Fragment, null, "💎 Generar 5 frases")
+    ),
+
+    error && h("div", { className: "card", style: { borderColor: "var(--danger)", color: "var(--danger)", textAlign: "center", fontSize: 13 } }, "❌ " + error),
+
+    resultado && h(React.Fragment, null,
+      h("div", { className: "result-card", style: { background: "var(--surface-2)" } },
+        h("div", { className: "result-header" },
+          h("div", { className: "result-meta" },
+            h("strong", { style: { fontSize: 13, fontFamily: "var(--font-display)" } }, "✨ 5 frases generadas"),
+            h("div", { className: "cost-badge" }, formatCost(resultado.cost))
+          ),
+          h("button", { className: "action-btn", onClick: generate }, h(Icon.Refresh))
+        ),
+        resultado.tips_globales && h("div", { className: "result-text", style: { fontSize: 12, fontStyle: "italic" } }, "💡 ", resultado.tips_globales)
+      ),
+
+      resultado.frases.map((f, i) =>
+        h("div", { key: i, className: "result-card" },
+          h("div", { className: "result-header" },
+            h("div", { className: "result-meta" },
+              h("div", { style: { fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--muted)", fontWeight: 700 } }, `#${i + 1}`),
+              h("div", { className: `viral-score ${viralColor(f.viral_score)}` }, "🔥 ", f.viral_score, "/10")
+            ),
+            h("div", { className: "result-actions" },
+              h("button", { className: "action-btn", onClick: () => copy(f.frase, "Frase") }, h(Icon.Copy)),
+              h("button", { className: "action-btn", onClick: () => saveFrase(f) }, h(Icon.Star, { filled: false }))
+            )
+          ),
+          h("div", { className: "result-text frase" }, `"${f.frase}"`),
+          h("div", { className: "result-section", style: { marginTop: 12 } },
+            h("div", { className: "result-label" }, "🎬 Setup visual"),
+            h("div", { className: "result-text", style: { fontSize: 12.5, fontStyle: "italic" } }, f.setup_visual)
+          ),
+          h("div", { className: "result-section" },
+            h("div", { className: "result-label" }, "📱 Caption",
+              h("span", { className: "copy-mini", onClick: () => copy(f.caption, "Caption") }, "COPIAR")
+            ),
+            h("div", { className: "result-text", style: { fontSize: 12.5 } }, f.caption)
+          ),
+          h("div", { className: "hashtags" },
+            f.hashtags.map(t => h("span", { key: t, className: "hashtag" }, t))
+          )
+        )
+      )
+    )
+  );
+}
+
+// ─── IMAGEN TAB ─────────────────────────────────────────────────────────────
+
+function ImagenTab({ apiKey, useCache, savedIdeas, setSavedIdeas, onToast }) {
+  const [ocasion, setOcasion] = useState("");
+  const [humor, setHumor] = useState("");
+  const [contexto, setContexto] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [resultado, setResultado] = useState(null);
+  const [error, setError] = useState(null);
+
+  const generate = useCallback(async () => {
+    if (!apiKey || !ocasion || !humor) {
+      setError("Selecciona ocasión y humor");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    setResultado(null);
+
+    const oc = IMG_OCASIONES.find(o => o.id === ocasion);
+    const hu = IMG_HUMOR.find(h => h.id === humor);
+
+    const system = `Eres un experto creador de memes virales para Facebook, TikTok e Instagram.
+
+ESPECIALIDAD: prompts detallados para generadores de imágenes (Midjourney, Leonardo, DALL-E) + frases hook que peguen.
+
+FORMATO JSON estricto:
+{
+  "ideas": [
+    {
+      "concepto": "Idea del meme en 1 oración",
+      "prompt_imagen": "Prompt detallado en inglés para Midjourney/Leonardo (máx 80 palabras)",
+      "frase_hook": "Caption viral en español (máx 12 palabras)",
+      "viral_score": número 1-10
+    }
+  ]
+}
+
+Genera 3 variaciones distintas pero del mismo tema/humor.`;
+
+    const userPrompt = `Genera 3 ideas virales de imágenes/memes.
+
+OCASIÓN: ${oc.label}
+HUMOR: ${hu.label}
+${contexto ? `CONTEXTO ADICIONAL: ${contexto}` : ''}
+
+Que sean originales, relatable. Los prompts deben ser específicos visualmente. Las frases hook deben ser cortas y directas.
+
+Responde SOLO el JSON.`;
+
+    try {
+      const result = await callClaude(apiKey, system, userPrompt, useCache);
+      if (result.data.error || !result.data.ideas) {
+        setError("Error procesando respuesta");
+      } else {
+        setResultado({ ...result.data, cost: result.cost });
+      }
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiKey, ocasion, humor, contexto, useCache]);
+
+  const copy = (text, label) => {
+    navigator.clipboard.writeText(text);
+    onToast(`${label} copiado`);
+  };
+
+  const saveIdea = (idea) => {
+    const item = {
+      id: "imagen_" + Date.now() + "_" + Math.random(),
+      tipo: "imagen",
+      titulo: idea.concepto.slice(0, 50),
+      contenido: idea,
+      ocasion, humor,
+      fecha: Date.now()
+    };
+    setSavedIdeas([item, ...savedIdeas]);
+    onToast("⭐ Idea guardada");
+  };
+
+  return h("div", { className: "tab-content" },
+    h("div", { className: "tab-hero imagen" },
+      h("div", { className: "hero-emoji" }, "🎨"),
+      h("h1", { className: "hero-title" }, "Imagen"),
+      h("p", { className: "hero-subtitle" }, "Prompts profesionales + frases hook para memes virales. Listo para Midjourney, Leonardo, DALL-E.")
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "📅 Ocasión", h("span", { className: "req" }, "*")),
+      h("div", { className: "chips" },
+        IMG_OCASIONES.map(o =>
+          h("button", {
+            key: o.id,
+            className: "chip" + (ocasion === o.id ? " selected" : ""),
+            onClick: () => setOcasion(o.id)
+          },
+            o.icon, " ", o.label
+          )
+        )
+      )
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "😂 Tipo de humor", h("span", { className: "req" }, "*")),
+      h("div", { className: "chips" },
+        IMG_HUMOR.map(hu =>
+          h("button", {
+            key: hu.id,
+            className: "chip" + (humor === hu.id ? " selected" : ""),
+            onClick: () => setHumor(hu.id)
+          },
+            hu.icon, " ", hu.label
+          )
+        )
+      )
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "💭 Contexto extra (opcional)"),
+      h("input", {
+        className: "input-field",
+        placeholder: "Ej: para mi audiencia gym, sobre dietas...",
+        value: contexto,
+        onChange: (e) => setContexto(e.target.value),
+        maxLength: 200
+      })
+    ),
+
+    h("button", {
+      className: "generate-btn" + (loading ? " streaming" : ""),
+      onClick: generate,
+      disabled: loading || !apiKey || !ocasion || !humor
+    },
+      loading ? h(React.Fragment, null, h("div", { className: "spinner" }), "Generando...") : 
+      h(React.Fragment, null, "🎨 Generar 3 ideas")
+    ),
+
+    error && h("div", { className: "card", style: { borderColor: "var(--danger)", color: "var(--danger)", textAlign: "center", fontSize: 13 } }, "❌ " + error),
+
+    resultado && resultado.ideas?.map((idea, i) =>
+      h("div", { key: i, className: "result-card" },
+        h("div", { className: "result-header" },
+          h("div", { className: "result-meta" },
+            h("div", { style: { fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--muted)", fontWeight: 700 } }, `#${i + 1}`),
+            h("div", { className: `viral-score ${viralColor(idea.viral_score)}` }, "🔥 ", idea.viral_score, "/10")
+          ),
+          h("button", { className: "action-btn", onClick: () => saveIdea(idea) }, h(Icon.Star, { filled: false }))
+        ),
+        h("div", { className: "result-section" },
+          h("div", { className: "result-label" }, "💡 Concepto"),
+          h("div", { className: "result-text", style: { fontSize: 13 } }, idea.concepto)
+        ),
+        h("div", { className: "result-section" },
+          h("div", { className: "result-label" }, "🤖 Prompt para imagen",
+            h("span", { className: "copy-mini", onClick: () => copy(idea.prompt_imagen, "Prompt") }, "COPIAR")
+          ),
+          h("div", { className: "result-text dialog" }, idea.prompt_imagen)
+        ),
+        h("div", { className: "result-section" },
+          h("div", { className: "result-label" }, "🎯 Frase hook",
+            h("span", { className: "copy-mini", onClick: () => copy(idea.frase_hook, "Hook") }, "COPIAR")
+          ),
+          h("div", { className: "result-text", style: { fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700, textAlign: "center" } }, `"${idea.frase_hook}"`)
+        )
+      )
+    )
+  );
+}
+
+// ─── VIDEO TAB ──────────────────────────────────────────────────────────────
+
+function VideoTab({ apiKey, useCache, savedIdeas, setSavedIdeas, onToast }) {
+  const [tema, setTema] = useState("");
+  const [formato, setFormato] = useState("tiktok");
+  const [humor, setHumor] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [resultado, setResultado] = useState(null);
+  const [error, setError] = useState(null);
+
+  const generate = useCallback(async () => {
+    if (!apiKey || !tema.trim() || !formato) {
+      setError("Completa los campos requeridos");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    setResultado(null);
+
+    const fmt = VIDEO_FORMATOS.find(f => f.id === formato);
+    const hu = humor ? IMG_HUMOR.find(h => h.id === humor) : null;
+
+    const system = `Eres un experto guionista de videos cortos virales (TikTok, Reels, Shorts).
+
+FORMATO de respuesta JSON estricto:
+{
+  "titulo": "Título del video",
+  "hook": "Primeros 3 segundos (frase impactante)",
+  "escenas": [
+    {
+      "tiempo": "0-3s",
+      "descripcion": "Qué pasa visualmente",
+      "dialogo": "Lo que dice (si aplica)",
+      "texto_pantalla": "Texto en pantalla (si aplica)"
+    }
+  ],
+  "caption": "Caption con emojis (máx 100 palabras)",
+  "hashtags": ["#tag1", "#tag2", "#tag3", "#tag4", "#tag5"],
+  "viral_score": número 1-10,
+  "musica_sugerida": "Tipo de música/sonido recomendado"
+}`;
+
+    const userPrompt = `Genera un guión completo para video viral.
+
+TEMA: ${tema}
+FORMATO: ${fmt.label} (${fmt.desc})
+${hu ? `HUMOR: ${hu.label}` : ''}
+
+Quiero un guión escena por escena, con tiempos exactos. El hook debe enganchar en los primeros 3 segundos. Total: 30-60 segundos.
+
+Responde SOLO el JSON.`;
+
+    try {
+      const result = await callClaude(apiKey, system, userPrompt, useCache);
+      if (result.data.error || !result.data.escenas) {
+        setError("Error procesando respuesta");
+      } else {
+        setResultado({ ...result.data, cost: result.cost });
+      }
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiKey, tema, formato, humor, useCache]);
+
+  const copy = (text, label) => {
+    navigator.clipboard.writeText(text);
+    onToast(`${label} copiado`);
+  };
+
+  const save = () => {
+    if (!resultado) return;
+    const item = {
+      id: "video_" + Date.now(),
+      tipo: "video",
+      titulo: resultado.titulo,
+      contenido: resultado,
+      tema, formato, humor,
+      fecha: Date.now()
+    };
+    setSavedIdeas([item, ...savedIdeas]);
+    onToast("⭐ Guardado");
+  };
+
+  return h("div", { className: "tab-content" },
+    h("div", { className: "tab-hero video" },
+      h("div", { className: "hero-emoji" }, "🎬"),
+      h("h1", { className: "hero-title" }, "Video"),
+      h("p", { className: "hero-subtitle" }, "Guiones escena por escena con tiempos, diálogos, texto en pantalla y música sugerida.")
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "💡 Tema o concepto", h("span", { className: "req" }, "*")),
+      h("textarea", {
+        className: "input-field textarea-field",
+        placeholder: "Ej: Cuando llegas tarde al trabajo y el jefe está en la entrada...",
+        value: tema,
+        onChange: (e) => setTema(e.target.value),
+        maxLength: 300
+      })
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "📱 Formato", h("span", { className: "req" }, "*")),
+      h("div", { className: "select-grid" },
+        VIDEO_FORMATOS.map(f =>
+          h("button", {
+            key: f.id,
+            className: "select-card" + (formato === f.id ? " selected" : ""),
+            onClick: () => setFormato(f.id)
+          },
+            h("div", { className: "select-card-icon" }, f.icon),
+            h("div", { className: "select-card-label" }, f.label),
+            h("div", { className: "select-card-desc" }, f.desc)
+          )
+        )
+      )
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "😂 Humor (opcional)"),
+      h("div", { className: "chips" },
+        IMG_HUMOR.map(hu =>
+          h("button", {
+            key: hu.id,
+            className: "chip" + (humor === hu.id ? " selected" : ""),
+            onClick: () => setHumor(humor === hu.id ? "" : hu.id)
+          },
+            hu.icon, " ", hu.label
+          )
+        )
+      )
+    ),
+
+    h("button", {
+      className: "generate-btn" + (loading ? " streaming" : ""),
+      onClick: generate,
+      disabled: loading || !apiKey || !tema.trim()
+    },
+      loading ? h(React.Fragment, null, h("div", { className: "spinner" }), "Generando guión...") : 
+      h(React.Fragment, null, "🎬 Generar guión")
+    ),
+
+    error && h("div", { className: "card", style: { borderColor: "var(--danger)", color: "var(--danger)", textAlign: "center", fontSize: 13 } }, "❌ " + error),
+
+    resultado && h("div", { className: "result-card" },
+      h("div", { className: "result-header" },
+        h("div", { className: "result-meta" },
+          h("div", { className: `viral-score ${viralColor(resultado.viral_score)}` }, "🔥 ", resultado.viral_score, "/10"),
+          h("div", { className: "cost-badge" }, formatCost(resultado.cost))
+        ),
+        h("div", { className: "result-actions" },
+          h("button", { className: "action-btn", onClick: save }, h(Icon.Star, { filled: false })),
+          h("button", { className: "action-btn", onClick: generate }, h(Icon.Refresh))
+        )
+      ),
+      h("div", { className: "result-section" },
+        h("div", { className: "result-label" }, "📌 Título"),
+        h("div", { className: "result-text", style: { fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700 } }, resultado.titulo)
+      ),
+      h("div", { className: "result-section" },
+        h("div", { className: "result-label" }, "🎣 Hook"),
+        h("div", { className: "result-text" }, resultado.hook)
+      ),
+      h("div", { className: "result-section" },
+        h("div", { className: "result-label" }, "🎬 Escenas"),
+        resultado.escenas.map((esc, i) =>
+          h("div", { key: i, style: { background: "var(--bg-2)", borderRadius: 10, padding: 12, marginBottom: 8 } },
+            h("div", { style: { fontSize: 11, color: "var(--purple-2)", fontFamily: "var(--font-mono)", fontWeight: 700, marginBottom: 6 } }, esc.tiempo),
+            h("div", { style: { fontSize: 13, marginBottom: 6 } }, "📹 ", esc.descripcion),
+            esc.dialogo && h("div", { style: { fontSize: 12.5, color: "var(--text-2)", marginBottom: 4 } }, "💬 \"", esc.dialogo, "\""),
+            esc.texto_pantalla && h("div", { style: { fontSize: 12, color: "var(--amber)", fontWeight: 600 } }, "📝 ", esc.texto_pantalla)
+          )
+        )
+      ),
+      h("div", { className: "result-section" },
+        h("div", { className: "result-label" }, "📱 Caption",
+          h("span", { className: "copy-mini", onClick: () => copy(resultado.caption, "Caption") }, "COPIAR")
+        ),
+        h("div", { className: "result-text" }, resultado.caption)
+      ),
+      h("div", { className: "result-section" },
+        h("div", { className: "result-label" }, "🏷️ Hashtags"),
+        h("div", { className: "hashtags" },
+          resultado.hashtags.map(t => h("span", { key: t, className: "hashtag" }, t))
+        )
+      ),
+      resultado.musica_sugerida && h("div", { className: "result-section" },
+        h("div", { className: "result-label" }, "🎵 Música sugerida"),
+        h("div", { className: "result-text", style: { fontSize: 12.5, fontStyle: "italic" } }, resultado.musica_sugerida)
+      )
+    )
+  );
+}
+
+// ─── GUARDADAS TAB ──────────────────────────────────────────────────────────
+
+function GuardadasTab({ savedIdeas, setSavedIdeas, onToast }) {
+  const [filter, setFilter] = useState("todas");
+  
+  const filtered = useMemo(() => {
+    if (filter === "todas") return savedIdeas;
+    return savedIdeas.filter(i => i.tipo === filter);
+  }, [savedIdeas, filter]);
+
+  const remove = (id) => {
+    if (!confirm("¿Eliminar?")) return;
+    setSavedIdeas(savedIdeas.filter(i => i.id !== id));
+    onToast("Eliminado");
+  };
+
+  const copy = (text, label) => {
+    navigator.clipboard.writeText(text);
+    onToast(`${label} copiado`);
+  };
+
+  const labelTipo = (t) => ({
+    charco: "🎤 Charco",
+    meilin: "💎 Mei Lin",
+    imagen: "🎨 Imagen",
+    video: "🎬 Video"
+  })[t] || t;
+
+  return h("div", { className: "tab-content" },
+    h("div", { className: "tab-hero", style: { background: "linear-gradient(135deg, #4a3a1a 0%, #2a1f0a 100%)", borderColor: "rgba(251, 191, 36, 0.3)" } },
+      h("div", { className: "hero-emoji" }, "⭐"),
+      h("h1", { className: "hero-title" }, "Guardadas"),
+      h("p", { className: "hero-subtitle" }, savedIdeas.length === 0 ? "Aún no tienes ideas guardadas." : `${savedIdeas.length} ideas guardadas`)
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "chips" },
+        h("button", { className: "chip" + (filter === "todas" ? " selected" : ""), onClick: () => setFilter("todas") }, "Todas (" + savedIdeas.length + ")"),
+        h("button", { className: "chip" + (filter === "charco" ? " selected" : ""), onClick: () => setFilter("charco") }, "🎤 Charco"),
+        h("button", { className: "chip" + (filter === "meilin" ? " selected" : ""), onClick: () => setFilter("meilin") }, "💎 Mei Lin"),
+        h("button", { className: "chip" + (filter === "imagen" ? " selected" : ""), onClick: () => setFilter("imagen") }, "🎨 Imagen"),
+        h("button", { className: "chip" + (filter === "video" ? " selected" : ""), onClick: () => setFilter("video") }, "🎬 Video")
+      )
+    ),
+
+    filtered.length === 0 ? 
+      h("div", { className: "empty-state" },
+        h("div", { className: "empty-icon" }, "📭"),
+        h("div", { className: "empty-title" }, "No hay nada aquí"),
+        h("div", { className: "empty-desc" }, "Guarda tus ideas favoritas con la estrella ⭐")
+      )
+    : filtered.map(item =>
+      h("div", { key: item.id, className: "result-card" },
+        h("div", { className: "result-header" },
+          h("div", { className: "result-meta" },
+            h("div", { style: { fontSize: 11, color: "var(--purple-2)", fontWeight: 700 } }, labelTipo(item.tipo)),
+            h("div", { style: { fontSize: 10, color: "var(--muted)", fontFamily: "var(--font-mono)" } }, new Date(item.fecha).toLocaleDateString())
+          ),
+          h("button", { className: "action-btn", onClick: () => remove(item.id) }, h(Icon.Trash))
+        ),
+        h("div", { style: { fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 700, marginBottom: 10 } }, item.titulo),
+        item.tipo === "meilin" && h("div", { className: "result-text frase" }, `"${item.contenido.frase}"`),
+        item.tipo === "charco" && h("div", { className: "result-text", style: { fontSize: 12 } }, item.contenido.hook),
+        item.tipo === "imagen" && h(React.Fragment, null,
+          h("div", { className: "result-text dialog", style: { fontSize: 11.5 } }, item.contenido.prompt_imagen),
+          h("div", { style: { marginTop: 8 } },
+            h("button", { className: "chip", onClick: () => copy(item.contenido.prompt_imagen, "Prompt") }, h(Icon.Copy), " Copiar prompt")
+          )
+        ),
+        item.tipo === "video" && h("div", { className: "result-text", style: { fontSize: 12 } }, item.contenido.hook)
+      )
+    )
+  );
+}
+
+// ─── CONFIG TAB ─────────────────────────────────────────────────────────────
+
+function ConfigTab({ apiKey, setApiKey, useCache, setUseCache, characters, setCharacters, totalCost, totalGenerations, onClearAll }) {
+  const [tempKey, setTempKey] = useState(apiKey);
+  const [tempLito, setTempLito] = useState(characters.lito || "");
+  const [tempMeilin, setTempMeilin] = useState(characters.meilin || "");
+
+  useEffect(() => { setTempKey(apiKey); }, [apiKey]);
+
+  const saveAll = () => {
+    setApiKey(tempKey);
+    setCharacters({ lito: tempLito, meilin: tempMeilin });
+  };
+
+  return h("div", { className: "tab-content" },
+    h("div", { className: "tab-hero", style: { background: "linear-gradient(135deg, #2a1f3d 0%, #1a0f25 100%)" } },
+      h("div", { className: "hero-emoji" }, "⚙️"),
+      h("h1", { className: "hero-title" }, "Configuración"),
+      h("p", { className: "hero-subtitle" }, "API key, personajes y ahorros")
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "🔑 API Key Anthropic", h("span", { className: "req" }, "*")),
+      h("input", {
+        type: "password",
+        className: "input-field",
+        value: tempKey,
+        onChange: (e) => setTempKey(e.target.value),
+        onBlur: () => setApiKey(tempKey),
+        placeholder: "sk-ant-...",
+        autoComplete: "off",
+        autoCapitalize: "off",
+        autoCorrect: "off",
+        spellCheck: false
+      }),
+      h("div", { className: "input-help" }, 
+        "Se guarda solo en tu dispositivo. ",
+        h("a", { href: "https://console.anthropic.com/settings/keys", target: "_blank", rel: "noopener", style: { color: "var(--purple-2)" } }, "Obtener key →")
+      )
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "🎤 Personalidad de Lito"),
+      h("textarea", {
+        className: "input-field textarea-field",
+        value: tempLito,
+        onChange: (e) => setTempLito(e.target.value),
+        onBlur: () => setCharacters({ ...characters, lito: tempLito }),
+        placeholder: "Lito es un chismoso experto, divertido, observador. Habla con energía...",
+        maxLength: 500
+      }),
+      h("div", { className: "input-help" }, "Define cómo habla, su tono, su origen, sus muletillas. Más detalle = mejores guiones.")
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "💎 Personalidad de Mei Lin"),
+      h("textarea", {
+        className: "input-field textarea-field",
+        value: tempMeilin,
+        onChange: (e) => setTempMeilin(e.target.value),
+        onBlur: () => setCharacters({ ...characters, meilin: tempMeilin }),
+        placeholder: "Mei Lin es una mujer hermosa, etérea, con presencia magnética...",
+        maxLength: 500
+      }),
+      h("div", { className: "input-help" }, "Su esencia, su forma de hablar, qué transmite. Influye en el tipo de frases generadas.")
+    ),
+
+    h("div", { className: "card", style: { borderColor: "rgba(74, 222, 128, 0.3)" } },
+      h("div", { className: "card-title" }, "💰 Ahorros"),
+      h("div", { className: "toggle-row" },
+        h("div", { className: "toggle-info" },
+          h("div", { className: "toggle-label" }, "Prompt Caching"),
+          h("div", { className: "toggle-desc" }, "Cachea las instrucciones del sistema, ahorra ~85% en consultas repetidas del mismo tipo")
+        ),
+        h("button", {
+          className: "toggle-switch" + (useCache ? " on" : ""),
+          onClick: () => setUseCache(!useCache)
+        })
+      )
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "📊 Uso total"),
+      h("div", { className: "usage-grid" },
+        h("div", { className: "usage-card" },
+          h("div", { className: "usage-label" }, "Gastado"),
+          h("div", { className: "usage-value" }, formatCost(totalCost)),
+          h("div", { className: "usage-sub" }, "Acumulado")
+        ),
+        h("div", { className: "usage-card" },
+          h("div", { className: "usage-label" }, "Generaciones"),
+          h("div", { className: "usage-value" }, totalGenerations.toString()),
+          h("div", { className: "usage-sub" }, "Total")
+        )
+      )
+    ),
+
+    h("div", { className: "card" },
+      h("div", { className: "card-title" }, "ℹ️ Modelo"),
+      h("div", { style: { fontSize: 13, color: "var(--text-2)", lineHeight: 1.6 } },
+        h("strong", null, "Claude Haiku 4.5"), " — el más rápido y económico de Anthropic.",
+        h("br"),
+        h("br"),
+        h("span", { style: { fontSize: 12, color: "var(--muted)" } }, "Costo: $1/$5 per millón de tokens"),
+        h("br"),
+        h("span", { style: { fontSize: 12, color: "var(--muted)" } }, "20 generaciones/día ≈ $0.50/mes")
+      )
+    ),
+
+    h("button", {
+      className: "btn-danger",
+      onClick: () => {
+        if (confirm("¿Borrar TODAS las ideas guardadas?")) onClearAll();
+      }
+    }, "🗑️ Borrar todas las ideas guardadas")
+  );
+}
+
+// ─── BOTTOM NAV ─────────────────────────────────────────────────────────────
+
+function BottomNav({ active, onChange, savedCount, hasKey }) {
+  const tabs = [
+    { id: "charco", icon: "🎤", label: "Charco" },
+    { id: "meilin", icon: "💎", label: "Mei Lin" },
+    { id: "imagen", icon: "🎨", label: "Imagen" },
+    { id: "video", icon: "🎬", label: "Video" },
+    { id: "guardadas", icon: "⭐", label: "Saved", badge: savedCount > 0 ? savedCount : null },
+    { id: "config", icon: "⚙️", label: "Config", dot: !hasKey }
+  ];
+
+  return h("nav", { className: "bottom-nav" },
+    tabs.map(t =>
+      h("button", {
+        key: t.id,
+        className: "nav-tab" + (active === t.id ? " active" : ""),
+        onClick: () => onChange(t.id)
+      },
+        h("span", { className: "nav-tab-icon" }, t.icon),
+        h("span", { className: "nav-tab-label" }, t.label),
+        t.badge && h("span", { className: "badge" }, t.badge > 99 ? "99+" : t.badge),
+        t.dot && h("span", { className: "dot" })
+      )
+    )
+  );
+}
+
+// ─── APP ────────────────────────────────────────────────────────────────────
+
+function App() {
+  const [tab, setTab] = usePersisted("lito_tab", "charco");
+  const [apiKey, setApiKey] = usePersisted("lito_api_key", "");
+  const [useCache, setUseCache] = usePersisted("lito_use_cache", true);
+  const [characters, setCharacters] = usePersisted("lito_characters", {
+    lito: "Lito es un chismoso experto, divertido, observador. Habla con energía mexicana, hace pausas dramáticas y reacciones exageradas. Picante pero sin caer en lo vulgar. Su frase distintiva es algo así como '¿estás listo para esto?'.",
+    meilin: "Mei Lin es una mujer hermosa, etérea, con presencia magnética. Habla con calma pero cada palabra impacta. Su mirada profunda y voz suave hacen que cada frase pegue como verdad universal."
+  });
+  const [savedIdeas, setSavedIdeas] = usePersisted("lito_saved", []);
+  const [totalCost, setTotalCost] = usePersisted("lito_total_cost", 0);
+  const [totalGenerations, setTotalGenerations] = usePersisted("lito_total_gens", 0);
+  const [toast, setToast] = useState(null);
+
+  // Wrap setSavedIdeas to track total cost when adding from generation
+  const trackSavedIdeas = useCallback((newIdeas) => {
+    setSavedIdeas(newIdeas);
+  }, [setSavedIdeas]);
+
+  // Track cost from generations (called from each tab)
+  const trackGeneration = useCallback((cost) => {
+    setTotalCost(prev => prev + cost);
+    setTotalGenerations(prev => prev + 1);
+  }, [setTotalCost, setTotalGenerations]);
+
+  const tabSubtitles = {
+    charco: "🎤 Charco Sucio · Podcast con Lito",
+    meilin: "💎 Mei Lin · Frases impactantes",
+    imagen: "🎨 Generador de imágenes virales",
+    video: "🎬 Guiones para video",
+    guardadas: "⭐ Mis ideas guardadas",
+    config: "⚙️ Configuración"
+  };
+
+  const handleClearAll = useCallback(() => {
+    setSavedIdeas([]);
+    setToast("Todas las ideas eliminadas");
+  }, [setSavedIdeas]);
+
+  return h(React.Fragment, null,
+    h("header", { className: "app-header" },
+      h("div", { className: "header-content" },
+        h("div", { className: "brand-mini" },
+          h("span", { className: "brand-icon" }, "🫧"),
+          h("div", null,
+            h("div", { className: "brand-text" }, "Lito Studio"),
+            h("div", { className: "tab-subtitle" }, tabSubtitles[tab])
+          )
+        ),
+        apiKey 
+          ? h("div", { className: "status-pill online" }, h("span", { className: "status-dot" }), "Conectado")
+          : h("div", { className: "status-pill offline" }, h("span", { className: "status-dot" }), "Sin API key")
+      )
+    ),
+
+    h("main", { className: "main" },
+      tab === "charco" && h(CharcoTab, { apiKey, useCache, characters, savedIdeas, setSavedIdeas: trackSavedIdeas, onToast: setToast }),
+      tab === "meilin" && h(MeiLinTab, { apiKey, useCache, characters, savedIdeas, setSavedIdeas: trackSavedIdeas, onToast: setToast }),
+      tab === "imagen" && h(ImagenTab, { apiKey, useCache, savedIdeas, setSavedIdeas: trackSavedIdeas, onToast: setToast }),
+      tab === "video" && h(VideoTab, { apiKey, useCache, savedIdeas, setSavedIdeas: trackSavedIdeas, onToast: setToast }),
+      tab === "guardadas" && h(GuardadasTab, { savedIdeas, setSavedIdeas: trackSavedIdeas, onToast: setToast }),
+      tab === "config" && h(ConfigTab, { apiKey, setApiKey, useCache, setUseCache, characters, setCharacters, totalCost, totalGenerations, onClearAll: handleClearAll })
+    ),
+
+    h(BottomNav, { active: tab, onChange: setTab, savedCount: savedIdeas.length, hasKey: !!apiKey }),
+    h(Toast, { message: toast, onClose: () => setToast(null) })
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  const swCode = `
+    const CACHE = "lito-studio-v3";
+    self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(["./"]))); self.skipWaiting(); });
+    self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))); self.clients.claim(); });
+    self.addEventListener("fetch", e => {
+      if (e.request.url.includes("api.anthropic.com")) return;
+      e.respondWith(fetch(e.request).then(res => {
+        if (e.request.method === "GET" && res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return res;
+      }).catch(() => caches.match(e.request)));
+    });
+  `;
+  const swBlob = new Blob([swCode], { type: "application/javascript" });
+  navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+}
+</script>
+</body>
+</html>
